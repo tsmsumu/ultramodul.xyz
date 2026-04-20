@@ -23,15 +23,14 @@ export async function executeRawNexusQuery(query: string) {
       metadata: { query }
     });
 
-    // LibSQL rows are custom classes containing both index and keys. 
-    // Next.js Server Actions STRIP custom classes! We MUST convert it to a pristine JSON Array of Objects!
+    // LibSQL named columns may not be enumerable in Object.keys()
+    // We strictly use result.columns to extract values from the row proxy.
+    const columns = result.columns;
     const plainRows = result.rows.map((row: any) => {
       const obj: Record<string, any> = {};
-      for (const k of Object.keys(row)) {
-        if (isNaN(Number(k))) { // Only take column names, ignore numeric indices
-          obj[k] = row[k];
-        }
-      }
+      columns.forEach((col: string) => {
+         obj[col] = row[col];
+      });
       return obj;
     });
 

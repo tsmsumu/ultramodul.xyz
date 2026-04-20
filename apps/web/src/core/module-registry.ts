@@ -33,7 +33,7 @@ export const ModuleRegistry: OmniModule[] = [
   },
   {
     id: "Keamanan Mandat",
-    name: "Delegasi Mandat",
+    name: "Mandate Delegation",
     path: "/mandate",
     icon: Key,
     isCore: true
@@ -57,7 +57,7 @@ export const ModuleRegistry: OmniModule[] = [
   // Modul Dummy untuk Pengujian Event Bus Saraf
   {
     id: "Saraf Interaktif",
-    name: "Uji Saraf Ping",
+    name: "Event Bus Test",
     path: "/test-bus",
     icon: ActivitySquare,
     isCore: false

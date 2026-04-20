@@ -16,10 +16,14 @@ export function ApprovalInbox() {
     setApprovals(data);
   };
 
-  const handleResolve = async (id: string, isApprove: boolean) => {
+  const handleResolve = async (id: string, type: string, isApprove: boolean) => {
     const checker = "SYSTEM_ADMIN"; // Mocked
-    await resolveApproval(id, checker, isApprove);
+    await resolveApproval(id, checker, isApprove, type);
     load();
+    // Beritahu parent (page) bahwa ada user baru yg di-approve supaya tabel terre-render
+    if (type === "IDENTITY" && typeof window !== "undefined") {
+        window.dispatchEvent(new Event("iam-refresh"));
+    }
   };
 
   // Hapus return null agar Kotak Persidangan selalu muncul
@@ -42,7 +46,7 @@ export function ApprovalInbox() {
                 <div>
                   <p className="text-sm font-bold text-gray-900 dark:text-white flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-                    Modul: {ap.moduleName}
+                    {ap.type === 'IDENTITY' ? "Pendaftaran Karakter Baru" : "Akses Matriks:"} {ap.moduleName}
                   </p>
                   <div className="flex flex-wrap gap-2 text-xs text-gray-500 mt-2 font-mono">
                     <span className="bg-gray-100 dark:bg-white/5 px-2 py-0.5 rounded">ID: {ap.targetUserId.split('-')[0]}</span>
@@ -51,10 +55,10 @@ export function ApprovalInbox() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2 shrink-0 ml-4">
-                  <button onClick={() => handleResolve(ap.id, false)} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-red-500 hover:bg-red-600 rounded-md transition shadow-sm shadow-red-500/20" title="Tolak">
+                  <button onClick={() => handleResolve(ap.id, ap.type, false)} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-red-500 hover:bg-red-600 rounded-md transition shadow-sm shadow-red-500/20" title="Tolak">
                     <XCircle className="w-4 h-4" /> Tolak
                   </button>
-                  <button onClick={() => handleResolve(ap.id, true)} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-emerald-500 hover:bg-emerald-600 rounded-md transition shadow-sm shadow-emerald-500/20" title="Setujui">
+                  <button onClick={() => handleResolve(ap.id, ap.type, true)} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-emerald-500 hover:bg-emerald-600 rounded-md transition shadow-sm shadow-emerald-500/20" title="Setujui">
                     <CheckCircle className="w-4 h-4" /> Setujui
                   </button>
                 </div>

@@ -25,6 +25,10 @@ export default function IAMConsolePage() {
 
   useEffect(() => {
     fetchUsers();
+
+    const handleRefresh = () => fetchUsers();
+    window.addEventListener("iam-refresh", handleRefresh);
+    return () => window.removeEventListener("iam-refresh", handleRefresh);
   }, []);
 
   return (

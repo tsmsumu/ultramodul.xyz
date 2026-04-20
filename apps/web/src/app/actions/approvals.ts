@@ -7,14 +7,46 @@ import { randomUUID } from "crypto";
 
 export async function getPendingApprovals() {
   try {
-    return await db.select().from(matrixApprovals).where(eq(matrixApprovals.status, "PENDING"));
+    const list: any[] = [];
+    
+    // 1. Fetch Pendings for Matrix
+    const matrixReqs = await db.select().from(matrixApprovals).where(eq(matrixApprovals.status, "PENDING"));
+    matrixReqs.forEach(m => list.push({ type: "MATRIX", ...m }));
+
+    // 2. Fetch Pendings for New Identities
+    const userReqs = await db.select().from(users).where(eq(users.status, "pending"));
+    userReqs.forEach(u => list.push({
+       type: "IDENTITY",
+       id: u.id,
+       moduleName: "SYSTEM_ACCOUNT",
+       targetUserId: u.username,
+       proposedTimeRule: "Registration",
+       proposedPermissions: `Role: ${u.role} | Nama: ${u.name}`,
+    }));
+
+    return list;
   } catch (error) {
     return [];
   }
 }
 
-export async function resolveApproval(approvalId: string, checkerId: string, isApproved: boolean) {
+export async function resolveApproval(approvalId: string, checkerId: string, isApproved: boolean, type: string = "MATRIX") {
   try {
+    if (type === "IDENTITY") {
+      // Resolve Account Registration
+      const newStatus = isApproved ? "active" : "blocked";
+      await db.update(users).set({ status: newStatus }).where(eq(users.id, approvalId));
+      
+      await createAuditLog({
+        action: "RESOLVE_IDENTITY_APPROVAL",
+        actorId: checkerId,
+        target: approvalId,
+        metadata: { isApproved, newStatus }
+      });
+      return { success: true };
+    }
+
+    // Resolve Matrix Access
     const apps = await db.select().from(matrixApprovals).where(eq(matrixApprovals.id, approvalId));
     if (!apps.length) return { success: false };
 

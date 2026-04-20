@@ -39,8 +39,8 @@ export function SmartEdge({
       const sourceNode = getNode(source);
       const targetNode = getNode(target);
       
-      const sCols = sourceNode?.data?.schema || [];
-      const tCols = targetNode?.data?.schema || [];
+      const sCols: any[] = (sourceNode?.data as any)?.schema || [];
+      const tCols: any[] = (targetNode?.data as any)?.schema || [];
       
       setSourceCols(sCols);
       setTargetCols(tCols);
@@ -75,10 +75,10 @@ export function SmartEdge({
     
     setIsProcessing(true);
     try {
-      const sourceNode = getNode(source);
-      const targetNode = getNode(target);
-      const sTable = sourceNode?.data?.tableName;
-      const tTable = targetNode?.data?.tableName;
+      const sData = sourceNode?.data as any;
+      const tData = targetNode?.data as any;
+      const sTable = sData?.tableName;
+      const tTable = tData?.tableName;
 
       if (!sTable || !tTable) {
         alert("Wah, filenya belum ditelan mesin Wasm! Lemparkan data dulu ke dalam Node.");

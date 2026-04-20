@@ -52,5 +52,24 @@
     "mfDesc": "Halaman ini sama sekali tidak mengimpor kode `Header`. Namun jika Anda memencet tombol di bawah, Lonceng di sudut kanan atas seluruh aplikasi akan berdentang. Modul ini terdaftar secara gaib via <strong>Module Registry</strong>.",
     "inputPlaceholder": "Ketik rahasia intelijen yang ingin dilempar lintas modul...",
     "fireSignalBtn": "Tembakkan Sinyal ke Header (Pub/Sub)"
+  },
+  "public": {
+    "registerTitle": "Pendaftaran Identitas",
+    "registerSubtitle": "Daftar mandiri untuk akses layanan publik.",
+    "nikLabel": "Nomor Induk Kependudukan (NIK)",
+    "nikPlaceholder": "Masukkan 16 Digit NIK",
+    "nameLabel": "Nama Lengkap",
+    "namePlaceholder": "Sesuai KTP",
+    "passwordLabel": "Kata Sandi",
+    "submitBtn": "Daftar Sekarang",
+    "waitRoomTitle": "Ruang Tunggu Eksekutif",
+    "waitRoomDesc": "Identitas Anda sedang dalam pengawalan ketat dan verifikasi otomatis/IAM. Mohon sabar menunggu jadwal aktivasi."
+  },
+  "pengaduan": {
+    "title": "Layanan Pengaduan Publik",
+    "desc": "Sampaikan keluhan dan laporan langsung ke unit terkait. Diawasi penuh oleh logbook.",
+    "topicLabel": "Topik Aduan",
+    "contentLabel": "Detail Kronologi",
+    "submitBtn": "Kirim Laporan Resmi"
   }
 }

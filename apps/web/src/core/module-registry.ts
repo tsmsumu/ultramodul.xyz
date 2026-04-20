@@ -75,7 +75,14 @@ export const ModuleRegistry: OmniModule[] = [
     id: "Data Sanitizer Pabrik",
     name: "Data Washing Station",
     path: "/sanitizer",
-    icon: ActivitySquare, // Will change icon to something like Droplets or Washing Machine if available, ActivitySquare is placeholder
+    icon: ActivitySquare,
+    isCore: false
+  },
+  {
+    id: "Layanan Pengaduan",
+    name: "Public Complaint",
+    path: "/pengaduan",
+    icon: ActivitySquare, // Will adapt icon as needed
     isCore: false
   }
 ];

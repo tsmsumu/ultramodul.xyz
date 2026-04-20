@@ -52,5 +52,24 @@
     "mfDesc": "This page absolutely does NOT import `Header` code. However, if you press the button below, the Bell in the top right corner of the entire app will chime. This module is registered invisibly via the <strong>Module Registry</strong>.",
     "inputPlaceholder": "Type intelligence secret to throw across modules...",
     "fireSignalBtn": "Fire Signal to Header (Pub/Sub)"
+  },
+  "public": {
+    "registerTitle": "Identity Registration",
+    "registerSubtitle": "Self-register for public service access.",
+    "nikLabel": "National Identity Number (NIK)",
+    "nikPlaceholder": "Enter 16 Digit NIK",
+    "nameLabel": "Full Name",
+    "namePlaceholder": "As written on ID card",
+    "passwordLabel": "Password",
+    "submitBtn": "Register Now",
+    "waitRoomTitle": "Executive Waiting Room",
+    "waitRoomDesc": "Your identity is under strict escort and automatic/IAM verification. Please patiently wait for activation."
+  },
+  "pengaduan": {
+    "title": "Public Complaint Service",
+    "desc": "Submit complaints and reports directly to the related unit. Fully monitored by logbook.",
+    "topicLabel": "Complaint Topic",
+    "contentLabel": "Detailed Chronology",
+    "submitBtn": "Send Official Report"
   }
 }

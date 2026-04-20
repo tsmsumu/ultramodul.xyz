@@ -151,8 +151,8 @@ export function DataTable({ initialUsers }: { initialUsers: any[] }) {
             </th>
             <th className="px-6 py-4 font-semibold tracking-wider">Identitas NIK</th>
             <th className="px-6 py-4 font-semibold tracking-wider">Nama Lengkap</th>
-            <th className="px-6 py-4 font-medium">Otoritas</th>
-            <th className="px-6 py-4 font-medium">Status</th>
+            <th className="px-6 py-4 font-medium">Domain Otoritas</th>
+            <th className="px-6 py-4 font-medium">Batas Izin (Status)</th>
             <th className="px-6 py-4 font-medium text-right">Tindakan</th>
           </tr>
         </thead>
@@ -173,21 +173,23 @@ export function DataTable({ initialUsers }: { initialUsers: any[] }) {
               </td>
               <td className="px-6 py-4 font-medium">{user.name}</td>
               <td className="px-6 py-4">
-                <span className={`px-2.5 py-1 rounded-full text-xs font-medium border
-                  ${user.role === 'admin' ? 'bg-purple-100 border-purple-200 text-purple-700 dark:bg-purple-900/30 dark:border-purple-800/50 dark:text-purple-400' : 
+                <span className={`px-2.5 py-1 rounded-full text-[10px] uppercase font-black tracking-widest border
+                  ${user.role === 'admin' ? 'bg-purple-100 border-purple-200 text-purple-700 dark:bg-purple-900/40 dark:border-purple-800/50 dark:text-purple-400 shadow-[0_0_15px_-3px_rgba(168,85,247,0.4)]' : 
+                    user.role === 'member' ? 'bg-cyan-100 border-cyan-200 text-cyan-700 dark:bg-cyan-900/40 dark:border-cyan-800/50 dark:text-cyan-400' : 
                     user.role === 'viewer' ? 'bg-gray-100 border-gray-200 text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300' : 
-                    'bg-blue-100 border-blue-200 text-blue-700 dark:bg-blue-900/30 dark:border-blue-800/50 dark:text-blue-400'}
+                    'bg-blue-100 border-blue-200 text-blue-700 dark:bg-blue-900/40 dark:border-blue-800/50 dark:text-blue-400'}
                 `}>
-                  {user.role.toUpperCase()}
+                  {user.role}
                 </span>
               </td>
               <td className="px-6 py-4">
-                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border
-                  ${user.status === 'active' ? 'bg-green-100 border-green-200 text-green-700 dark:bg-green-900/30 dark:border-green-800/50 dark:text-green-400' : 
+                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black tracking-widest uppercase border
+                  ${user.status === 'active' ? 'bg-emerald-100 border-emerald-200 text-emerald-700 dark:bg-emerald-900/30 dark:border-emerald-800/50 dark:text-emerald-400' : 
+                    user.status === 'pending' ? 'bg-amber-100 border-amber-200 text-amber-700 dark:bg-amber-900/30 dark:border-amber-800/50 dark:text-amber-400 shadow-[0_0_15px_-3px_rgba(245,158,11,0.4)]' : 
                     'bg-red-100 border-red-200 text-red-700 dark:bg-red-900/30 dark:border-red-800/50 dark:text-red-400'}
                 `}>
-                  <div className={`w-1.5 h-1.5 rounded-full ${user.status === 'active' ? 'bg-green-500' : 'bg-red-500'}`} />
-                  {user.status === 'active' ? 'Aktif' : 'Terblokir'}
+                  <div className={`w-1.5 h-1.5 rounded-full ${user.status === 'active' ? 'bg-emerald-500' : user.status === 'pending' ? 'bg-amber-500 animate-pulse' : 'bg-red-500'}`} />
+                  {user.status}
                 </span>
               </td>
               <td className="px-6 py-4 text-right flex items-center justify-end gap-2">
@@ -217,7 +219,7 @@ export function DataTable({ initialUsers }: { initialUsers: any[] }) {
                   disabled={loadingId === user.id}
                   onClick={() => handleToggle(user.id, user.status)}
                   className="p-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg transition disabled:opacity-50"
-                  title={user.status === 'active' ? 'Kunci Akses' : 'Buka Akses'}
+                  title={user.status === 'active' ? 'Kunci Akses (Blokir)' : 'Buka Akses (Approve/Aktifkan)'}
                 >
                   {user.status === 'active' ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
                 </button>

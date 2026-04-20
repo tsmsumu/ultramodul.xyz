@@ -48,14 +48,15 @@ export async function createIdentity(data: { nik: string; name: string; role: st
 
 export async function toggleIdentityStatus(id: string, currentStatus: string) {
   try {
-    const newStatus = currentStatus === "active" ? "inactive" : "active";
+    // Jika pending atau blocked, klik tombol ini akan mengaktifkan (Verval Manual)
+    const newStatus = currentStatus === "active" ? "blocked" : "active";
     await db.update(users).set({ status: newStatus }).where(eq(users.id, id));
 
     await createAuditLog({
       action: "TOGGLE_IDENTITY_STATUS",
       actorId: "SYSTEM",
       target: id,
-      metadata: { newStatus }
+      metadata: { newStatus, previous: currentStatus }
     });
 
     return { success: true };

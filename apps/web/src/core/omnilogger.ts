@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import { db } from "@ultra/db";
-import { systemLogs } from "@ultra/db/schema";
+import { systemLogs } from "@ultra/db/src/schema";
 import { v4 as uuidv4 } from "uuid";
 
 // The OmniLogger (Singleton Pattern)

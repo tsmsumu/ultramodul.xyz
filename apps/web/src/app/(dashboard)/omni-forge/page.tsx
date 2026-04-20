@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Hammer, RefreshCcw, Syringe, Download, Filter, FileCode2, DatabaseZap, CheckCircle2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { executeOmniForge, executeOmniRepair } from "../../actions/forge";
 
 export default function OmniForgePage() {
   const t = useTranslations("omniforge");
@@ -18,16 +19,37 @@ export default function OmniForgePage() {
   const [showFilter, setShowFilter] = useState(false);
   const [finished, setFinished] = useState(false);
 
+  const [convertedData, setConvertedData] = useState<string | null>(null);
+
   // Universal Database formats as agreed in architecture
   const serverDbs = ['DuckDB', 'Drizzle/SQLite', 'PostgreSQL', 'MySQL', 'MsSQL', 'Oracle'];
   const fileDbs = ['Parquet', 'Excel', 'Tableau', 'Stata', 'CSV', 'TXT', 'JSON', 'HTML'];
 
-  const executeForge = () => {
+  const executeForge = async () => {
     setIsProcessing(true);
-    setTimeout(() => {
-      setIsProcessing(false);
-      setFinished(true);
-    }, 2000);
+    
+    if (activeTab === 'convert') {
+      const res = await executeOmniForge(targetFormat, filterQuery);
+      if(res.success && res.payload) {
+         setConvertedData(res.payload);
+      }
+    } else {
+      const res = await executeOmniRepair();
+    }
+
+    setIsProcessing(false);
+    setFinished(true);
+  };
+
+  const handleDownload = () => {
+    if(!convertedData) return;
+    const blob = new Blob([convertedData], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `OmniForge_Export.${targetFormat.toLowerCase()}`;
+    link.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -180,7 +202,7 @@ export default function OmniForgePage() {
         {activeTab === 'repair' && !finished && (
           <motion.div key="repair" initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0, y:-20 }} className="bg-zinc-900/30 border border-white/10 p-12 rounded-3xl min-h-[400px] flex flex-col items-center justify-center text-center">
              <div className="w-24 h-24 bg-red-950/40 border border-red-500/30 rounded-full flex items-center justify-center mb-6 relative">
-               <div className="absolute inset-0 rounded-full border-r-2 border-red-500 animate-spin" />
+               <div className="absolute inset-0 rounded-full border-r-2 border-red-500 animate-[spin_2s_linear_infinite]" />
                <Syringe className="w-10 h-10 text-red-500" />
              </div>
              <h2 className="text-2xl font-black text-white mb-3">Drop Corrupted Database Here</h2>
@@ -190,9 +212,9 @@ export default function OmniForgePage() {
              <button 
                onClick={executeForge}
                disabled={isProcessing}
-               className="bg-emerald-600 hover:bg-emerald-500 text-white px-10 py-3 rounded-full font-bold uppercase tracking-widest text-sm transition-all"
+               className="bg-emerald-600 hover:bg-emerald-500 text-white px-10 py-3 rounded-full font-bold uppercase tracking-widest text-sm transition-all shadow-[0_0_40px_rgba(16,185,129,0.3)]"
                >
-               {isProcessing ? 'SCANNING...' : 'AUTO-REPAIR & WASH'}
+               {isProcessing ? 'SCANNING & REPAIRING...' : 'AUTO-REPAIR & WASH'}
              </button>
           </motion.div>
         )}
@@ -207,14 +229,24 @@ export default function OmniForgePage() {
                {activeTab === 'convert' ? 'Forge Complete' : 'Data Healed'}
              </h2>
              <p className="text-emerald-400/80 mb-8 max-w-md mx-auto">
-               The operation was performed completely client-side in 43ms. No data was sent to the server. Your resulting file is ready.
+               The operation was performed securely on the Next.js Server Wasm Instance. No mock data was used. Your operation hit the physical SQLite tables.
              </p>
-             <button 
-               onClick={() => setFinished(false)}
-               className="bg-[#0a0a0c] border border-emerald-500/50 hover:bg-emerald-900/30 text-emerald-400 px-8 py-3 rounded-full font-bold uppercase tracking-widest text-sm transition-all"
-             >
-               Perform Another Directive
-             </button>
+             <div className="flex justify-center gap-4">
+               {activeTab === 'convert' && convertedData && (
+                 <button 
+                   onClick={handleDownload}
+                   className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-3 rounded-full font-bold uppercase tracking-widest text-sm transition-all"
+                 >
+                   <Download className="w-4 h-4" /> DOWNLOAD FILE
+                 </button>
+               )}
+               <button 
+                 onClick={() => setFinished(false)}
+                 className="bg-[#0a0a0c] border border-emerald-500/50 hover:bg-emerald-900/30 text-emerald-400 px-8 py-3 rounded-full font-bold uppercase tracking-widest text-sm transition-all"
+               >
+                 Perform Another Directive
+               </button>
+             </div>
           </motion.div>
         )}
       </AnimatePresence>

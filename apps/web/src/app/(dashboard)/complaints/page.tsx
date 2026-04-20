@@ -1,22 +1,31 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { submitComplaintAction } from "../../actions/complaints";
 import { MessageSquareWarning, Send, AlertCircle } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 export default function PengaduanPage() {
   const t = useTranslations("pengaduan");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Simulasi pengiriman data ke database pengaduan_publik
-    setTimeout(() => {
-      setLoading(false);
+    
+    // Create FormData from the form target
+    const formData = new FormData(e.target as HTMLFormElement);
+    
+    // Absolute Pure Drizzle Execute
+    const res = await submitComplaintAction(formData);
+    
+    setLoading(false);
+    if(res.success) {
       setSubmitted(true);
-    }, 1500);
+    } else {
+      alert("Error: " + res.error);
+    }
   };
 
   return (
@@ -52,7 +61,7 @@ export default function PengaduanPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-sm font-semibold mb-2">{t("topicLabel")}</label>
-              <select required className="w-full px-4 py-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-red-500 outline-none transition appearance-none">
+              <select name="topic" required className="w-full px-4 py-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-red-500 outline-none transition appearance-none">
                 <option value="" disabled selected>{t("optSelect")}</option>
                 <option value="infrastruktur" className="dark:bg-[#09090b]">{t("optInfra")}</option>
                 <option value="pelayanan" className="dark:bg-[#09090b]">{t("optPublic")}</option>
@@ -63,6 +72,7 @@ export default function PengaduanPage() {
             <div>
               <label className="block text-sm font-semibold mb-2">{t("contentLabel")}</label>
               <textarea 
+                name="content"
                 required 
                 rows={5}
                 placeholder={t("placeholder")}

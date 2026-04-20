@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { UploadCloud, Zap, FileText, Download, CheckCircle2, AlertTriangle, ArrowRight, Dna } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { executeEvolutionDiff } from "../../actions/evolution";
 
 const STEPS = [
   { id: 1, label: "step1", icon: UploadCloud, color: "blue", title: "Data Ingestor" },
@@ -21,17 +22,24 @@ export default function EvolutionCenter() {
   // Mock State Data
   const [diffData, setDiffData] = useState<any>(null);
   
-  const handleNextStep = () => {
+  const handleNextStep = async () => {
     setIsProcessing(true);
+    
+    // TAHAP 1 -> 2: Ingestor & Quantum Collision (REAL SERVER ACTION EXECUTION)
+    if (currentStep === 1) {
+       const res = await executeEvolutionDiff();
+       if (res.success && res.stats) {
+          setDiffData(res.stats);
+       } else {
+          setDiffData({ newRows: 0, missingRows: 0, unchangedRows: 0 });
+       }
+    }
+
+    // TAHAP LAIN: UI Transition
     setTimeout(() => {
       setIsProcessing(false);
       setCurrentStep(prev => Math.min(prev + 1, 4));
-      
-      // Simulate data population on Step 2
-      if (currentStep === 1) {
-        setDiffData({ newRows: 14050, missingRows: 2310, unchangedRows: 4850020 });
-      }
-    }, 1500); // Simulate processing time
+    }, 500); 
   };
 
   return (

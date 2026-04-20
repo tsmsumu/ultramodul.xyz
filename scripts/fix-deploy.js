@@ -24,8 +24,13 @@ pnpm install
 # Force Absolute Path for the whole monorepo
 export DATABASE_URL="file:/var/www/ultramodul/production.db"
 
+echo "-> Stopping old PM2 processes to release File Locks..."
+pm2 delete ultramodul || true
+
 echo "-> Flushing Old DB & Regenerating Local DB Schema (Drizzle Push)..."
 rm -f /var/www/ultramodul/production.db
+rm -f /var/www/ultramodul/production.db-journal
+
 cd packages/db
 pnpm exec drizzle-kit push
 cd ../..
@@ -36,7 +41,6 @@ export NODE_ENV=production
 pnpm run build
 
 echo "-> Restarting PM2 process..."
-pm2 delete ultramodul || true
 pm2 start pnpm --name "ultramodul" --cwd /var/www/ultramodul/apps/web --env DATABASE_URL="file:/var/www/ultramodul/production.db" -- run start
 pm2 save
 

@@ -1,8 +1,9 @@
 "use client";
 
 import { BaseEdge, EdgeLabelRenderer, EdgeProps, getBezierPath, useReactFlow } from '@xyflow/react';
-import { Link, Check, Settings2, Trash2, Cpu } from 'lucide-react';
+import { Link, Check, Settings2, Trash2, Cpu, Loader2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { duckEngine } from "@/core/duckdb-engine";
 
 export function SmartEdge({
   id,
@@ -23,6 +24,7 @@ export function SmartEdge({
   });
 
   const [isOpen, setIsOpen] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   
   // State Manual Override
   const [joinType, setJoinType] = useState('LEFT JOIN');
@@ -66,6 +68,44 @@ export function SmartEdge({
   const onEdgeDelete = (evt: React.MouseEvent) => {
     evt.stopPropagation();
     setEdges((edges) => edges.filter((e) => e.id !== id));
+  };
+
+  const executeJoinLogic = async () => {
+    if (!leftCol || !rightCol) return alert("Pilih kolom sumber dan target!");
+    
+    setIsProcessing(true);
+    try {
+      const sourceNode = getNode(source);
+      const targetNode = getNode(target);
+      const sTable = sourceNode?.data?.tableName;
+      const tTable = targetNode?.data?.tableName;
+
+      if (!sTable || !tTable) {
+        alert("Wah, filenya belum ditelan mesin Wasm! Lemparkan data dulu ke dalam Node.");
+        setIsProcessing(false);
+        return;
+      }
+
+      const joinedName = `joined_${id.replace(/[^a-zA-Z0-9]/g, '_')}`;
+      
+      // RACIKAN KODE SQL DEWA 
+      // Karena gabungan akan mewarisi semua kolom, kita pakai SELECT *
+      // Di enterprise asli biasanya di-aliaskan jika kolom bentrok, namun DuckDB punya keajaiban.
+      const sql = `CREATE OR REPLACE TABLE ${joinedName} AS SELECT * FROM ${sTable} ${joinType} ${tTable} ON ${sTable}.${leftCol} = ${tTable}.${rightCol};`;
+      
+      await duckEngine.executeRaw(sql);
+
+      // Pancarkan Sinyal ke Kanvas Induk
+      const event = new CustomEvent('NEXUS_TABLE_JOINED', { detail: joinedName });
+      window.dispatchEvent(event);
+
+      setIsOpen(false);
+    } catch (err: any) {
+      alert("Gagal merajut data: " + err.message);
+      console.error(err);
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -138,10 +178,12 @@ export function SmartEdge({
                   </div>
 
                 <button 
-                  onClick={() => setIsOpen(false)}
-                  className="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition flex items-center justify-center gap-2 shadow-md shadow-indigo-600/20"
+                  onClick={executeJoinLogic}
+                  disabled={isProcessing}
+                  className="w-full py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-lg text-xs font-bold transition flex items-center justify-center gap-2 shadow-md shadow-indigo-600/20"
                 >
-                  <Check className="w-3 h-3" /> APPROVE JOIN RELATION
+                  {isProcessing ? <Loader2 className="w-3 h-3 animate-spin"/> : <Check className="w-3 h-3" />}
+                  {isProcessing ? "MERAJUT DATA..." : "APPROVE JOIN RELATION"}
                 </button>
              </div>
            )}

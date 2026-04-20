@@ -23,11 +23,7 @@ const edgeTypes = {
   smartEdge: SmartEdge,
 };
 
-const initialNodes: Node[] = [
-  { id: "1", type: "database", position: { x: 100, y: 150 }, data: { label: "PostgreSQL", dbName: "Server Jakarta" } },
-  { id: "2", type: "file", position: { x: 100, y: 350 }, data: { label: "Parquet", fileName: "Data Penduduk 2026.parquet" } },
-];
-
+const initialNodes: Node[] = [];
 const initialEdges: Edge[] = [];
 
 export function NexusCanvas() {
@@ -46,6 +42,15 @@ export function NexusCanvas() {
       })
     );
     setActiveTable(tableName); // Langsung otomatis buka terminal untuk melihat suksesnya
+  }, []);
+
+  // Mendengarkan siaran sakti dari Tali Saraf saat Join Selesai
+  useEffect(() => {
+    const handleJoinEvent = (e: any) => {
+      setActiveTable(e.detail); // Tancapkan Hologram Terminal
+    };
+    window.addEventListener('NEXUS_TABLE_JOINED', handleJoinEvent);
+    return () => window.removeEventListener('NEXUS_TABLE_JOINED', handleJoinEvent);
   }, []);
 
   const onNodesChange = useCallback(

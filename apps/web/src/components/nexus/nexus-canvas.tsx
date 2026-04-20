@@ -3,6 +3,8 @@
 import { useCallback, useState } from "react";
 import { ReactFlow, Background, Controls, applyNodeChanges, applyEdgeChanges, addEdge, Node, Edge, Connection } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 import { DatabaseNode } from "./nodes/database-node";
 import { FileNode } from "./nodes/file-node";
 import { MetadataNode } from "./nodes/metadata-node";
@@ -81,30 +83,40 @@ export function NexusCanvas() {
   };
 
   return (
-    <div className="w-full h-full flex bg-[#fafafa] dark:bg-[#09090b]">
-       <div className="flex-1 relative h-full">
-         <ReactFlow
-           nodes={nodes}
-           edges={edges}
-           onNodesChange={onNodesChange}
-           onEdgesChange={onEdgesChange}
-           onConnect={onConnect}
-           nodeTypes={nodeTypes}
-           edgeTypes={edgeTypes}
-           onNodeClick={onNodeClick}
-           fitView
-           className="dark:bg-[#0a0a0c]"
-         >
-           <Background color="#cbd5e1" gap={16} />
-           <Controls />
-         </ReactFlow>
+    <div className="w-full h-full relative bg-[#fafafa] dark:bg-[#09090b]">
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
+          onNodeClick={onNodeClick}
+          fitView
+          className="dark:bg-[#0a0a0c]"
+        >
+          <Background color="#0ea5e9" gap={20} size={1} />
+          <Controls className="!bg-white/80 dark:!bg-[#111113]/80 backdrop-blur-md !border-gray-200 dark:!border-white/10 !fill-gray-600 dark:!fill-gray-300" />
+        </ReactFlow>
 
-         {/* TERMINAL SAKTI */}
-         <HologramTerminal tableName={activeTable} onClose={() => setActiveTable(null)} />
-       </div>
-       <div className="w-80 h-full border-l border-gray-200 dark:border-white/10 bg-white dark:bg-[#111113] p-4 flex flex-col gap-4 z-10 shadow-xl overflow-y-auto">
-          <NexusPanel onAddNode={addNode} />
-       </div>
+        {/* ZENITH HUD: Exit Button */}
+        <Link href="/iam" className="absolute top-6 left-6 z-50 flex items-center gap-2 bg-white/80 dark:bg-[#111113]/80 backdrop-blur-xl border border-gray-200 dark:border-white/10 px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition-all cursor-pointer text-gray-700 dark:text-gray-200 hover:text-blue-500">
+           <ArrowLeft className="w-4 h-4" />
+           <span className="text-xs font-bold tracking-wide">EXIT ZEN MODE</span>
+        </Link>
+        
+        {/* ZENITH HUD: Floating Tools Panel */}
+        <div className="absolute top-6 right-6 z-50 w-72 max-h-[80vh] bg-white/70 dark:bg-[#0a0a0c]/70 backdrop-blur-2xl border border-gray-200 dark:border-white/10 rounded-2xl shadow-[0_15px_40px_rgba(0,0,0,0.12)] p-2 overflow-y-auto custom-scrollbar flex flex-col gap-2">
+           <div className="p-3 pb-1 border-b border-gray-100 dark:border-white/5 mb-2">
+             <div className="text-[10px] uppercase font-mono tracking-widest text-blue-500 font-bold">PUM NEXUS ENGINE</div>
+             <div className="text-xs text-gray-500 dark:text-gray-400">Zenith Command Center</div>
+           </div>
+           <NexusPanel onAddNode={addNode} />
+        </div>
+
+        {/* TERMINAL SAKTI */}
+        <HologramTerminal tableName={activeTable} onClose={() => setActiveTable(null)} />
     </div>
   );
 }

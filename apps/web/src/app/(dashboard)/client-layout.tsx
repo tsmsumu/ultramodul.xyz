@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { Header } from "@/components/layout/header";
 import { Sidebar } from "@/components/layout/sidebar";
 
@@ -24,6 +25,17 @@ export default function ClientDashboardLayout({
     if (permissions["ALL_ACCESS_JIT"]) return true; // JIT Emergency Dinyalakan
     return permissions[modName]?.includes("VIEW");
   };
+
+  const pathname = usePathname();
+  const isZenMode = pathname?.startsWith("/nexus");
+
+  if (isZenMode) {
+    return (
+      <div className="w-screen h-screen overflow-hidden bg-[#fafafa] dark:bg-[#09090b]">
+        {children}
+      </div>
+    );
+  }
 
   if (layoutType === "topbar") {
     return (

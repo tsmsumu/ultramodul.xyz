@@ -56,12 +56,12 @@
     "fireSignalBtn": "Tembakkan Sinyal ke Header (Pub/Sub)"
   },
   "public": {
-    "registerTitle": "Pendaftaran Identitas",
-    "registerSubtitle": "Daftar mandiri untuk akses layanan publik.",
-    "nikLabel": "Nomor Induk Kependudukan (NIK)",
-    "nikPlaceholder": "Masukkan 16 Digit NIK",
+    "registerTitle": "Pendaftaran Identitas Universal",
+    "registerSubtitle": "Daftar mandiri untuk akses Universal Platform.",
+    "nikLabel": "Kode Identitas Universal (ID/SSO)",
+    "nikPlaceholder": "Masukkan ID Alfanumerik",
     "nameLabel": "Nama Lengkap",
-    "namePlaceholder": "Sesuai KTP",
+    "namePlaceholder": "Nama Resmi Pengguna",
     "passwordLabel": "Kata Sandi",
     "submitBtn": "Daftar Sekarang",
     "waitRoomTitle": "Ruang Tunggu Eksekutif",

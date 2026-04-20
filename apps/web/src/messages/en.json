@@ -56,12 +56,12 @@
     "fireSignalBtn": "Fire Signal to Header (Pub/Sub)"
   },
   "public": {
-    "registerTitle": "Identity Registration",
-    "registerSubtitle": "Self-register for public service access.",
-    "nikLabel": "National Identity Number (NIK)",
-    "nikPlaceholder": "Enter 16 Digit NIK",
+    "registerTitle": "Universal Identity Registration",
+    "registerSubtitle": "Self-register for Universal Platform access.",
+    "nikLabel": "Universal Identity Code (ID/SSO)",
+    "nikPlaceholder": "Enter Alphanumeric ID",
     "nameLabel": "Full Name",
-    "namePlaceholder": "As written on ID card",
+    "namePlaceholder": "Your Official Name",
     "passwordLabel": "Password",
     "submitBtn": "Register Now",
     "waitRoomTitle": "Executive Waiting Room",

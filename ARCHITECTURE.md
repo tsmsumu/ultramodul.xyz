@@ -76,4 +76,10 @@ Jika ada perintah perancangan modul penarikan data (*Export*) atau pemasukan dat
 *   AI yang diizinkan tertanam (*embedded*) di dalam PUM UltraModul haruslah berjenis **LLM Lite On-Premise (Local SLM)** seperti model Qwen 3B (berformat terkompresi ~4GB) yang sanggup menelan instruksi Bahasa Indonesia.
 *   **Fungsi Absolut LLM Lite:** Bertindak sebagai *Database Router* atau penterjemah pikiran manusia menjadi perintah mesin (**Text-to-SQL/Text-to-Query**). Tujuannya murni untuk mencari/menggali data secara interaktif tanpa menyentuh *cloud* pihak ketiga.
 
+## 11. Arsitektur "The Nexus Oracle" (Hukum Antarmuka LLM)
+Jika AI (Qwen 3B LLM Lite) diaktifkan menjelang masa *Production*, antarmukanya **WAJIB MUTLAK** mematuhi kaidah *Zero-Latency Inference*:
+1.  **The Obsidian Bar (Mac Spotlight UX):** Tidak ada tombol *chat* kuno. Orakel diakses memanggil antarmuka melayang universal via `Ctrl + K`.
+2.  **Mesin Bisu C++ (Silent execution):** SLM wajib dibungkam melalui *System Prompt* bertangan besi agar dilarang berbasa-basi ("Halo, berikut datanya..."). Model hanya diizinkan merespons murni dengan syntax `SQL` untuk dieksekusi instan oleh DuckDB/Core Engine.
+3.  **Tandem Pemisahan Hardware:** Proses inferensi (misal `Ollama` / `Llama.cpp`) wajib dijalankan sebagai layanan latar belakang di port terpisah (bukan di dalam *thread Node.js/Next.js* utama) untuk menjamin antarmuka depan (*Frontend*) tidak pernah membeku (*freeze*).
+
 **Amnesia Prevention Active: TRUE**

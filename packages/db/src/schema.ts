@@ -49,6 +49,18 @@ export const matrixApprovals = sqliteTable('matrix_approvals', {
   resolvedAt: integer('resolved_at', { mode: 'timestamp' })
 });
 
+export const systemLogs = sqliteTable("system_logs", {
+  id: text("id").primaryKey(),
+  timestamp: integer("timestamp").notNull(), // Waktu persis kejadian
+  module: text("module").notNull(),          // Modul asal: IAM, TAILOR, AUTH, SYSTEM
+  actionData: text("action_data"),           // Bentuk JSON kejadian (Matrix, SQL, dll)
+  userId: text("user_id").notNull(),         // NIK / ID Pelaku
+  ipAddress: text("ip_address"),             // Koordinat IP Address Perekam
+  userAgent: text("user_agent"),             // Browser Perekam
+  severity: text("severity").notNull(),      // INFO, WARNING, CRITICAL, FATAL
+  cryptoHash: text("crypto_hash").notNull()  // Kriptografi SHA-256 Rantai Abadi
+});
+
 // Biometric Pillar (WebAuthn / Passkeys)
 export const passkeys = sqliteTable('passkeys', {
   id: text('id').primaryKey(),

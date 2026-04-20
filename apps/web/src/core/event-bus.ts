@@ -3,7 +3,22 @@
  * Menggunakan pendekatan Pub/Sub murni yang cepat.
  */
 
-type EventCallback = (payload: any) => void;
+export type EventPayload = any;
+type EventCallback = (payload: EventPayload) => void;
+
+class ServerBus {
+  // Global event interceptor for the Panopticon Logger
+  static async hook(event: string, moduleName: string, userId: string, payload: any) {
+    if (typeof window !== "undefined") return; // Hanya berjalan di sisi Server (Next.js Actions)
+    const { OmniLogger } = await import("./omnilogger");
+    await OmniLogger.log({
+      module: moduleName,
+      userId: userId,
+      actionData: { event, ...payload },
+      severity: "INFO"
+    });
+  }
+}
 
 class OmniEventBus {
   private listeners: Record<string, EventCallback[]> = {};

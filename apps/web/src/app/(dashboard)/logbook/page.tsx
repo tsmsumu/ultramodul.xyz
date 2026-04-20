@@ -1,130 +1,133 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { BookOpen, Search, ShieldAlert, Cpu, Activity } from "lucide-react";
-import { getAuditLogs } from "@/app/actions/logbook";
+import { Shield, Eye, Clock, Activity, Fingerprint, Map, Terminal, RotateCcw } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
-export default function LogbookPage() {
-  const [logs, setLogs] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
+interface LogEntry {
+  id: string;
+  timestamp: number;
+  module: string;
+  actionData: string;
+  userId: string;
+  severity: "INFO" | "WARNING" | "CRITICAL" | "FATAL";
+  cryptoHash: string;
+}
 
-  const fetchData = async () => {
-    setLoading(true);
-    const data = await getAuditLogs();
-    setLogs(data);
-    setLoading(false);
-  };
+export default function LogBookPage() {
+  const [logs, setLogs] = useState<LogEntry[]>([]);
+  const [isLive, setIsLive] = useState(true);
 
+  // Simulasi SSE (Server-Sent Events) turunnya Log ala Matrix
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (!isLive) return;
 
-  const filteredLogs = logs.filter(log => 
-    JSON.stringify(log).toLowerCase().includes(searchQuery.toLowerCase())
-  );
+    const interval = setInterval(() => {
+      const cryptoSeed = Math.random().toString(36).substring(2, 15);
+      const randomModules = ["IAM_MATRIX", "PUM_TAILOR", "CORE_AUTH", "EXPORT_HUB"];
+      const randMod = randomModules[Math.floor(Math.random() * randomModules.length)];
+      
+      const newLog: LogEntry = {
+        id: cryptoSeed,
+        timestamp: Date.now(),
+        module: randMod,
+        actionData: JSON.stringify({ event: "PULSE_CHECK", latency: Math.floor(Math.random() * 50) + "ms" }),
+        userId: "SYS_ORACLE",
+        severity: Math.random() > 0.9 ? "WARNING" : "INFO",
+        cryptoHash: "0x" + cryptoSeed.toUpperCase() + "..."
+      };
+
+      setLogs(prev => [newLog, ...prev].slice(0, 50)); // Simpan max 50 log interaktif
+    }, 2500);
+
+    return () => clearInterval(interval);
+  }, [isLive]);
 
   return (
-    <div className="space-y-6 max-w-7xl animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="p-3 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-xl">
-            <BookOpen className="w-6 h-6" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Audit Logbook Intel</h1>
-            <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
-              Instrumen pengintaian aktivitas sistem sekunder secara komprehensif.
-            </p>
-          </div>
+    <div className="p-6 h-[calc(100vh-64px)] flex flex-col bg-[#050505] text-green-500 font-mono overflow-hidden">
+      
+      {/* Header Panopticon */}
+      <div className="flex items-center justify-between mb-6 pb-4 border-b border-green-500/20">
+        <div>
+          <h1 className="text-2xl font-bold tracking-widest flex items-center gap-3 text-green-400">
+            <Eye className="w-8 h-8 animate-pulse text-red-500" />
+            PANOPTICON LEDGER
+          </h1>
+          <p className="text-xs text-green-600 mt-1 uppercase tracking-widest flex items-center gap-2">
+            <Shield className="w-3 h-3" /> Immutable Blockchain-Lite Logger (Live Streaming SSE)
+          </p>
         </div>
-
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Lacak ID, Aksi, atau Aktor..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full md:w-80 pl-9 pr-4 py-2 bg-white dark:bg-[#0a0a0c] border border-gray-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-red-500/50 outline-none transition"
-          />
+        
+        <div className="flex items-center gap-4">
+           <button 
+             onClick={() => setIsLive(!isLive)}
+             className={`px-4 py-2 rounded border text-xs font-bold transition flex items-center gap-2
+             ${isLive ? 'bg-red-500/10 border-red-500/50 text-red-500' : 'bg-green-500/10 border-green-500/50 text-green-500'}`}
+           >
+             <Activity className={isLive ? "animate-pulse" : ""} w-4 h-4 />
+             {isLive ? "LIVE: ONLINE" : "LIVE: PAUSED"}
+           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-         <div className="p-4 bg-white dark:bg-[#0a0a0c] border border-gray-200 dark:border-white/10 rounded-xl flex items-center justify-between shadow-sm">
-           <div>
-             <p className="text-sm text-gray-500 dark:text-gray-400">Total Log Terekam</p>
-             <h4 className="text-2xl font-semibold mt-1">{loading ? "..." : logs.length}</h4>
-           </div>
-           <Activity className="w-8 h-8 text-blue-500 opacity-80" />
-         </div>
-         <div className="p-4 bg-white dark:bg-[#0a0a0c] border border-gray-200 dark:border-white/10 rounded-xl flex items-center justify-between shadow-sm">
-           <div>
-             <p className="text-sm text-gray-500 dark:text-gray-400">Aksi Tingkat Kritis</p>
-             <h4 className="text-2xl font-semibold mt-1 text-red-600 dark:text-red-400">
-               {loading ? "..." : logs.filter(l => l.action.includes("REVOKE") || l.action.includes("DELETE")).length}
-             </h4>
-           </div>
-           <ShieldAlert className="w-8 h-8 text-red-500 opacity-80" />
-         </div>
-         <div className="p-4 bg-white dark:bg-[#0a0a0c] border border-gray-200 dark:border-white/10 rounded-xl flex items-center justify-between shadow-sm">
-           <div>
-             <p className="text-sm text-gray-500 dark:text-gray-400">Status Integritas Mesin</p>
-             <h4 className="text-2xl font-semibold mt-1 text-emerald-600 dark:text-emerald-400">Aman</h4>
-           </div>
-           <Cpu className="w-8 h-8 text-emerald-500 opacity-80" />
-         </div>
-      </div>
-
-      <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-white/10 shadow-sm bg-white dark:bg-[#0a0a0c] mt-4">
-        <table className="w-full text-left text-sm whitespace-nowrap">
-          <thead className="bg-gray-50 dark:bg-white/5 border-b border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400">
-            <tr>
-              <th className="px-6 py-4 font-medium">Timestamp (WIP)</th>
-              <th className="px-6 py-4 font-medium">Aktor</th>
-              <th className="px-6 py-4 font-medium">Aktivitas Sistem</th>
-              <th className="px-6 py-4 font-medium">Target ID</th>
-              <th className="px-6 py-4 font-medium">Data Metadata Raw</th>
+      {/* Tampilan Tabel Log ala Terminal */}
+      <div className="flex-1 overflow-auto pr-2 custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead>
+            <tr className="text-xs text-green-700 uppercase border-b border-green-500/20">
+              <th className="py-3 px-2 font-normal"><Clock className="w-3 h-3 inline mr-1"/> Timestamp</th>
+              <th className="py-3 px-2 font-normal"><Fingerprint className="w-3 h-3 inline mr-1"/> Hash (SHA256)</th>
+              <th className="py-3 px-2 font-normal"><Map className="w-3 h-3 inline mr-1"/> Target Module</th>
+              <th className="py-3 px-2 font-normal"><Terminal className="w-3 h-3 inline mr-1"/> Payload (JSON)</th>
+              <th className="py-3 px-2 text-right font-normal">Revert</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100 dark:divide-white/5">
-            {loading ? (
-              <tr>
-                <td colSpan={5} className="py-20 text-center text-gray-500 animate-pulse">Menyelaraskan koneksi Intelejen...</td>
-              </tr>
-            ) : filteredLogs.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="py-20 text-center text-gray-500">Log intelijen nihil atau tidak ditemukan di basis data.</td>
-              </tr>
-            ) : (
-              filteredLogs.map((log) => (
-                <tr key={log.id} className="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors font-mono text-xs">
-                  <td className="px-6 py-3 border-l-2 border-transparent">
-                    {new Date(log.createdAt).toLocaleString("id-ID", { hour12: false, fractionalSecondDigits: 3 })}
+          <tbody>
+            <AnimatePresence>
+              {logs.map((log) => (
+                <motion.tr 
+                  key={log.id}
+                  initial={{ opacity: 0, y: -20, backgroundColor: "rgba(34, 197, 94, 0.2)" }}
+                  animate={{ opacity: 1, y: 0, backgroundColor: "transparent" }}
+                  exit={{ opacity: 0 }}
+                  className={`border-b border-green-500/10 text-xs transition-colors hover:bg-green-500/5 ${log.severity === 'WARNING' ? 'text-amber-500' : 'text-green-400'}`}
+                >
+                  <td className="py-3 px-2 opacity-70">
+                    {new Date(log.timestamp).toISOString().split('T')[1].slice(0,-1)}
                   </td>
-                  <td className="px-6 py-3 font-semibold">{log.actorName}</td>
-                  <td className="px-6 py-3">
-                    <span className={`px-2 py-0.5 rounded border 
-                      ${log.action.includes('CREATE') ? 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800/50' :
-                        log.action.includes('REVOKE') || log.action.includes('REJECT') ? 'bg-red-100 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800/50' :
-                        'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700'
-                      }
-                    `}>
-                      {log.action}
-                    </span>
+                  <td className="py-3 px-2 text-[10px] tracking-wider opacity-60">
+                    {log.cryptoHash}
                   </td>
-                  <td className="px-6 py-3 text-gray-500 dark:text-gray-400">
-                     {log.target ? `${log.target.slice(0,12)}...` : '-'}
+                  <td className="py-3 px-2 font-bold flex items-center gap-2">
+                    {log.severity !== 'INFO' && <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>}
+                    [{log.module}]
                   </td>
-                  <td className="px-6 py-3 text-gray-500 dark:text-gray-400 max-w-xs truncate">
-                    {log.metadata || "-"}
+                  <td className="py-3 px-2 opacity-80 break-all max-w-[300px]">
+                    {log.actionData}
                   </td>
-                </tr>
-              ))
-            )}
+                  <td className="py-3 px-2 text-right">
+                    <button className="text-[10px] px-2 py-1 bg-green-500/10 border border-green-500/30 rounded text-green-500 hover:bg-green-500 hover:text-black transition flex items-center gap-1 ml-auto">
+                      <RotateCcw className="w-3 h-3" /> UNDO
+                    </button>
+                  </td>
+                </motion.tr>
+              ))}
+            </AnimatePresence>
           </tbody>
         </table>
+
+        {logs.length === 0 && (
+          <div className="flex flex-col items-center justify-center p-20 opacity-30">
+            <Eye className="w-16 h-16 mb-4 animate-pulse" />
+            <p className="text-sm tracking-widest">AWAITING SYSTEM SIGNALS...</p>
+          </div>
+        )}
+      </div>
+      
+      {/* Footer / Status Bar */}
+      <div className="mt-4 pt-3 border-t border-green-500/20 text-[10px] flex justify-between opacity-50 uppercase tracking-widest">
+         <span>Secure PUM Tailor Panopticon v1.0</span>
+         <span>Connection: WSS://ENCRYPTED_LEDGER</span>
       </div>
     </div>
   );

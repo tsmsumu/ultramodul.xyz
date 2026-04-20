@@ -37,9 +37,8 @@ const initialEdges: Edge[] = [];
 export function NexusCanvas() {
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
-  const [activeTable, setActiveTable] = useState<string | null>(null);
+  const [activeTerminalNode, setActiveTerminalNode] = useState<any | null>(null);
 
-  // Fungsi pengikat untuk Node agar bisa melapor balik
   const onFileIngested = useCallback((id: string, tableName: string) => {
     setNodes((nds) => 
       nds.map(node => {
@@ -49,15 +48,15 @@ export function NexusCanvas() {
         return node;
       })
     );
-    setActiveTable(tableName); // Langsung otomatis buka terminal untuk melihat suksesnya
+    setActiveTerminalNode({ tableName }); 
   }, []);
 
   const onNodeClick = useCallback((_: React.MouseEvent, node: Node) => {
-    const data = node.data as { tableName?: string };
-    if (data.tableName) {
-      setActiveTable(data.tableName);
+    const data = node.data;
+    if (data.tableName || data.dbName || data.sqlQuery) {
+      setActiveTerminalNode(data);
     } else {
-      setActiveTable(null); // Tutup terminal jika node tak punya tabel
+      setActiveTerminalNode(null); 
     }
   }, []);
 
@@ -76,16 +75,18 @@ export function NexusCanvas() {
     const handleJoinEvent = (e: any) => {
       const payload = e.detail;
       if (typeof payload === 'object') {
-        setActiveTable(payload.tableName); 
-        // SPAWN VIRTUAL NODE RESULT SECARA OTOMATIS!
-        addNode('database', { 
+        const nodeData = { 
             label: "Virtual View", 
             dbName: payload.tableName,
             isVirtual: true,
-            sqlQuery: payload.sqlQuery
-        }, payload.sourceX, payload.sourceY);
+            sqlQuery: payload.sqlQuery,
+            executionEngine: 'sqlite'
+        };
+        setActiveTerminalNode(nodeData); 
+        // SPAWN VIRTUAL NODE RESULT SECARA OTOMATIS!
+        addNode('database', nodeData, payload.sourceX, payload.sourceY);
       } else {
-        setActiveTable(payload);
+        setActiveTerminalNode({ tableName: payload });
       }
     };
     window.addEventListener('NEXUS_TABLE_JOINED', handleJoinEvent);
@@ -141,7 +142,7 @@ export function NexusCanvas() {
         </div>
 
         {/* TERMINAL SAKTI */}
-        <HologramTerminal tableName={activeTable} onClose={() => setActiveTable(null)} />
+        <HologramTerminal nodeData={activeTerminalNode} onClose={() => setActiveTerminalNode(null)} />
     </div>
   );
 }

@@ -3,15 +3,16 @@
 import { useEffect, useState } from "react";
 import { X, Database, Play, Loader2 } from "lucide-react";
 import { duckEngine } from "@/core/duckdb-engine";
+import { executeRawNexusQuery } from "@/app/actions/queryEngine";
 
-export function HologramTerminal({ tableName, onClose }: { tableName: string | null, onClose: () => void }) {
+export function HologramTerminal({ nodeData, onClose }: { nodeData: any | null, onClose: () => void }) {
   const [data, setData] = useState<any[]>([]);
   const [columns, setColumns] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!tableName) return;
+    if (!nodeData) return;
     
     let isMounted = true;
     const fetchData = async () => {
@@ -21,7 +22,18 @@ export function HologramTerminal({ tableName, onClose }: { tableName: string | n
       setColumns([]);
 
       try {
-        const rows = await duckEngine.previewData(tableName, 50); // Get top 50 rows
+        let rows = [];
+        // Jika data dari SQLite Backend:
+        if (nodeData.executionEngine === 'sqlite') {
+           const query = nodeData.sqlQuery || `SELECT * FROM ${nodeData.dbName || nodeData.tableName} LIMIT 50`;
+           const res = await executeRawNexusQuery(query);
+           if (!res.success) throw new Error(res.error);
+           rows = res.data;
+        } else {
+           // DuckDB Parquet Client
+           rows = await duckEngine.previewData(nodeData.tableName || nodeData.dbName, 50);
+        }
+
         if (!isMounted) return;
 
         if (rows.length > 0) {
@@ -38,9 +50,9 @@ export function HologramTerminal({ tableName, onClose }: { tableName: string | n
     fetchData();
 
     return () => { isMounted = false; };
-  }, [tableName]);
+  }, [nodeData]);
 
-  if (!tableName) return null;
+  if (!nodeData) return null;
 
   return (
     <div className="absolute bottom-4 left-4 right-80 mx-auto max-w-5xl h-64 bg-white/95 dark:bg-[#0a0a0c]/95 backdrop-blur-xl border border-blue-500/30 rounded-t-2xl shadow-[0_-10px_40px_rgba(0,0,0,0.15)] flex flex-col overflow-hidden animate-in slide-in-from-bottom-10 z-20">
@@ -50,12 +62,12 @@ export function HologramTerminal({ tableName, onClose }: { tableName: string | n
         <div className="flex items-center gap-2">
           <Database className="w-4 h-4 text-blue-600 dark:text-blue-400" />
           <span className="font-mono text-sm font-semibold tracking-wide text-blue-900 dark:text-blue-300">
-            Hologram Terminal: <span className="text-pink-600 dark:text-pink-400">{tableName}</span>
+            Terminal: <span className="text-pink-600 dark:text-pink-400">{nodeData.dbName || nodeData.tableName || 'SQL_NODE'}</span>
           </span>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-[10px] uppercase font-bold bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-2 py-0.5 rounded flex items-center gap-1">
-            <Play className="w-3 h-3"/> IN-MEMORY LIVE
+          <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded flex items-center gap-1 ${nodeData.executionEngine === 'sqlite' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' : 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'}`}>
+            <Play className="w-3 h-3"/> {nodeData.executionEngine === 'sqlite' ? 'SQLITE LIVE' : 'DUCKDB WASM'}
           </span>
           <button onClick={onClose} className="p-1 hover:bg-black/10 dark:hover:bg-white/10 rounded cursor-pointer transition">
             <X className="w-4 h-4 text-gray-500 dark:text-gray-400" />

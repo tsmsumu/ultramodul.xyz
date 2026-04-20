@@ -9,7 +9,7 @@ export function NexusPanel({ onAddNode }: { onAddNode: (type: string, payload: a
          <h3 className="font-bold text-[10px] tracking-widest text-[#4f46e5] mb-2 uppercase">1. The Ingestors</h3>
          <div className="space-y-1.5">
             <button 
-              onClick={() => onAddNode('database', { label: 'Live Connection', dbUrl: '' })}
+              onClick={() => onAddNode('database', { label: 'Live Server SQLite', dbName: 'users', executionEngine: 'sqlite' })}
               className="w-full px-3 py-2 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-900/20 dark:hover:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/30 rounded-xl text-left text-[11px] font-bold transition flex items-center justify-between"
             >
               <span className="flex items-center gap-2"><Database className="w-3.5 h-3.5"/> Live DB Connector</span>
@@ -29,7 +29,7 @@ export function NexusPanel({ onAddNode }: { onAddNode: (type: string, payload: a
          <h3 className="font-bold text-[10px] tracking-widest text-amber-500 mb-2 uppercase">2. The Forge</h3>
          <div className="space-y-1.5">
             <button 
-              onClick={() => onAddNode('sql', { sqlQuery: 'SELECT * FROM source_data' })}
+              onClick={() => onAddNode('sql', { sqlQuery: 'SELECT * FROM users LIMIT 10', executionEngine: 'sqlite', label: 'Backend Server SQL' })}
               className="w-full px-3 py-2 bg-amber-50 hover:bg-amber-100 dark:bg-amber-900/20 dark:hover:bg-amber-900/40 text-amber-700 dark:text-amber-500 border border-amber-200 dark:border-amber-900/30 rounded-xl text-left text-[11px] font-bold transition flex items-center justify-between shadow-[0_0_15px_-3px_rgba(245,158,11,0.2)]"
             >
               <span className="flex items-center gap-2"><PenTool className="w-3.5 h-3.5"/> Raw SQL Override</span>

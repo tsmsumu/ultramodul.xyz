@@ -1,17 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getMandates, updateMandateStatus } from "@/app/actions/mandate";
-import { Clock, KeyRound, AlertCircle, CheckCircle2, XCircle, ShieldOff } from "lucide-react";
+import { getMandates, updateMandateStatus, createMandate } from "@/app/actions/mandate";
+import { getUsers } from "@/app/actions/iam";
+import { Clock, KeyRound, AlertCircle, CheckCircle2, XCircle, ShieldOff, Plus, Loader2 } from "lucide-react";
 
 export default function MandateWorkflowPage() {
   const [mandates, setMandates] = useState<any[]>([]);
+  const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
     const data = await getMandates();
+    const uData = await getUsers();
     setMandates(data);
+    setUsers(uData);
     setLoading(false);
   };
 
@@ -22,6 +28,28 @@ export default function MandateWorkflowPage() {
   const handleAction = async (id: string, status: string) => {
     // In real app, actorId is from session. We use placeholder SYSTEM
     await updateMandateStatus(id, "SYSTEM", status);
+    fetchData();
+  };
+
+  const handleCreateSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    const formData = new FormData(e.currentTarget);
+    
+    // Convert jam ke detik
+    const hoursStr = formData.get("validHours") as string;
+    const hours = parseInt(hoursStr) || 24;
+    const seconds = hours * 3600;
+
+    await createMandate({
+      delegatorId: "SYSTEM_ROOT", // Kita asumsikan Root/User yang lg login
+      delegateeId: formData.get("delegateeId") as string,
+      taskDescription: formData.get("taskDescription") as string,
+      validUntilSeconds: seconds
+    });
+
+    setIsSubmitting(false);
+    setIsModalOpen(false);
     fetchData();
   };
 
@@ -37,6 +65,15 @@ export default function MandateWorkflowPage() {
             Engine perpindahan beban kerja (*Workflow*) seketika.
           </p>
         </div>
+      </div>
+
+      <div className="flex justify-start">
+        <button 
+          onClick={() => setIsModalOpen(true)}
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-lg transition"
+        >
+          <Plus className="w-4 h-4" /> Delegasikan Mandat
+        </button>
       </div>
 
       {loading ? (
@@ -94,6 +131,47 @@ export default function MandateWorkflowPage() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Modal Buat Mandat */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white dark:bg-[#0a0a0c] w-full max-w-md rounded-2xl shadow-2xl border border-gray-200 dark:border-white/10 overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-white/10 flex justify-between items-center">
+               <h3 className="font-semibold">Menerbitkan Mandat Baru</h3>
+               <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-white"><XCircle className="w-5 h-5"/></button>
+            </div>
+            
+            <form onSubmit={handleCreateSubmit} className="p-6 space-y-4">
+               <div>
+                 <label className="block text-xs font-semibold text-gray-500 uppercase tracking-widest mb-1.5">Pilih Rekan (Delegatee)</label>
+                 <select name="delegateeId" required className="w-full px-3 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg outline-none text-sm">
+                   <option value="">-- Pilih target --</option>
+                   {users.map(u => (
+                     <option key={u.id} value={u.id} className="dark:bg-zinc-900">{u.name} ({u.username})</option>
+                   ))}
+                 </select>
+               </div>
+               
+               <div>
+                 <label className="block text-xs font-semibold text-gray-500 uppercase tracking-widest mb-1.5">Deskripsi Beban Kerja</label>
+                 <textarea name="taskDescription" required rows={3} placeholder="Instruksi operasional mandat..." className="w-full px-3 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg outline-none text-sm resize-none"></textarea>
+               </div>
+
+               <div>
+                 <label className="block text-xs font-semibold text-gray-500 uppercase tracking-widest mb-1.5">Masa Berlaku (Jam)</label>
+                 <input type="number" name="validHours" defaultValue="24" min="1" max="720" required className="w-full px-3 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg outline-none text-sm" />
+               </div>
+               
+               <div className="pt-2 flex justify-end gap-3">
+                  <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm font-medium hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition">Batal</button>
+                  <button type="submit" disabled={isSubmitting} className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-lg transition flex items-center gap-2">
+                     {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin"/> : "Terbitkan Mandat"}
+                  </button>
+               </div>
+            </form>
+          </div>
         </div>
       )}
     </div>

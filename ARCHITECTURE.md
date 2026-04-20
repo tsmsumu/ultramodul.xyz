@@ -40,4 +40,8 @@ Semua pekerjaan wajib diisolasi dengan ketat:
 *   Perancangan skema database, otentikasi, dan rute navigasi untuk struktur ke depannya harus **selalu menyediakan ruang** *(Future-Proof)* untuk kedatangan entitas eksternal di luar otoritas internal.
 *   Sistem harus bisa mewadahi *Role* seperti **"User Member / Client / Masyarakat Umum"** yang menggunakan aplikasi ini sebagai portal publik, bukan hanya melayani pegawai instansi secara manajerial.
 
+## 8. Tritunggal Hukum UltraModul (The Unbreakable Triad)
+*   **Hukum Keterikatan Mutlak:** Aturan #5 (IAM), #6 (Bahasa), dan #7 (Member Publik) **TIDAK BISA BERDIRI SENDIRI. KETIGANYA SALING TERKAIT MUTLAK SATU SAMA LAIN.**
+*   *Buktinya:* Modul Member Publik tidak boleh dibuat jika menabrak otoritas IAM. IAM tidak boleh dibangun jika bahasanya di-hardcode. Tampilan Publik Member harus sepenuhnya menggunakan kamus i18n *next-intl*, dan menunya ditarik eksklusif dari *Registry IAM*. Jika salah satu pilar ini diabaikan pada saat perakitan antarmuka apapun, maka arsitektur gagal.
+
 **Amnesia Prevention Active: TRUE**

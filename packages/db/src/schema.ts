@@ -19,3 +19,23 @@ export const auditLogs = sqliteTable('audit_logs', {
   userAgent: text('user_agent'),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull()
 });
+
+export const accessMatrix = sqliteTable('access_matrix', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull(), // Relates to users.id
+  moduleName: text('module_name').notNull(), // e.g. "KEUANGAN", "PEGAWAI"
+  permissionLevel: text('permission_level').notNull().default('READ'), // READ, WRITE, ADMIN
+  grantedBy: text('granted_by').notNull(), // The Admin who granted this
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull()
+});
+
+export const mandates = sqliteTable('mandates', {
+  id: text('id').primaryKey(),
+  delegatorId: text('delegator_id').notNull(), // Yang memberi mandat
+  delegateeId: text('delegatee_id').notNull(), // Yang menerima mandat
+  taskDescription: text('task_description').notNull(),
+  status: text('status').notNull().default('PENDING'), // PENDING, ACTIVE, REJECTED, REVOKED, EXPIRED
+  validUntil: integer('valid_until', { mode: 'timestamp' }), // Tanggal Kadaluarsa
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull()
+});

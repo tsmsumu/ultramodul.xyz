@@ -26,7 +26,7 @@ export async function createIdentity(data: { username: string; name: string; rol
       username: data.username,
       name: data.name,
       role: data.role,
-      status: "active",
+      status: "pending", // KABINET RESOLUSI: Identitas baru harus PENDING
       passwordHash,
       createdAt: new Date(),
     });
@@ -123,7 +123,7 @@ export async function importCSVIdentities(csvText: string) {
             username,
             name,
             role,
-            status: "active",
+            status: "pending", // KABINET RESOLUSI: Harus divalidasi/diaktifkan manual
             createdAt: new Date(),
           });
           imported++;

@@ -76,45 +76,25 @@ export async function saveUserMatrix(userId: string, moduleName: string, permiss
   try {
     const jsonPerms = JSON.stringify(permissions);
 
-    const existingMtx = await db.select().from(accessMatrix).where(
-      and(eq(accessMatrix.userId, userId), eq(accessMatrix.moduleName, moduleName))
-    );
+    // [KABINET RESOLUSI MATRIKS DIAKTIFKAN]
+    // Tidak lagi langsung masuk ke accessMatrix, melainkan diajukan via matrixApprovals ke Inbox
 
-    if (existingMtx.length > 0) {
-      await db.update(accessMatrix)
-        .set({ permissions: jsonPerms, timeRule })
-        .where(eq(accessMatrix.id, existingMtx[0].id));
-    } else {
-      await db.insert(accessMatrix).values({
-        id: randomUUID(),
-        userId,
-        moduleName,
-        permissions: jsonPerms,
-        timeRule,
-        grantedBy: "SYSTEM",
-        createdAt: new Date()
-      });
-    }
-
-    // Tetap catat di histori
     await db.insert(matrixApprovals).values({
       id: randomUUID(),
       targetUserId: userId,
       moduleName,
       proposedPermissions: jsonPerms,
       proposedTimeRule: timeRule,
-      makerId: "SYSTEM",
-      checkerId: "SYSTEM",
-      status: "APPROVED", // Auto-approved
+      makerId: "SYSTEM", // Seharusnya ID admin yg login
+      status: "PENDING", 
       createdAt: new Date(),
-      resolvedAt: new Date()
     });
 
     await createAuditLog({
-      action: "GRANT_MATRIX_ACCESS_DIRECT",
+      action: "PROPOSE_MATRIX_ACCESS",
       actorId: "SYSTEM",
       target: userId,
-      metadata: { moduleName, timeRule }
+      metadata: { moduleName, timeRule, status: "PENDING_APPROVAL" }
     });
 
     return { success: true };

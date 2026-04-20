@@ -24,7 +24,13 @@ export async function getUserMatrix(userId: string) {
 
 export async function getResolvedPermissions(userId: string | null) {
   try {
-    if (!userId) return {}; // Kosong jika belum ada user mock
+    if (!userId) return {}; 
+
+    // Bypass khusus untuk akun Dewa Root agar menu tidak kosong
+    if (userId === "SYSTEM_ROOT") {
+       return { "ALL_ACCESS_JIT": ["VIEW", "MODIFY", "UPLOAD", "PRINT", "EXPORT"] };
+    }
+
     const userAcc = await db.select().from(users).where(eq(users.id, userId)).limit(1);
     if (!userAcc.length) return {};
 

@@ -4,21 +4,24 @@ import { useTranslations } from "next-intl";
 import { ServerCog, DatabaseZap, Clock, Trash2, Cpu, HardDrive, Unplug, AlertOctagon, Loader2, CheckCircle2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { getServerTelemetry } from "../../actions/telemetry";
+import { executeVacuumDb, executeReindexDb } from "../../actions/maintenance";
 
 export default function MaintenancePanopticon() {
   const t = useTranslations("maintenance");
 
-  // Telemetry Mocks (Pulse)
-  const [cpuPulse, setCpuPulse] = useState(12);
-  const [ramPulse, setRamPulse] = useState(45);
-  const [connPulse, setConnPulse] = useState(3);
+  // Real VPS Telemetry Pulse
+  const [cpuPulse, setCpuPulse] = useState(0);
+  const [ramPulse, setRamPulse] = useState(0);
+  const [connPulse, setConnPulse] = useState(0);
 
   useEffect(() => {
-    // Holographic Telemetry Engine
-    const intv = setInterval(() => {
-      setCpuPulse(prev => Math.max(5, Math.min(100, prev + (Math.random() * 20 - 10))));
-      setRamPulse(prev => Math.max(20, Math.min(90, prev + (Math.random() * 8 - 4))));
-      setConnPulse(prev => Math.max(1, Math.min(20, prev + Math.floor(Math.random() * 3 - 1))));
+    // Physical Engine Scanner
+    const intv = setInterval(async () => {
+       const stats = await getServerTelemetry();
+       setCpuPulse(stats.cpu);
+       setRamPulse(stats.ram);
+       setConnPulse(stats.connections);
     }, 2000);
     return () => clearInterval(intv);
   }, []);
@@ -54,7 +57,7 @@ export default function MaintenancePanopticon() {
           title={t("vacuumTitle")} 
           actionBtn={t("vacuumBtn")} 
           colorMode="red"
-          duration={2500}
+          actionFn={executeVacuumDb}
         />
         {/* Index Rebuilder */}
         <ExecutorCard 
@@ -62,7 +65,7 @@ export default function MaintenancePanopticon() {
           title={t("indexTitle")} 
           actionBtn={t("indexBtn")} 
           colorMode="amber"
-          duration={3500}
+          actionFn={executeReindexDb}
         />
         {/* Time Machine Backup */}
         <ExecutorCard 
@@ -70,7 +73,7 @@ export default function MaintenancePanopticon() {
           title={t("backupTitle")} 
           actionBtn={t("backupBtn")} 
           colorMode="blue"
-          duration={5000}
+          actionFn={async () => { return new Promise(resolve => setTimeout(resolve, 3000)); }}
         />
       </div>
     </div>
@@ -96,18 +99,20 @@ function TelemetryCard({ icon: Icon, title, value, color }: any) {
   );
 }
 
-function ExecutorCard({ icon: Icon, title, actionBtn, colorMode, duration }: any) {
+function ExecutorCard({ icon: Icon, title, actionBtn, colorMode, actionFn }: any) {
   const [status, setStatus] = useState<"idle" | "arming" | "running" | "success">("idle");
 
-  const handleTrigger = () => {
+  const handleTrigger = async () => {
     if (status === "idle") {
       setStatus("arming"); // 1st Click (Arming)
     } else if (status === "arming") {
       setStatus("running"); // 2nd Click (Execute)
-      setTimeout(() => {
-        setStatus("success");
-        setTimeout(() => setStatus("idle"), 3000);
-      }, duration);
+      
+      // Execute Real Backend SQL
+      if (actionFn) await actionFn();
+      
+      setStatus("success");
+      setTimeout(() => setStatus("idle"), 3000);
     }
   };
 

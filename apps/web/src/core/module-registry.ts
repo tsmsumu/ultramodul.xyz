@@ -19,7 +19,7 @@ export interface OmniModule {
 export const ModuleRegistry: OmniModule[] = [
   // --- KATEGORI: HUB (PUSAT PENGGERAK) ---
   { id: "Dashboard", name: "Command Center", path: "/dashboard", icon: LayoutDashboard, isCore: true, category: "hub" },
-  { id: "Layanan Pengaduan", name: "Public Complaint", path: "/pengaduan", icon: ActivitySquare, isCore: false, category: "hub" },
+  { id: "Layanan Pengaduan", name: "Public Complaint", path: "/complaints", icon: ActivitySquare, isCore: false, category: "hub" },
 
   // --- KATEGORI: IAM (BENTENG IDENTITAS) ---
   { id: "IAM Console", name: "IAM Console", path: "/iam", icon: Shield, isCore: true, category: "iam" },

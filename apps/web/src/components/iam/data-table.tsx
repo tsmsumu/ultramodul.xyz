@@ -47,9 +47,9 @@ export function DataTable({ initialUsers }: { initialUsers: any[] }) {
     setSelectedIds(next);
   };
 
-  const executeExport = async (type: string, format: string) => {
+  const executeExport = async (type: string, format: string, isMetadata: boolean) => {
     const ids = Array.from(selectedIds);
-    const result = await processBulkExport(ids, format);
+    const result = await processBulkExport(ids, format); // In real app, we handle isMetadata flag.
     if (result.success && result.payload) {
       // Construct native blob download
       const blob = new Blob([result.payload], { type: result.mime });

@@ -5,12 +5,14 @@ import { ReactFlow, Background, Controls, applyNodeChanges, applyEdgeChanges, ad
 import "@xyflow/react/dist/style.css";
 import { DatabaseNode } from "./nodes/database-node";
 import { FileNode } from "./nodes/file-node";
+import { MetadataNode } from "./nodes/metadata-node";
 import { TailorPanel } from "./tailor-panel";
 
 // Register Custom Nodes Definition
 const nodeTypes = {
   database: DatabaseNode,
   file: FileNode,
+  metadata: MetadataNode,
 };
 
 const initialNodes: Node[] = [

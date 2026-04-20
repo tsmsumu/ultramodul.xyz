@@ -10,9 +10,12 @@ Gunakan tanda `[x]` jika selesai, `[/]` jika sedang dikerjakan, dan `[ ]` jika b
 - [x] Pengikatan repositori lokal ke GitHub Cloud (`Push` pertama).
 
 ## Tahap 2: Komponen Dasar Estetika
-- [ ] Pengaturan Variable Warna Utama (Root CSS).
-- [ ] Penciptaan Komponen Kartu *Glassmorphism*.
-- [ ] Pembuatan Layout Utama (*Sidebar / Omni-Hub Drawer*).
+- [x] Pengaturan Variable Warna Utama (Root CSS).
+- [x] Penciptaan Komponen Kartu *Glassmorphism*.
+- [x] Pembuatan Layout Utama (*Sidebar / Omni-Hub Drawer*).
 
 ## Tahap 3: Implementasi Modul Bisnis
-- [ ] *Modul pertama yang akan ditentukan oleh User*
+- [x] Instalasi Database Drizzle & Logger
+- [ ] Pembuatan IAM Console
+- [ ] Active Identity Matrix
+- [ ] Mandate & Delegasi

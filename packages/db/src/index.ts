@@ -11,3 +11,4 @@ export const db = drizzle(sqliteClient, { schema });
 
 // Export everything else
 export * from './schema';
+export * from 'drizzle-orm';

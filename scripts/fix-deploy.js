@@ -21,6 +21,11 @@ cd ultramodul
 echo "-> Installing dependencies..."
 pnpm install
 
+echo "-> Regenerating Local DB Schema (Drizzle Push)..."
+cd packages/db
+pnpm exec drizzle-kit push
+cd ../..
+
 echo "-> Building Next.js Apps..."
 cd apps/web
 export NODE_ENV=production

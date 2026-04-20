@@ -2,7 +2,7 @@
 
 import { Database, FileSpreadsheet, PlusCircle, Link, Download, BookOpen, FileText } from "lucide-react";
 
-export function TailorPanel({ onAddNode }: { onAddNode: (type: string, payload: any) => void }) {
+export function NexusPanel({ onAddNode }: { onAddNode: (type: string, payload: any) => void }) {
   return (
     <>
        <div>

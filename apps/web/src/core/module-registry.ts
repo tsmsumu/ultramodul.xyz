@@ -65,9 +65,9 @@ export const ModuleRegistry: OmniModule[] = [
 
   // --- BUSINESS MODULES ---
   {
-    id: "PUM Data Tailor",
-    name: "PUM Tailor (BETA)",
-    path: "/tailor",
+    id: "PUM Nexus Engine",
+    name: "Nexus Engine (PNE)",
+    path: "/nexus",
     icon: GitMerge,
     isCore: false
   }

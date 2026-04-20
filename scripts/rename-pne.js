@@ -1,7 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const projectRoot = path.join(__dirname, 'apps/web/src');
+// __dirname is scripts/. We need to go up one level to ultramodul root.
+const projectRoot = path.join(__dirname, '../apps/web/src');
 
 // 1. Rename Folders
 const tailorAppPath = path.join(projectRoot, 'app/(dashboard)/tailor');
@@ -46,10 +47,12 @@ replaceInFile(path.join(nexusCompPath, 'nexus-canvas.tsx'), [
   ['Tailor', 'Nexus']
 ]);
 
-replaceInFile(path.join(nexusCompPath, 'nexus-panel.tsx'), [
-  ['tailor', 'nexus'],
-  ['Tailor', 'Nexus']
-]);
+if (fs.existsSync(path.join(nexusCompPath, 'nexus-panel.tsx'))) {
+  replaceInFile(path.join(nexusCompPath, 'nexus-panel.tsx'), [
+    ['tailor', 'nexus'],
+    ['Tailor', 'Nexus']
+  ]);
+}
 
 // 5. Update Registry & Locales
 replaceInFile(path.join(projectRoot, 'core/module-registry.ts'), [
@@ -68,4 +71,4 @@ replaceInFile(path.join(projectRoot, 'messages/id.json'), [
   ['Penjahit PUM', 'Nexus Engine (PNE)']
 ]);
 
-console.log("Renaming to Nexus Engine Complete!");
+console.log("Renaming fixed and completed!");

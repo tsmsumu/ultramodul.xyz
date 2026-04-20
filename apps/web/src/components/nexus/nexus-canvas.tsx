@@ -7,7 +7,7 @@ import { DatabaseNode } from "./nodes/database-node";
 import { FileNode } from "./nodes/file-node";
 import { MetadataNode } from "./nodes/metadata-node";
 import { SmartEdge } from "./edges/smart-edge";
-import { TailorPanel } from "./tailor-panel";
+import { NexusPanel } from "./nexus-panel";
 
 // Register Custom Nodes Definition
 const nodeTypes = {
@@ -27,7 +27,7 @@ const initialNodes: Node[] = [
 
 const initialEdges: Edge[] = [];
 
-export function TailorCanvas() {
+export function NexusCanvas() {
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
 
@@ -75,7 +75,7 @@ export function TailorCanvas() {
          </ReactFlow>
        </div>
        <div className="w-80 h-full border-l border-gray-200 dark:border-white/10 bg-white dark:bg-[#111113] p-4 flex flex-col gap-4 z-10 shadow-xl overflow-y-auto">
-          <TailorPanel onAddNode={addNode} />
+          <NexusPanel onAddNode={addNode} />
        </div>
     </div>
   );

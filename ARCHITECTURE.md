@@ -43,6 +43,32 @@ Semua pekerjaan wajib diisolasi dengan ketat:
 
 ## 8. Tritunggal Hukum UltraModul (The Unbreakable Triad)
 *   **Hukum Keterikatan Mutlak:** Aturan #5 (IAM), #6 (Bahasa), dan #7 (Member Publik) **TIDAK BISA BERDIRI SENDIRI. KETIGANYA SALING TERKAIT MUTLAK SATU SAMA LAIN.**
-*   *Buktinya:* Modul Member Publik tidak boleh dibuat jika menabrak otoritas IAM. IAM tidak boleh dibangun jika bahasanya di-hardcode. Tampilan Publik Member harus sepenuhnya menggunakan kamus i18n *next-intl*, dan menunya ditarik eksklusif dari *Registry IAM*. Jika salah satu pilar ini diabaikan pada saat perakitan antarmuka apapun, maka arsitektur gagal.
+*    *Buktinya:* Modul Member Publik tidak boleh dibuat jika menabrak otoritas IAM. IAM tidak boleh dibangun jika bahasanya di-hardcode. Tampilan Publik Member harus sepenuhnya menggunakan kamus i18n *next-intl*, dan menunya ditarik eksklusif dari *Registry IAM*. Jika salah satu pilar ini diabaikan pada saat perakitan antarmuka apapun, maka arsitektur gagal.
+
+## 9. Universal Data Gateway (Hukum Ekspor/Impor PUM)
+Jika ada perintah perancangan modul penarikan data (*Export*) atau pemasukan data (*Import*), UI/UX **WAJIB MUTLAK** selalu menyediakan opsi *Dropdown/List* berikut secara universal tanpa diminta dua kali:
+
+*   **Database on Server / Persisten:**
+    *   `DuckDB` (Default)
+    *   `Drizzle/SQLite`
+    *   `PostgreSQL`
+    *   `MySQL`
+    *   `MsSQL`
+    *   `Oracle`
+*   **Database on File:**
+    *   `Parquet`
+    *   `Excel`
+    *   `Tableau`
+    *   `Stata`
+    *   `CSV`
+    *   `TXT`
+    *   `JSON`
+    *   `HTML`
+*   **Export to File (Laporan Fisik):**
+    *   `Word` (Default)
+    *   `PDF`
+    *   `HTML`
+    *   `JSON`
+    *   `TXT`
 
 **Amnesia Prevention Active: TRUE**

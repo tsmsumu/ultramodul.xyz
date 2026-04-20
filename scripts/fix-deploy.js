@@ -24,7 +24,8 @@ pnpm install
 # Force Absolute Path for the whole monorepo
 export DATABASE_URL="file:/var/www/ultramodul/production.db"
 
-echo "-> Regenerating Local DB Schema (Drizzle Push)..."
+echo "-> Flushing Old DB & Regenerating Local DB Schema (Drizzle Push)..."
+rm -f /var/www/ultramodul/production.db
 cd packages/db
 pnpm exec drizzle-kit push
 cd ../..

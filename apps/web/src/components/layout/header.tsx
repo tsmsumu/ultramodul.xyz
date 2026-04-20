@@ -1,5 +1,6 @@
 import { Menu, Search, User, LogOut, Bell } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useState, useEffect } from "react";
 import { logoutAction } from "@/app/actions/auth";
 import { EventBus, EVENTS } from "@/core/event-bus";
 

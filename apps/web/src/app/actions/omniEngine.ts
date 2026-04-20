@@ -1,7 +1,10 @@
 "use server";
 
+// @ts-ignore
 import pg from 'pg';
+// @ts-ignore
 import mysql from 'mysql2/promise';
+// @ts-ignore
 import sql from 'mssql';
 
 // Fallback Logger

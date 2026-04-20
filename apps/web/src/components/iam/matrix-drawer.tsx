@@ -32,6 +32,7 @@ export function MatrixDrawer({
   userName: string | null;
 }) {
   const [matrixData, setMatrixData] = useState<Record<string, string[]>>({});
+  const [timeRules, setTimeRules] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -44,9 +45,12 @@ export function MatrixDrawer({
     setLoading(true);
     const mtx = await getUserMatrix(userId!);
     const structured: Record<string, string[]> = {};
+    const tRules: Record<string, string> = {};
+    
     mtx.forEach((item: any) => {
       try {
         structured[item.moduleName] = JSON.parse(item.permissions);
+        tRules[item.moduleName] = item.timeRule || '24/7';
       } catch(e) {
         structured[item.moduleName] = [];
       }
@@ -55,9 +59,11 @@ export function MatrixDrawer({
     // Populate missing models
     MODULES.forEach(mod => {
       if (!structured[mod]) structured[mod] = [];
+      if (!tRules[mod]) tRules[mod] = '24/7';
     });
 
     setMatrixData(structured);
+    setTimeRules(tRules);
     setLoading(false);
   };
 
@@ -73,9 +79,9 @@ export function MatrixDrawer({
 
   const handleSaveAll = async () => {
     setLoading(true);
-    // Real app would process sequentially or batch
+    // Masuk ke tahap Maker-Checker Table
     for (const mod of Object.keys(matrixData)) {
-       await saveUserMatrix(userId!, mod, matrixData[mod]);
+       await saveUserMatrix(userId!, mod, matrixData[mod], timeRules[mod] || '24/7');
     }
     setLoading(false);
     onClose();
@@ -122,7 +128,17 @@ export function MatrixDrawer({
               ) : (
                 MODULES.map(mod => (
                   <div key={mod} className="border border-gray-200 dark:border-white/10 rounded-xl p-4 bg-gray-50/50 dark:bg-white/[0.01]">
-                     <h3 className="flex items-center gap-2 font-medium mb-4 text-sm"><BoxSelect className="w-4 h-4 opacity-50"/> Modul {mod}</h3>
+                     <div className="flex justify-between items-center mb-4">
+                        <h3 className="flex items-center gap-2 font-medium text-sm"><BoxSelect className="w-4 h-4 opacity-50"/> Modul {mod}</h3>
+                        <select 
+                           value={timeRules[mod]}
+                           onChange={(e) => setTimeRules(prev => ({...prev, [mod]: e.target.value}))}
+                           className="text-xs bg-gray-100 dark:bg-white/10 rounded-md px-2 py-1 border-none focus:ring-0 cursor-pointer"
+                        >
+                           <option value="24/7">24/7 (Bebas)</option>
+                           <option value="WORK_HOURS">Jam Kerja Saja</option>
+                        </select>
+                     </div>
                      <div className="grid grid-cols-2 gap-3">
                         {PERMISSIONS.map(p => {
                           const isActive = matrixData[mod]?.includes(p.id);
@@ -155,7 +171,7 @@ export function MatrixDrawer({
                  onClick={handleSaveAll}
                  className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium transition flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20 disabled:opacity-50"
                >
-                 <Save className="w-4 h-4" /> {loading ? "Menyimpan ke Logbook..." : "Terapkan Aturan"}
+                 <Save className="w-4 h-4" /> {loading ? "Mengajukan Sidang..." : "Ajukan Persetujuan Baru"}
                </button>
             </div>
           </motion.div>

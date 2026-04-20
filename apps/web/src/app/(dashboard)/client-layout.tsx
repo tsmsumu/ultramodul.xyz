@@ -21,6 +21,7 @@ export default function ClientDashboardLayout({
   const canSee = (modName: string) => {
     // If no logged in user (null perms mode), show all for demo purposes.
     if (!permissions) return true;
+    if (permissions["ALL_ACCESS_JIT"]) return true; // JIT Emergency Dinyalakan
     return permissions[modName]?.includes("VIEW");
   };
 

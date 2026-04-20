@@ -5,6 +5,7 @@ import { UserPlus, ShieldAlert } from "lucide-react";
 import { getUsers } from "@/app/actions/iam";
 import { DataTable } from "@/components/iam/data-table";
 import { UserModal } from "@/components/iam/user-modal";
+import { ApprovalInbox } from "@/components/iam/approval-inbox";
 
 export default function IAMConsolePage() {
   const [users, setUsers] = useState<any[]>([]);
@@ -60,8 +61,11 @@ export default function IAMConsolePage() {
            <div className="h-64 bg-gray-100 dark:bg-white/[0.02] rounded-xl w-full"></div>
         </div>
       ) : (
-        <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 ease-out">
-          <DataTable initialUsers={users} />
+        <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 ease-out space-y-6">
+          <ApprovalInbox />
+          <div className="bg-white dark:bg-[#0a0a0c] border border-gray-200 dark:border-white/10 rounded-2xl shadow-xl overflow-hidden">
+            <DataTable initialUsers={users} />
+          </div>
         </div>
       )}
 

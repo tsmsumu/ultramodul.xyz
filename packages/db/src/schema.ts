@@ -6,6 +6,9 @@ export const users = sqliteTable('users', {
   name: text('name').notNull(),
   role: text('role').notNull().default('user'),
   status: text('status').notNull().default('active'),
+  branchCode: text('branch_code').notNull().default('PUSAT'), // Gamma Pillar
+  emergencyBypass: integer('emergency_bypass', { mode: 'boolean' }).notNull().default(false), // JIT Pillar
+  emergencyUntil: integer('emergency_until', { mode: 'timestamp' }), // Waktu Expired Dewa Sementara
   layoutTemplate: text('layout_template').notNull().default('sidebar'),
   colorSkin: text('color_skin').notNull().default('default'),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull()
@@ -27,7 +30,32 @@ export const accessMatrix = sqliteTable('access_matrix', {
   userId: text('user_id').notNull(), // Relates to users.id
   moduleName: text('module_name').notNull(), // e.g. "KEUANGAN", "PEGAWAI"
   permissions: text('permissions').notNull().default('[]'), // JSON Array: ["VIEW", "MODIFY", "PRINT", "EXPORT", "UPLOAD"]
+  timeRule: text('time_rule').notNull().default('24/7'), // "24/7" atau "WORK_HOURS"
   grantedBy: text('granted_by').notNull(), // The Admin who granted this
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull()
+});
+
+// Alpha Pillar: Maker-Checker System
+export const matrixApprovals = sqliteTable('matrix_approvals', {
+  id: text('id').primaryKey(),
+  targetUserId: text('target_user_id').notNull(),
+  moduleName: text('module_name').notNull(),
+  proposedPermissions: text('proposed_permissions').notNull(),
+  proposedTimeRule: text('proposed_time_rule').notNull().default('24/7'),
+  status: text('status').notNull().default('PENDING'), // PENDING, APPROVED, REJECTED
+  makerId: text('maker_id').notNull(), // Admin yang mengusulkan
+  checkerId: text('checker_id'), // Admin yang menyetujui
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+  resolvedAt: integer('resolved_at', { mode: 'timestamp' })
+});
+
+// Biometric Pillar (WebAuthn / Passkeys)
+export const passkeys = sqliteTable('passkeys', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull(),
+  credentialId: text('credential_id').notNull(),
+  publicKey: text('public_key').notNull(),
+  counter: integer('counter').notNull().default(0),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull()
 });
 

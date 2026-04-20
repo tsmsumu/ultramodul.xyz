@@ -1,7 +1,8 @@
 "use client";
 
 import { toggleIdentityStatus } from "@/app/actions/iam";
-import { Lock, Unlock, ShieldAlert, Settings } from "lucide-react";
+import { triggerEmergencyJit } from "@/app/actions/matrix";
+import { Lock, Unlock, ShieldAlert, Settings, Siren } from "lucide-react";
 import { useState } from "react";
 import { MatrixDrawer } from "./matrix-drawer";
 
@@ -16,11 +17,19 @@ export function DataTable({ initialUsers }: { initialUsers: any[] }) {
 
   const handleToggle = async (id: string, currentStatus: string) => {
     setLoadingId(id);
-    const res = await toggleIdentityStatus(id, currentStatus);
-    if (res.success) {
-      setUsers(users.map(u => u.id === id ? { ...u, status: currentStatus === "active" ? "inactive" : "active" } : u));
-    }
+    await toggleIdentityStatus(id, currentStatus);
     setLoadingId(null);
+    const updated = users.map(u => u.id === id ? { ...u, status: currentStatus === 'active' ? 'blocked' : 'active' } : u);
+    setUsers(updated);
+  };
+
+  const handleJIT = async (id: string) => {
+    if (confirm("Aktifkan Akses Dewa (Bypass JIT) selama 30 menit? Sirine Logbook akan berbunyi!")) {
+      setLoadingId(id);
+      await triggerEmergencyJit(id, 30);
+      setLoadingId(null);
+      alert("JIT Aktif. Menu Navigasi akan terbuka semua untuk User ini selama 30 menit ke depan.");
+    }
   };
 
   if (users.length === 0) {
@@ -69,6 +78,13 @@ export function DataTable({ initialUsers }: { initialUsers: any[] }) {
                 </span>
               </td>
               <td className="px-6 py-4 text-right flex items-center justify-end gap-2">
+                <button 
+                  onClick={() => handleJIT(user.id)}
+                  className="p-2 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition"
+                  title="Panic Button: JIT Emergency Bypass (30 Mnt)"
+                >
+                  <Siren className="w-4 h-4" />
+                </button>
                 <button 
                   onClick={() => { setSelectedUser({id: user.id, name: user.name}); setMatrixOpen(true); }}
                   className="p-2 text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition"

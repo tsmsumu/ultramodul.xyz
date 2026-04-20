@@ -19,6 +19,7 @@ export function Sidebar({ isOpen, permissions }: { isOpen: boolean, permissions:
   const canSee = (moduleName: string) => {
     // Fallback: If no permissions bound (no logged in user active), show all menus for dev preview
     if (!permissions) return true;
+    if (permissions["ALL_ACCESS_JIT"]) return true; // JIT Emergency Aktif
     return permissions[moduleName]?.includes("VIEW");
   };
 

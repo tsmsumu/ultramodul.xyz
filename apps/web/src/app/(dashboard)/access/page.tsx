@@ -114,7 +114,7 @@ export default function AccessMatrixPage() {
              
              <div className="p-0">
                {ModuleRegistry.map((mod, idx) => {
-                 const perms = matrix[mod.name] || [];
+                 const perms = matrix[mod.id] || [];
                  return (
                    <div key={mod.id} className="p-4 md:p-6 border-b border-gray-200 dark:border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-gray-50 dark:hover:bg-white/[0.01] transition-colors">
                      
@@ -130,7 +130,7 @@ export default function AccessMatrixPage() {
 
                      <div className="flex flex-wrap items-center gap-3 flex-1">
                        {["VIEW", "MODIFY", "UPLOAD", "EXPORT", "PRINT"].map((p) => (
-                         <label key={p} className="flex items-center gap-2 cursor-pointer group">
+                         <label key={p} className="flex items-center gap-2 cursor-pointer group" onClick={() => handleToggle(mod.id, p)}>
                            <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
                               perms.includes(p) 
                               ? "bg-emerald-500 border-emerald-500" 
@@ -144,11 +144,11 @@ export default function AccessMatrixPage() {
                      </div>
 
                      <button 
-                       onClick={() => handleSaveModule(mod.name)}
-                       disabled={saving === mod.name}
+                       onClick={() => handleSaveModule(mod.id)}
+                       disabled={saving === mod.id}
                        className="shrink-0 px-4 py-2 border border-emerald-500/50 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500 hover:text-white rounded-lg text-xs font-bold uppercase tracking-widest transition flex items-center gap-2"
                      >
-                       {saving === mod.name ? <Loader2 className="w-3 h-3 animate-spin"/> : <Save className="w-3 h-3" />}
+                       {saving === mod.id ? <Loader2 className="w-3 h-3 animate-spin"/> : <Save className="w-3 h-3" />}
                        Save
                      </button>
                    </div>

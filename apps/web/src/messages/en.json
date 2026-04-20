@@ -75,7 +75,16 @@
     "desc": "Submit complaints and reports directly to the related unit. Fully monitored by logbook.",
     "topicLabel": "Complaint Topic",
     "contentLabel": "Detailed Chronology",
-    "submitBtn": "Send Official Report"
+    "submitBtn": "Send Official Report",
+    "submittingBtn": "Transmitting...",
+    "optSelect": "-- Select Emergency Category --",
+    "optInfra": "Infrastructure & Damaged Roads",
+    "optPublic": "Extortion / Public Services",
+    "optHealth": "Emergency Medical Assistance",
+    "successTitle": "Report Successfully Submitted!",
+    "successDesc": "Your complaint ticket is strictly bound to your Universal ID and dispatched to the Multi-Channel Gateway. Keep monitoring its status.",
+    "newReportBtn": "Create New Report",
+    "placeholder": "Explain the exact time, location, and individuals involved..."
   },
   "maintenance": {
     "title": "Aegis Database Panopticon",

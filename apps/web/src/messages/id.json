@@ -75,7 +75,16 @@
     "desc": "Sampaikan keluhan dan laporan langsung ke unit terkait. Diawasi penuh oleh logbook.",
     "topicLabel": "Topik Aduan",
     "contentLabel": "Detail Kronologi",
-    "submitBtn": "Kirim Laporan Resmi"
+    "submitBtn": "Kirim Laporan Resmi",
+    "submittingBtn": "Menyalurkan...",
+    "optSelect": "-- Pilih Kategori Darurat --",
+    "optInfra": "Infrastruktur & Jalan Rusak",
+    "optPublic": "Pungli / Pelayanan Publik",
+    "optHealth": "Bantuan Medis Darurat",
+    "successTitle": "Laporan Berhasil Masuk!",
+    "successDesc": "Tiket pengaduan Anda mengikat pada ID Universal secara paten dan telah dikirim ke Multi-Channel Gateway. Pantau terus statusnya.",
+    "newReportBtn": "Buat Laporan Baru",
+    "placeholder": "Jelaskan detail waktu, lokasi kejadian, dan oknum terkait..."
   },
   "maintenance": {
     "title": "Aegis Database Panopticon",

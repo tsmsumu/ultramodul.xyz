@@ -37,15 +37,15 @@ export default function PengaduanPage() {
             <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-800/50 rounded-full flex items-center justify-center mb-4">
               <AlertCircle className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
             </div>
-            <h3 className="text-xl font-bold text-emerald-800 dark:text-emerald-400 mb-2">Laporan Berhasil Masuk!</h3>
+            <h3 className="text-xl font-bold text-emerald-800 dark:text-emerald-400 mb-2">{t("successTitle")}</h3>
             <p className="text-emerald-600 dark:text-emerald-500/80 text-sm max-w-md">
-              Tiket pengaduan Anda mengikat pada ID Universal secara paten dan telah dikirim ke Multi-Channel Gateway. Pantau terus statusnya.
+              {t("successDesc")}
             </p>
             <button 
               onClick={() => setSubmitted(false)}
               className="mt-6 px-6 py-2 bg-emerald-600 text-white font-medium rounded-xl hover:bg-emerald-700 transition"
             >
-              Buat Laporan Baru
+              {t("newReportBtn")}
             </button>
           </div>
         ) : (
@@ -53,10 +53,10 @@ export default function PengaduanPage() {
             <div>
               <label className="block text-sm font-semibold mb-2">{t("topicLabel")}</label>
               <select required className="w-full px-4 py-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-red-500 outline-none transition appearance-none">
-                <option value="" disabled selected>-- Pilih Kategori Darurat --</option>
-                <option value="infrastruktur" className="dark:bg-[#09090b]">Infrastruktur & Jalan Rusak</option>
-                <option value="pelayanan" className="dark:bg-[#09090b]">Pungli / Pelayanan Publik</option>
-                <option value="kesehatan" className="dark:bg-[#09090b]">Bantuan Medis Darurat</option>
+                <option value="" disabled selected>{t("optSelect")}</option>
+                <option value="infrastruktur" className="dark:bg-[#09090b]">{t("optInfra")}</option>
+                <option value="pelayanan" className="dark:bg-[#09090b]">{t("optPublic")}</option>
+                <option value="kesehatan" className="dark:bg-[#09090b]">{t("optHealth")}</option>
               </select>
             </div>
 
@@ -65,7 +65,7 @@ export default function PengaduanPage() {
               <textarea 
                 required 
                 rows={5}
-                placeholder="Jelaskan detail waktu, lokasi kejadian, dan oknum terkait..."
+                placeholder={t("placeholder")}
                 className="w-full px-4 py-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-red-500 outline-none transition"
               />
             </div>
@@ -76,7 +76,7 @@ export default function PengaduanPage() {
                 disabled={loading}
                 className="px-8 py-3.5 bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold rounded-xl transition flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed shadow-xl shadow-red-600/20"
               >
-                {loading ? "Menyalurkan..." : t("submitBtn")}
+                {loading ? t("submittingBtn") : t("submitBtn")}
                 {!loading && <Send className="w-4 h-4 ml-1" />}
               </button>
             </div>

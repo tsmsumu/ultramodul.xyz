@@ -33,9 +33,16 @@ class DuckDBEngine {
         URL.revokeObjectURL(worker_url); // Bersihkan Memori
 
         this.db = db;
+        
+        // THE OPFS IMMORTALITY INJECTION (Zero-Amnesia)
+        await db.open({ path: 'opfs://pum-nexus.db' });
         this.connection = await db.connect();
         
-        console.log("🔥 [DuckDB Wasm] Jantung In-Memory Engine AKTIF!");
+        // Memaksa sistem untuk langsung mengukir perubahan ke harddisk (SSD lokal pengguna)
+        await this.connection.query("SET checkpoint_threshold = '0KB';");
+        await this.connection.query("SET wal_autocheckpoint = '0KB';");
+        
+        console.log("🔥 [DuckDB OPFS] Jantung Persistent Engine AKTIF secara KEKAL!");
       } catch (error) {
         console.error("🔥 [DuckDB Wasm] Gagal Mengidupkan Engine:", error);
         throw error;
@@ -113,6 +120,22 @@ class DuckDBEngine {
     } catch (e) {
       console.error(`[DuckDB] Execute Error:`, e);
       throw e;
+    }
+  }
+
+  // PENDETEKSI MEMORI OPFS: Mengambil nama tabel apa saja yang berhasil bertahan
+  async getPersistentTables(): Promise<string[]> {
+    await this.init();
+    if (!this.connection) return [];
+    
+    try {
+      // Kueri rahasia untuk merontgen isi pikiran OPFS DuckDB
+      const result = await this.connection.query(`SELECT table_name FROM information_schema.tables WHERE table_schema='main';`);
+      const rows = result.toArray().map(r => r.toJSON());
+      return rows.map((r: any) => r.table_name);
+    } catch (e) {
+      console.error("[DuckDB OPFS] Gagal memanggil ingatan masa lalu:", e);
+      return [];
     }
   }
 }

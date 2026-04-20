@@ -1,7 +1,7 @@
-import { toggleIdentityStatus, setRandomPassword } from "@/app/actions/iam";
+import { toggleIdentityStatus, setRandomPassword, deleteIdentity } from "@/app/actions/iam";
 import { triggerEmergencyJit } from "@/app/actions/matrix";
 import { processBulkExport } from "@/app/actions/export";
-import { Lock, Unlock, ShieldAlert, Settings, Siren, Search, CheckSquare, HardDriveDownload, BoxSelect, Key } from "lucide-react";
+import { Lock, Unlock, ShieldAlert, Settings, Siren, Search, CheckSquare, HardDriveDownload, BoxSelect, Key, Trash2 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { MatrixDrawer } from "./matrix-drawer";
 import { OmniEtlModal } from "./omni-etl-modal";
@@ -97,6 +97,19 @@ export function DataTable({ initialUsers }: { initialUsers: any[] }) {
         alert(`SUKSES! Password Sementara untuk NIK ${username}:\n\n${pass}\n\nSilakan segera copy/salin sekarang! Sandi ini tidak akan ditampilkan lagi demi keamanan Audit.`);
       } else {
         alert("Gagal membuat password. Hubungi sysadmin.");
+      }
+    }
+  };
+
+  const handleDeleteUser = async (id: string, username: string) => {
+    if (confirm(`PERINGATAN KRITIKAL!\n\nAnda akan MENGHAPUS PERMANEN identitas NIK ${username} dari peladen. Seluruh jejak otorisasi Matrix & Mandat mungkin terhapus atau anomali. Lanjutkan?`)) {
+      setLoadingId(id);
+      const result = await deleteIdentity(id);
+      setLoadingId(null);
+      if (result.success) {
+         setUsers(users.filter(u => u.id !== id));
+      } else {
+         alert(result.error || "Gagal menghapus identitas.");
       }
     }
   };
@@ -222,6 +235,15 @@ export function DataTable({ initialUsers }: { initialUsers: any[] }) {
                   title={user.status === 'active' ? 'Kunci Akses (Blokir)' : 'Buka Akses (Approve/Aktifkan)'}
                 >
                   {user.status === 'active' ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
+                </button>
+                <div className="w-px h-6 bg-gray-200 dark:bg-white/10 mx-1"></div>
+                <button 
+                  disabled={loadingId === user.id}
+                  onClick={() => handleDeleteUser(user.id, user.username)}
+                  className="p-2 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition disabled:opacity-50"
+                  title="Hapus Identitas Permanen"
+                >
+                  <Trash2 className="w-4 h-4" />
                 </button>
               </td>
             </tr>

@@ -82,3 +82,22 @@ export async function setRandomPassword(id: string, plainText: string) {
     return { success: false };
   }
 }
+
+export async function deleteIdentity(id: string) {
+  try {
+    // SECURITY: Di tahap produksi asli, kita perlu mengecek relasi matrix & mandate sebelum dihapus
+    await db.delete(users).where(eq(users.id, id));
+
+    await createAuditLog({
+      action: "DELETE_IDENTITY",
+      actorId: "SYSTEM",
+      target: id,
+      metadata: { note: "Karakter/User Berhasil Ditarik dari Database Utama" }
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error("Delete failed:", error);
+    return { success: false, error: "Gagal menghapus user, mungkin berkaitan dengan data lain." };
+  }
+}

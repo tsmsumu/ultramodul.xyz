@@ -23,14 +23,13 @@ export function HologramTerminal({ nodeData, onClose }: { nodeData: any | null, 
 
       try {
         let rows = [];
-        // Jika data dari SQLite Backend:
-        if (nodeData.executionEngine === 'sqlite') {
-           const query = nodeData.sqlQuery || `SELECT * FROM ${nodeData.dbName || nodeData.tableName} LIMIT 50`;
-           const res = await executeRawNexusQuery(query);
-           if (!res.success) throw new Error(res.error);
-           rows = res.data;
+        
+        // Execute di dalam PUM Nexus Engine selalu hit WASM DuckDB (baik itu SQL Node atau Table Preview)
+        if (nodeData.sqlQuery) {
+           rows = await duckEngine.executeRaw(nodeData.sqlQuery);
+           // batasi tampilan 50 jika query tidak ada limit bisa hancur browsernya
+           if(rows.length > 50) rows = rows.slice(0, 50);
         } else {
-           // DuckDB Parquet Client
            rows = await duckEngine.previewData(nodeData.tableName || nodeData.dbName, 50);
         }
 
@@ -66,8 +65,8 @@ export function HologramTerminal({ nodeData, onClose }: { nodeData: any | null, 
           </span>
         </div>
         <div className="flex items-center gap-3">
-          <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded flex items-center gap-1 ${nodeData.executionEngine === 'sqlite' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' : 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'}`}>
-            <Play className="w-3 h-3"/> {nodeData.executionEngine === 'sqlite' ? 'SQLITE LIVE' : 'DUCKDB WASM'}
+          <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded flex items-center gap-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400`}>
+            <Play className="w-3 h-3"/> DUCKDB WASM LOCALLY COMPILED
           </span>
           <button onClick={onClose} className="p-1 hover:bg-black/10 dark:hover:bg-white/10 rounded cursor-pointer transition">
             <X className="w-4 h-4 text-gray-500 dark:text-gray-400" />

@@ -19,7 +19,7 @@ export async function getRealLogs(options: {
            ilike(auditLogs.action, term),
            ilike(auditLogs.actorId, term),
            ilike(auditLogs.target, term),
-           ilike(sql`CAST(${auditLogs.metadata} AS TEXT)`, term)
+           sql`CAST(${auditLogs.metadata} AS TEXT) ILIKE ${term}`
          )
        );
     }

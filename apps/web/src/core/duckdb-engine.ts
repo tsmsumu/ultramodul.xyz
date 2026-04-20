@@ -80,6 +80,30 @@ class DuckDBEngine {
     }
   }
 
+  // Fungsi Inti 2: Menelan JSON Object Langsung dari Peladen SQLite
+  async ingestJSONData(tableName: string, jsonData: any[]): Promise<boolean> {
+    await this.init();
+    if (!this.db || !this.connection) return false;
+
+    try {
+      const fileName = `${tableName}_${Date.now()}.json`;
+      const txt = JSON.stringify(jsonData);
+      const buffer = new TextEncoder().encode(txt);
+
+      // Daftarkan memory buffer seolah-olah file di local
+      await this.db.registerFileBuffer(fileName, buffer);
+
+      // Telan JSON ke dalam tabel DuckDB
+      await this.connection.query(`CREATE OR REPLACE TABLE ${tableName} AS SELECT * FROM read_json_auto('${fileName}');`);
+      
+      console.log(`🔥 [DuckDB] SQLite Data disedot dan dipadatkan ke OPFS DuckDB: '${tableName}'.`);
+      return true;
+    } catch (e) {
+      console.error(`❌ [DuckDB] Gagal menelan JSON:`, e);
+      return false;
+    }
+  }
+
   // Sensor Mata Elang: Rontgen Skema Tabel
   async discoverSchema(tableName: string): Promise<any[]> {
     await this.init();

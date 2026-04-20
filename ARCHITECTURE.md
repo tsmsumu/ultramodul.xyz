@@ -7,19 +7,19 @@
 *   **Visi:** Menyediakan antarmuka manajemen super-app tingkat pemerintah dan enterprise dengan estetika mewah dan keamanan ekstrem.
 *   **Multi-Platform Strategy:** Jika ada sub-aplikasi baru (seperti NexS, SS8, SS9), buatlah *Repository GitHub* terpisah untuk menjaga agar ingatan AI tidak tercampur (*Zero-Amnesia Boundaries*).
 
-## 2. Tech Stack & Framework
-*   **Frontend:** Next.js (App Router, Server Components).
-*   **Bahasa:** TypeScript. Dilarang keras menggunakan tipe `any` kecuali mendesak.
-*   **Styling Utama:** CSS Murni (Modular atau Vanilla). Jangan menggunakan Tailwind CSS secara abusif kecuali diinstruksikan khusus, demi menjaga kerapian kode dan kontrol absolut atas efek *Glassmorphism*.
-*   **Database Engine:** DuckDB (untuk analitik besar data/Parquet) & SQLite lokal.
+## 2. Tech Stack & Framework (Ultra Modern)
+*   **Monorepo Engine:** `pnpm workspaces` / `Turborepo`. Sangat wajib untuk *Zero-Redundancy* kode. Package dipisah menjadi `@ultra/ui`, `@ultra/db`, `@ultra/core`.
+*   **Frontend:** Next.js 15+ (App Router, Server Actions, React Server Components).
+*   **Bahasa:** TypeScript Strict Mode. Dilarang keras menggunakan `any`.
+*   **Styling Utama:** `Tailwind CSS` + `Framer Motion` + Komponen *Headless* (`Shadcn UI`). Ini standar absolut Vercel untuk stabilitas dan keindahan desain.
+*   **Database Engine:** `DuckDB` (Data Lake/Parquet analitik) & `better-sqlite3` + `Drizzle ORM` (Relasional log/konfigurasi lokal paling cepat).
+*   **State Management:** `Zustand` (untuk efisiensi memori di *Client*).
 
 ## 3. Aturan Desain Antarmuka (Aesthetics)
 UltraModul WAJIB terlihat lebih mahal dari platform global mana pun:
-*   **Color Palette:** *Dark Mode Default* (Hitam kelam, aksen Cyan/Ungu *Cyberpunk* namun tertata formal).
-*   **Komponen UI:** 
-    * Menggunakan efek tembus pandang (*Glassmorphism*. `backdrop-filter: blur()`).
-    * Semua tombol dan kartu harus memiliki bayangan lembut dan animasi transisi responsif saat di-*hover*.
-*   **Tipografi:** Font Sans-serif global (Inter/Outfit) berukuran proporsional. Tidak boleh ada font raksasa yang norak.
+*   **Color Palette:** *Dark Mode Exclusive* (Hitam kelam #09090b, aksen presisi).
+*   **Komponen UI (`Shadcn`):** Wajib bersih, memiliki garis batas (border) halus, efek *Glassmorphism* (`backdrop-blur`), dan *Skeleton Loading* untuk setiap *Fetch* data.
+*   **Micro-Interactions:** Transisi instan (0.2s) dengan *Framer Motion*. Dilarang menggunakan *Loading Spinner* yang muter-muter tanpa batas.
 
 ## 4. Partisi Kode (Zoning Code)
 Semua pekerjaan wajib diisolasi dengan ketat:

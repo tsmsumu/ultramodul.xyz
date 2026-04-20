@@ -7,7 +7,7 @@ Gunakan tanda `[x]` jika selesai, `[/]` jika sedang dikerjakan, dan `[ ]` jika b
 - [x] Inisiasi Local Git.
 - [x] Penciptaan 3 Dokumen Otak Buatan Utama (`ARCHITECTURE.md`, `SYSTEM_PROMPT.md`, `TODO.md`).
 - [ ] Inisialisasi dasar Next.js Framework (Scaffolding).
-- [ ] Pengikatan repositori lokal ke GitHub Cloud (`Push` pertama).
+- [x] Pengikatan repositori lokal ke GitHub Cloud (`Push` pertama).
 
 ## Tahap 2: Komponen Dasar Estetika
 - [ ] Pengaturan Variable Warna Utama (Root CSS).

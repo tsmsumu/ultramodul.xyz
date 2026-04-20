@@ -1,0 +1,10 @@
+{
+  "name": "@ultra/db",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.ts",
+  "dependencies": {
+    "drizzle-orm": "^0.30.0",
+    "better-sqlite3": "^9.0.0"
+  }
+}

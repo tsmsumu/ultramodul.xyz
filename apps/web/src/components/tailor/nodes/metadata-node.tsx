@@ -14,7 +14,7 @@ export function MetadataNode({ data }: { data: any }) {
       <div className="bg-amber-500 text-white p-2 text-xs font-bold flex justify-between items-center">
         <div className="flex items-center gap-2">
           <BookOpen className="w-3 h-3" />
-          <span>METADATA KAMUS</span>
+          <span>DICTIONARY METADATA</span>
         </div>
         <Settings className="w-3 h-3 cursor-pointer opacity-70 hover:opacity-100" />
       </div>
@@ -31,7 +31,7 @@ export function MetadataNode({ data }: { data: any }) {
             onClick={() => setAutoMode(true)}
             className={`flex-1 text-[10px] py-1 font-bold rounded ${autoMode ? "bg-amber-500 text-white shadow" : "text-gray-500"}`}
           >
-            OTOMATIS
+            AUTO
           </button>
         </div>
         <span className="font-bold text-gray-900 dark:text-white text-sm mt-1">{data.label}</span>

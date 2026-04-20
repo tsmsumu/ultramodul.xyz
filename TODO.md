@@ -27,3 +27,5 @@ Gunakan tanda `[x]` jika selesai, `[/]` jika sedang dikerjakan, dan `[ ]` jika b
 - [x] Omni-Module Registry & Event Bus (Micro-Frontend Comm)
 - [x] PUM Database Tailor (Kanvas Drag & Drop React Flow)
 - [x] Skema Ekstraksi Metadata (Auto/Manual) & Drizzle/SQLite Support
+- [x] Smart Edge UI (Kabel Cerdas JOIN Auto-Suggest)
+- [x] Eksekusi Server VPS Ubuntu & Kloning GitHub Anti-Amnesia

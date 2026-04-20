@@ -61,15 +61,15 @@ export function SmartEdge({
                 </div>
 
                 <div className="bg-indigo-50 dark:bg-indigo-900/10 border border-indigo-100 dark:border-indigo-900/30 p-2 rounded-lg text-xs mb-3 text-indigo-800 dark:text-indigo-300">
-                  <p className="font-semibold mb-1">Menganalisa Kolom Sama...</p>
-                  <p className="text-[10px] opacity-80">( Simulasi DuckDB: Kolom NIK terdeteksi di kedua Node. Menggunakan tipe relasi INNER JOIN )</p>
+                  <p className="font-semibold mb-1">Analyzing common columns...</p>
+                  <p className="text-[10px] opacity-80">( DuckDB Simulation: 'NIK' column detected in both nodes. Using INNER JOIN )</p>
                 </div>
 
                 <button 
                   onClick={() => setIsOpen(false)}
                   className="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition flex items-center justify-center gap-2 shadow-md shadow-indigo-600/20"
                 >
-                  <Check className="w-3 h-3" /> SETUJUI RELASI (JOIN)
+                  <Check className="w-3 h-3" /> APPROVE JOIN RELATION
                 </button>
              </div>
            )}

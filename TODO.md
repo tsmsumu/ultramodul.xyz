@@ -17,5 +17,5 @@ Gunakan tanda `[x]` jika selesai, `[/]` jika sedang dikerjakan, dan `[ ]` jika b
 ## Tahap 3: Implementasi Modul Bisnis
 - [x] Instalasi Database Drizzle & Logger
 - [x] Pembuatan IAM Console
-- [ ] Active Identity Matrix
-- [ ] Mandate & Delegasi
+- [x] Active Identity Matrix
+- [x] Mandate & Delegasi

@@ -75,6 +75,8 @@ export function SmartEdge({
     
     setIsProcessing(true);
     try {
+      const sourceNode = getNode(source);
+      const targetNode = getNode(target);
       const sData = sourceNode?.data as any;
       const tData = targetNode?.data as any;
       const sTable = sData?.tableName;

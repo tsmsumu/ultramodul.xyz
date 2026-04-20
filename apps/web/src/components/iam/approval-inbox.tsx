@@ -31,6 +31,7 @@ export function ApprovalInbox() {
          <h2 className="font-semibold text-amber-800 dark:text-amber-500">Antrean Persidangan Hak Akses ({approvals.length})</h2>
        </div>
 
+       <div className="space-y-3">
           {approvals.length === 0 ? (
             <div className="text-center py-6 text-amber-700/60 dark:text-amber-500/50 text-sm font-medium">
                Bebas Tugas! Tidak ada antrean mandat otorisasi yang menunggu persetujuan Bapak.

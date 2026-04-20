@@ -9,6 +9,7 @@ const VpsConfig = {
 };
 
 const BASH_SCRIPT = `
+echo "-> Fetching PM2 Logs..."
 pm2 logs ultramodul --lines 50 --nostream
 `;
 

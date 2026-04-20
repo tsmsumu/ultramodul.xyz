@@ -1,6 +1,6 @@
 "use server";
 
-import { db } from "@ultra/db";
+import { db, sqliteClient } from "@ultra/db";
 import { sql } from "@ultra/db";
 import { createAuditLog } from "@ultra/db/src/logger";
 
@@ -11,8 +11,9 @@ export async function executeRawNexusQuery(query: string) {
       return { success: false, error: "Only SELECT queries are allowed for safety.", data: [] };
     }
 
-    // Execute raw SQL
-    const result = await db.all(sql.raw(query));
+    // Execute raw SQL directly via LibSQL Client to get unmapped rows
+    const result = await sqliteClient.execute(query);
+    
     
     // Log audit
     await createAuditLog({
@@ -22,7 +23,7 @@ export async function executeRawNexusQuery(query: string) {
       metadata: { query }
     });
 
-    return { success: true, data: result };
+    return { success: true, data: result.rows };
   } catch (err: any) {
     return { success: false, error: err.message || "Failed to execute query", data: [] };
   }

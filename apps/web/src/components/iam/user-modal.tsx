@@ -2,12 +2,25 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, UserPlus, CheckCircle2 } from "lucide-react";
+import { X, UserPlus, CheckCircle2, Shuffle, Copy } from "lucide-react";
 import { createIdentity } from "@/app/actions/iam";
 
 export function UserModal({ isOpen, onClose, onRefresh }: { isOpen: boolean; onClose: () => void; onRefresh: () => void }) {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [generatedPass, setGeneratedPass] = useState("");
+
+  const generatePass = () => {
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*";
+    let pass = "";
+    for (let i = 0; i < 12; i++) pass += chars.charAt(Math.floor(Math.random() * chars.length));
+    setGeneratedPass(pass);
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(generatedPass);
+    alert("Password tersalin!");
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -18,6 +31,7 @@ export function UserModal({ isOpen, onClose, onRefresh }: { isOpen: boolean; onC
       nik: formData.get("nik") as string,
       name: formData.get("name") as string,
       role: formData.get("role") as string,
+      plainPassword: generatedPass || undefined
     });
 
     if (res.success) {
@@ -86,6 +100,23 @@ export function UserModal({ isOpen, onClose, onRefresh }: { isOpen: boolean; onC
                       <option value="admin" className="dark:bg-zinc-900">Administrator Pusat</option>
                       <option value="viewer" className="dark:bg-zinc-900">Auditor (View Only)</option>
                     </select>
+                  </div>
+                  
+                  <div>
+                    <div className="flex justify-between items-end mb-1.5 opacity-80">
+                      <label className="block text-sm font-medium">Password Sementara (Opsional)</label>
+                      <button type="button" onClick={generatePass} className="text-[10px] flex items-center gap-1 text-blue-600 dark:text-blue-400 font-bold hover:underline">
+                        <Shuffle className="w-3 h-3" /> ACAK BARU
+                      </button>
+                    </div>
+                    <div className="flex gap-2">
+                      <input readOnly value={generatedPass} className="w-full px-4 py-2 bg-gray-50 dark:bg-black border border-gray-200 dark:border-white/10 rounded-lg font-mono text-xs focus:outline-none text-gray-500" placeholder="Kosongkan jika sistem murni Passkey..." />
+                      {generatedPass && (
+                        <button type="button" onClick={copyToClipboard} className="p-2 border border-gray-200 dark:border-white/10 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition" title="Salin Password">
+                          <Copy className="w-4 h-4 text-gray-500" />
+                        </button>
+                      )}
+                    </div>
                   </div>
 
                   <div className="pt-4 flex justify-end gap-3">

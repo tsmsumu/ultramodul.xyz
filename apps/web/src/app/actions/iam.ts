@@ -2,7 +2,7 @@
 
 import { db, users, eq } from "@ultra/db";
 import { createAuditLog } from "@ultra/db/src/logger";
-import { randomUUID } from "crypto";
+import { randomUUID, createHash } from "crypto";
 
 export async function getUsers() {
   try {
@@ -13,15 +13,21 @@ export async function getUsers() {
   }
 }
 
-export async function createIdentity(data: { nik: string; name: string; role: string }) {
+export async function createIdentity(data: { nik: string; name: string; role: string; plainPassword?: string }) {
   try {
     const newId = randomUUID();
+    let passwordHash = null;
+    if (data.plainPassword) {
+      passwordHash = createHash("sha256").update(data.plainPassword).digest("hex");
+    }
+
     await db.insert(users).values({
       id: newId,
       nik: data.nik,
       name: data.name,
       role: data.role,
       status: "active",
+      passwordHash,
       createdAt: new Date(),
     });
 
@@ -50,6 +56,24 @@ export async function toggleIdentityStatus(id: string, currentStatus: string) {
       actorId: "SYSTEM",
       target: id,
       metadata: { newStatus }
+    });
+
+    return { success: true };
+  } catch (error) {
+    return { success: false };
+  }
+}
+
+export async function setRandomPassword(id: string, plainText: string) {
+  try {
+    const passwordHash = createHash("sha256").update(plainText).digest("hex");
+    await db.update(users).set({ passwordHash }).where(eq(users.id, id));
+
+    await createAuditLog({
+      action: "GENERATE_TEMPORARY_PASSWORD",
+      actorId: "SYSTEM",
+      target: id,
+      metadata: { note: "Admin generated new temp password" }
     });
 
     return { success: true };

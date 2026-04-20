@@ -1,7 +1,7 @@
-import { toggleIdentityStatus } from "@/app/actions/iam";
+import { toggleIdentityStatus, setRandomPassword } from "@/app/actions/iam";
 import { triggerEmergencyJit } from "@/app/actions/matrix";
 import { processBulkExport } from "@/app/actions/export";
-import { Lock, Unlock, ShieldAlert, Settings, Siren, Search, CheckSquare, HardDriveDownload, BoxSelect } from "lucide-react";
+import { Lock, Unlock, ShieldAlert, Settings, Siren, Search, CheckSquare, HardDriveDownload, BoxSelect, Key } from "lucide-react";
 import { useState, useMemo } from "react";
 import { MatrixDrawer } from "./matrix-drawer";
 import { OmniEtlModal } from "./omni-etl-modal";
@@ -79,6 +79,25 @@ export function DataTable({ initialUsers }: { initialUsers: any[] }) {
       await triggerEmergencyJit(id, 30);
       setLoadingId(null);
       alert("JIT Aktif. Menu Navigasi akan terbuka semua untuk User ini selama 30 menit ke depan.");
+    }
+  };
+
+  const handleGeneratePassword = async (id: string, nik: string) => {
+    if (confirm(`Apakah Anda yakin ingin men-generate password baru untuk NIK ${nik}? Sandi lama akan hangus.`)) {
+      setLoadingId(id);
+      
+      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*";
+      let pass = "";
+      for (let i = 0; i < 12; i++) pass += chars.charAt(Math.floor(Math.random() * chars.length));
+      
+      const result = await setRandomPassword(id, pass);
+      setLoadingId(null);
+      
+      if (result.success) {
+        alert(`SUKSES! Password Sementara untuk NIK ${nik}:\n\n${pass}\n\nSilakan segera copy/salin sekarang! Sandi ini tidak akan ditampilkan lagi demi keamanan Audit.`);
+      } else {
+        alert("Gagal membuat password. Hubungi sysadmin.");
+      }
     }
   };
 
@@ -178,6 +197,14 @@ export function DataTable({ initialUsers }: { initialUsers: any[] }) {
                   title="Panic Button: JIT Emergency Bypass (30 Mnt)"
                 >
                   <Siren className="w-4 h-4" />
+                </button>
+                <button 
+                  disabled={loadingId === user.id}
+                  onClick={() => handleGeneratePassword(user.id, user.nik)}
+                  className="p-2 text-gray-500 hover:text-yellow-600 dark:text-gray-400 dark:hover:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/30 rounded-lg transition"
+                  title="Generate Password Sementara"
+                >
+                  <Key className="w-4 h-4" />
                 </button>
                 <button 
                   onClick={() => { setSelectedUser({id: user.id, name: user.name}); setMatrixOpen(true); }}

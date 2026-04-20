@@ -11,6 +11,7 @@ export const users = sqliteTable('users', {
   emergencyUntil: integer('emergency_until', { mode: 'timestamp' }), // Waktu Expired Dewa Sementara
   layoutTemplate: text('layout_template').notNull().default('sidebar'),
   colorSkin: text('color_skin').notNull().default('default'),
+  passwordHash: text('password_hash'), // Legacy Password/Temporary Login Fallback
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull()
 });
 

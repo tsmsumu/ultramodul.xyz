@@ -28,10 +28,10 @@ export default function IAMConsolePage() {
       {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Identitas & Akses Matrix</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Identity & Access Matrix</h1>
           <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
-            Manajemen terpusat seluruh akses pengguna dalam satu konsol. 
-            Semua aktivitas dipantau otomatis oleh Logbook.
+            Centralized management of all user permissions in one console. 
+            All activities are automatically monitored by the Panopticon Logbook.
           </p>
         </div>
         <button 
@@ -39,7 +39,7 @@ export default function IAMConsolePage() {
           className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition shadow-sm shadow-blue-500/20"
         >
           <UserPlus className="w-4 h-4" />
-          Tambah Identitas
+          Add Identity
         </button>
       </div>
 
@@ -47,9 +47,9 @@ export default function IAMConsolePage() {
       <div className="p-4 bg-orange-50 border border-orange-200 dark:bg-orange-950/20 dark:border-orange-900/50 rounded-xl flex items-start gap-4">
          <ShieldAlert className="w-6 h-6 text-orange-600 dark:text-orange-500 shrink-0 mt-0.5" />
          <div>
-           <h4 className="font-medium text-orange-900 dark:text-orange-300">Zona Zero-Trust Aktif</h4>
+           <h4 className="font-medium text-orange-900 dark:text-orange-300">Zero-Trust Zone Active</h4>
            <p className="text-sm text-orange-800 dark:text-orange-400 mt-1">
-             Segala perubahan otoritas pada konsol ini akan direkam permanen ke dalam tabel Audit Log.
+             All authorization changes in this console will be permanently recorded into the Audit Log ledger.
            </p>
          </div>
       </div>

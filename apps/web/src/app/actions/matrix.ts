@@ -76,8 +76,27 @@ export async function saveUserMatrix(userId: string, moduleName: string, permiss
   try {
     const jsonPerms = JSON.stringify(permissions);
 
-    // Alpha Pillar: Masukkan ke Persidangan (Maker-Checker)
-    // Di produksi asli, ini memvalidasi apakah yg login admin. 
+    const existingMtx = await db.select().from(accessMatrix).where(
+      and(eq(accessMatrix.userId, userId), eq(accessMatrix.moduleName, moduleName))
+    );
+
+    if (existingMtx.length > 0) {
+      await db.update(accessMatrix)
+        .set({ permissions: jsonPerms, timeRule })
+        .where(eq(accessMatrix.id, existingMtx[0].id));
+    } else {
+      await db.insert(accessMatrix).values({
+        id: randomUUID(),
+        userId,
+        moduleName,
+        permissions: jsonPerms,
+        timeRule,
+        grantedBy: "SYSTEM",
+        createdAt: new Date()
+      });
+    }
+
+    // Tetap catat di histori
     await db.insert(matrixApprovals).values({
       id: randomUUID(),
       targetUserId: userId,
@@ -85,12 +104,14 @@ export async function saveUserMatrix(userId: string, moduleName: string, permiss
       proposedPermissions: jsonPerms,
       proposedTimeRule: timeRule,
       makerId: "SYSTEM",
-      status: "PENDING",
-      createdAt: new Date()
+      checkerId: "SYSTEM",
+      status: "APPROVED", // Auto-approved
+      createdAt: new Date(),
+      resolvedAt: new Date()
     });
 
     await createAuditLog({
-      action: "PROPOSE_MATRIX_CHANGE",
+      action: "GRANT_MATRIX_ACCESS_DIRECT",
       actorId: "SYSTEM",
       target: userId,
       metadata: { moduleName, timeRule }

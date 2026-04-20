@@ -62,8 +62,9 @@ export function NexusCanvas() {
   );
 
   const onNodeClick = useCallback((_: React.MouseEvent, node: Node) => {
-    if (node.data.tableName) {
-      setActiveTable(node.data.tableName);
+    const data = node.data as { tableName?: string };
+    if (data.tableName) {
+      setActiveTable(data.tableName);
     } else {
       setActiveTable(null); // Tutup terminal jika node tak punya tabel
     }

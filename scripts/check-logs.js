@@ -8,8 +8,12 @@ const VpsConfig = {
   password: 'kAYqjET6umxar&#ZCGlse)0D9SN7(!'
 };
 
+const BASH_SCRIPT = `
+pm2 logs ultramodul --lines 50 --nostream
+`;
+
 conn.on('ready', () => {
-  conn.exec('pm2 logs --lines 50 --nostream', (err, stream) => {
+  conn.exec(BASH_SCRIPT, (err, stream) => {
     if (err) throw err;
     stream.on('close', () => conn.end())
     .on('data', data => process.stdout.write(data))

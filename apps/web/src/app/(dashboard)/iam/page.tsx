@@ -5,6 +5,7 @@ import { UserPlus, ShieldAlert } from "lucide-react";
 import { getUsers } from "@/app/actions/iam";
 import { DataTable } from "@/components/iam/data-table";
 import { UserModal } from "@/components/iam/user-modal";
+import { ImportModal } from "@/components/iam/import-modal";
 import { ApprovalInbox } from "@/components/iam/approval-inbox";
 import { useTranslations } from "next-intl";
 
@@ -12,6 +13,7 @@ export default function IAMConsolePage() {
   const t = useTranslations("iam");
   const [users, setUsers] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isImportOpen, setIsImportOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const fetchUsers = async () => {
@@ -35,13 +37,21 @@ export default function IAMConsolePage() {
             {t("desc")}
           </p>
         </div>
-        <button 
-          onClick={() => setIsModalOpen(true)}
-          className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition shadow-sm shadow-blue-500/20"
-        >
-          <UserPlus className="w-4 h-4" />
-          {t("addBtn")}
-        </button>
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={() => setIsImportOpen(true)}
+            className="inline-flex items-center gap-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800/50 px-4 py-2.5 rounded-lg text-sm font-medium transition shadow-sm"
+          >
+            Import CSV
+          </button>
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition shadow-sm shadow-blue-500/20"
+          >
+            <UserPlus className="w-4 h-4" />
+            {t("addBtn")}
+          </button>
+        </div>
       </div>
 
       {/* IAM Security Highlight */}
@@ -74,6 +84,11 @@ export default function IAMConsolePage() {
       <UserModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
+        onRefresh={fetchUsers}
+      />
+      <ImportModal 
+        isOpen={isImportOpen} 
+        onClose={() => setIsImportOpen(false)} 
         onRefresh={fetchUsers}
       />
     </div>

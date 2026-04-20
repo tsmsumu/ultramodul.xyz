@@ -101,3 +101,45 @@ export async function deleteIdentity(id: string) {
     return { success: false, error: "Gagal menghapus user, mungkin berkaitan dengan data lain." };
   }
 }
+
+export async function importCSVIdentities(csvText: string) {
+  try {
+    const rows = csvText.split('\n').map(r => r.trim()).filter(r => r.length > 0);
+    // Asumsi format CSV: username,name,role
+    // Lewati baris pertama jika itu header (username,name,role)
+    const startIndex = rows[0].toLowerCase().includes('username') ? 1 : 0;
+    
+    let imported = 0;
+    for (let i = startIndex; i < rows.length; i++) {
+       const cols = rows[i].split(',').map(c => c.trim());
+       if (cols.length >= 3) {
+          const username = cols[0];
+          const name = cols[1];
+          const role = cols[2];
+          
+          const newId = randomUUID();
+          await db.insert(users).values({
+            id: newId,
+            username,
+            name,
+            role,
+            status: "active",
+            createdAt: new Date(),
+          });
+          imported++;
+       }
+    }
+
+    await createAuditLog({
+      action: "IMPORT_IDENTITIES_CSV",
+      actorId: "SYSTEM",
+      target: "SYS_IAM",
+      metadata: { count: imported }
+    });
+
+    return { success: true, count: imported };
+  } catch (error) {
+    console.error("CSV Import failed:", error);
+    return { success: false, error: "Gagal mengimpor CSV. Pastikan format: username,name,role" };
+  }
+}

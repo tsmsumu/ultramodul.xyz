@@ -86,20 +86,15 @@ export function UserModal({ isOpen, onClose, onRefresh }: { isOpen: boolean; onC
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium mb-1.5 opacity-80">Nomor Induk Kependudukan (NIK)</label>
-                    <input required name="username" pattern="[0-9]{16}" title="16 Digit NIK" className="w-full px-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Masukkan 16 angka NIK..." />
+                    <label className="block text-sm font-medium mb-1.5 opacity-80">Universal Identity Code</label>
+                    <input required name="username" className="w-full px-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Enter Unique ID..." />
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-1.5 opacity-80">Nama Lengkap</label>
                     <input required name="name" className="w-full px-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Nama sesuai identitas..." />
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1.5 opacity-80">Hak Akses (Role)</label>
-                    <select required name="role" className="w-full px-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition appearance-none">
-                      <option value="user" className="dark:bg-zinc-900">Operator Standar</option>
-                      <option value="admin" className="dark:bg-zinc-900">Administrator Pusat</option>
-                      <option value="viewer" className="dark:bg-zinc-900">Auditor (View Only)</option>
-                    </select>
+                  <div className="hidden">
+                    <input type="hidden" name="role" value="user" />
                   </div>
                   
                   <div>

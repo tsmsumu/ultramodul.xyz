@@ -63,12 +63,12 @@ export default function RegisterPage() {
             )}
 
             <div>
-              <label className="block text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1.5">{t("nikLabel")}</label>
+              <label className="block text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1.5">Universal Identity Code</label>
               <input 
                 name="username" 
                 required 
                 maxLength={16}
-                placeholder={t("nikPlaceholder")}
+                placeholder="Enter 16 Digit Code"
                 className="w-full px-4 py-3.5 bg-black/50 border border-white/10 rounded-xl focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition text-white placeholder:text-gray-600 font-mono"
               />
             </div>

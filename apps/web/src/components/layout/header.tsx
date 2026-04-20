@@ -1,21 +1,16 @@
 import { Menu, Search, User, LogOut, Bell } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState, useEffect } from "react";
-import { fetchSandboxUsers, impersonateUser, clearImpersonation } from "@/app/actions/auth";
+import { logoutAction } from "@/app/actions/auth";
 import { EventBus, EVENTS } from "@/core/event-bus";
 
 export function Header({ toggleSidebar, activeUserId }: { toggleSidebar: () => void, activeUserId: string | null }) {
   const tHome = useTranslations("home");
   const tHeader = useTranslations("header");
-  const [users, setUsers] = useState<any[]>([]);
   const [showSandbox, setShowSandbox] = useState(false);
   const [bellTing, setBellTing] = useState(false);
   const [alertMsg, setAlertMsg] = useState("");
 
-  useEffect(() => {
-    fetchSandboxUsers().then(setUsers);
-
-    // MENDENGAR SINYAL EVENT DARI UDARA (Pub/Sub)
+  useEffect(() => {    // MENDENGAR SINYAL EVENT DARI UDARA (Pub/Sub)
     const unsubscribe = EventBus.subscribe(EVENTS.NOTIFICATION_ALERT, (payload) => {
       setAlertMsg(payload);
       setBellTing(true);
@@ -25,13 +20,8 @@ export function Header({ toggleSidebar, activeUserId }: { toggleSidebar: () => v
     return () => unsubscribe(); // Cabut jaringan saat komponen Header dibersihkan
   }, []);
 
-  const handleImpersonate = async (id: string) => {
-    await impersonateUser(id);
-    window.location.reload();
-  };
-
-  const handleClear = async () => {
-    await clearImpersonation();
+  const handleLogout = async () => {
+    await logoutAction();
     window.location.reload();
   };
 
@@ -76,40 +66,18 @@ export function Header({ toggleSidebar, activeUserId }: { toggleSidebar: () => v
         <div className="relative">
           <button 
             onClick={() => setShowSandbox(!showSandbox)}
-            title={activeUserId ? "Sandbox Aktif" : "Auth Sandbox Mode"}
-            className={`w-8 h-8 rounded-full flex items-center justify-center text-white cursor-pointer transition-all border-2 
-              ${activeUserId ? "bg-red-500 border-red-300 animate-pulse" : "bg-indigo-600 border-transparent hover:ring-2 hover:ring-indigo-400"}
-            `}
+            title="Profile"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-white cursor-pointer transition-all border-2 bg-emerald-600 border-transparent hover:ring-2 hover:ring-emerald-400"
           >
             <User className="w-4 h-4" />
           </button>
           
-          {/* SANDBOX DROPDOWN */}
+          {/* PROFILE DROPDOWN */}
           {showSandbox && (
-            <div className="absolute top-10 right-0 w-64 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-white/10 shadow-xl rounded-xl p-2 z-50">
-               <div className="px-3 py-2 border-b border-gray-100 dark:border-white/10 mb-2 font-mono text-[10px] text-gray-400 uppercase tracking-wider">
-                 Test Sandbox (Impersonation)
-               </div>
-               
-               {activeUserId && (
-                 <button onClick={handleClear} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md mb-2">
-                   <LogOut className="w-3 h-3" /> {tHeader("sandboxExit")}
-                 </button>
-               )}
-
-               <div className="max-h-40 overflow-y-auto space-y-1">
-                 {users.map(u => (
-                   <button 
-                     key={u.id} 
-                     onClick={() => handleImpersonate(u.id)}
-                     className={`w-full text-left px-3 py-2 text-xs rounded-md truncate
-                       ${activeUserId === u.id ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 font-bold' : 'hover:bg-gray-100 dark:hover:bg-zinc-800'}
-                     `}
-                   >
-                     {u.name} <span className="opacity-50 ml-1">({u.role})</span>
-                   </button>
-                 ))}
-               </div>
+            <div className="absolute top-10 right-0 w-48 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-white/10 shadow-xl rounded-xl p-2 z-50">
+               <button onClick={handleLogout} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md">
+                 <LogOut className="w-3 h-3" /> Secure Logout
+               </button>
             </div>
           )}
         </div>

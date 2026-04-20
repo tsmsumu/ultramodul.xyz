@@ -36,6 +36,40 @@ export function SmartEdge({
   // Neural Auto-Detect Logic (Mata Elang + Saraf Cerdas)
   useEffect(() => {
     if (isOpen) {
+      const sourceNode = getNode(source);
+      const targetNode = getNode(target);
+      
+      const sCols: any[] = (sourceNode?.data as any)?.schema || [];
+      const tCols: any[] = (targetNode?.data as any)?.schema || [];
+      
+      setSourceCols(sCols);
+      setTargetCols(tCols);
+
+      // Auto-detect kolom yang namanya sama
+      const commonCol = sCols.find((sc: any) => 
+        tCols.some((tc: any) => tc.column_name.toLowerCase() === sc.column_name.toLowerCase())
+      );
+
+      if (commonCol && !leftCol && !rightCol) {
+        setLeftCol(commonCol.column_name);
+        setRightCol(commonCol.column_name);
+      } else if (sCols.length > 0 && tCols.length > 0 && !leftCol && !rightCol) {
+        setLeftCol(sCols[0].column_name);
+        setRightCol(tCols[0].column_name);
+      }
+    }
+  }, [isOpen, source, target, getNode, leftCol, rightCol]);
+
+  const onEdgeClick = (evt: React.MouseEvent) => {
+    evt.stopPropagation();
+    setIsOpen(!isOpen);
+  };
+
+  const onEdgeDelete = (evt: React.MouseEvent) => {
+    evt.stopPropagation();
+    setEdges((edges) => edges.filter((e) => e.id !== id));
+  };
+
   const executeJoinLogic = async () => {
     if (!leftCol || !rightCol) return alert("Pilih kolom sumber dan target!");
     

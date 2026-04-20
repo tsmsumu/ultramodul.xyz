@@ -12,6 +12,18 @@ export const users = sqliteTable('users', {
   layoutTemplate: text('layout_template').notNull().default('sidebar'),
   colorSkin: text('color_skin').notNull().default('default'),
   passwordHash: text('password_hash'), // Legacy Password/Temporary Login Fallback
+  
+  // Future-Proofing: Multi-Factor Auth (MFA) Gateway
+  mfaEnrolled: integer('mfa_enrolled', { mode: 'boolean' }).notNull().default(false),
+  mfaSecret: text('mfa_secret'),
+  
+  // Future-Proofing: Multi-Channel Gateway (WA/SMS/Email)
+  phoneNumber: text('phone_number'),
+  email: text('email'),
+  
+  // Future-Proofing: API Exchange
+  publicUuid: text('public_uuid'), // UUID alias for hiding NIK in API responses
+
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull()
 });
 
@@ -99,5 +111,28 @@ export const nexusBlueprints = sqliteTable('nexus_blueprints', {
   sourceMetadata: text('source_metadata'), // JSON Array of Parquet links or DB refs
   schemaSnapshot: text('schema_snapshot'), // JSON Object of final column schemas
   authorId: text('author_id').notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull()
+});
+
+// Member Public Facing Feature
+export const pengaduanPublik = sqliteTable('pengaduan_publik', {
+  id: text('id').primaryKey(), // UUID laporan
+  reporterNik: text('reporter_nik').notNull(), // Mengikat aduan ke NIK (Bukan anonim)
+  topic: text('topic').notNull(), // Kategori laporan (Infrastruktur, Pelayanan, dll)
+  content: text('content').notNull(), // Isi detail pengaduan
+  channelSource: text('channel_source').notNull().default('WEB_PORTAL'), // Future-proof: WEB_PORTAL, WHATSAPP_API, TELEGRAM
+  status: text('status').notNull().default('OPEN'), // OPEN, IN_PROGRESS, RESOLVED, REJECTED
+  adminNote: text('admin_note'), // Tanggapan petugas (Verval)
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull()
+});
+
+// Future-Proofing: API Exchange Hub
+export const apiKeys = sqliteTable('api_keys', {
+  id: text('id').primaryKey(),
+  appName: text('app_name').notNull(),
+  tokenHash: text('token_hash').notNull().unique(),
+  ownerId: text('owner_id').notNull(), // Relates to users.id
+  status: text('status').notNull().default('ACTIVE'), // ACTIVE, REVOKED
+  allowedOrigins: text('allowed_origins'), // JSON array of allowed domains for CORS
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull()
 });

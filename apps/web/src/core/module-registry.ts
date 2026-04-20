@@ -70,6 +70,13 @@ export const ModuleRegistry: OmniModule[] = [
     path: "/nexus",
     icon: GitMerge,
     isCore: false
+  },
+  {
+    id: "Data Sanitizer Pabrik",
+    name: "Data Washing Station",
+    path: "/sanitizer",
+    icon: ActivitySquare, // Will change icon to something like Droplets or Washing Machine if available, ActivitySquare is placeholder
+    isCore: false
   }
 ];
 

@@ -1,12 +1,13 @@
 "use client";
 
-import { Handle, Position } from "@xyflow/react";
-import { Database, Settings, PlugZap, Play, Loader2 } from "lucide-react";
+import { Handle, Position, useReactFlow } from "@xyflow/react";
+import { Database, PlugZap, Play, Loader2, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { executeRawNexusQuery } from "@/app/actions/queryEngine";
 import { duckEngine } from "@/core/duckdb-engine";
 
-export function DatabaseNode({ data, selected }: { data: any, selected?: boolean }) {
+export function DatabaseNode({ id, data, selected }: { id: string, data: any, selected?: boolean }) {
+  const { deleteElements } = useReactFlow();
   const [dbName, setDbName] = useState(data.dbName || "");
   const [isConnecting, setIsConnecting] = useState(false);
   const [status, setStatus] = useState<"idle"|"loading"|"connected"|"error">("idle");
@@ -20,7 +21,13 @@ export function DatabaseNode({ data, selected }: { data: any, selected?: boolean
           <Database className="w-4 h-4" />
           <span className="tracking-wider">LIVE DB CONNECTOR</span>
         </div>
-        <Settings className="w-3.5 h-3.5 cursor-pointer opacity-70 hover:opacity-100 hover:rotate-90 transition-all" />
+        <button 
+          onClick={(e) => { e.stopPropagation(); deleteElements({ nodes: [{ id }] }); }}
+          className="p-1 cursor-pointer opacity-50 hover:opacity-100 hover:bg-white/20 rounded transition-all text-white hover:text-red-100"
+          title="Hapus Node"
+        >
+          <Trash2 className="w-3.5 h-3.5" />
+        </button>
       </div>
       
       <div className="p-4 flex flex-col gap-3">

@@ -9,6 +9,7 @@ import NextLink from "next/link";
 
 export function Sidebar({ isOpen, permissions }: { isOpen: boolean, permissions: Record<string, string[]> | null }) {
   const pathname = usePathname();
+  const t = useTranslations("nav");
 
   const canSee = (moduleName: string) => {
     // Fallback: If no permissions bound (no logged in user active), show all menus for dev preview
@@ -44,7 +45,7 @@ export function Sidebar({ isOpen, permissions }: { isOpen: boolean, permissions:
                 <Icon className={`w-5 h-5 ${isActive ? "text-white" : "group-hover:text-indigo-600 dark:group-hover:text-indigo-400"}`} />
               </div>
               <span className={`relative z-10 whitespace-nowrap transition-opacity duration-300 ${isOpen ? "opacity-100" : "lg:opacity-0"}`}>
-                {mod.name}
+                {t(mod.id)}
               </span>
             </NextLink>
           );

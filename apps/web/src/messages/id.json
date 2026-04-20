@@ -13,5 +13,35 @@
     "title": "Platform Enterprise UltraModul",
     "subtitle": "Nir-Amnesia. Nir-Redundansi.",
     "welcome": "Selamat datang di Konsol Identitas Aktif"
+  },
+  "nav": {
+    "Dashboard": "Pusat Komando",
+    "IAM Console": "Konsol IAM",
+    "Keamanan Mandat": "Delegasi Mandat",
+    "Active Identity Matrix": "Identitas Aktif",
+    "Audit Logbook Intel": "Buku Log Audit",
+    "Saraf Interaktif": "Tes Saraf API",
+    "PUM Data Tailor": "Penjahit PUM"
+  },
+  "customizer": {
+    "title": "Pengaturan Tampilan",
+    "skin": "Skin Warna Eksklusif",
+    "layout": "Struktur Matriks (Layout)",
+    "sidebar": "Menu Samping",
+    "topbar": "Menu Atas",
+    "langTitle": "Bahasa Ruang Kerja",
+    "langEn": "Inggris (Utama)",
+    "langId": "Bahasa Indonesia"
+  },
+  "header": {
+    "signalReceived": "Sinyal Saraf Diterima",
+    "sandboxExit": "Cabut Impersonasi (Balik ke Master)"
+  },
+  "iam": {
+    "title": "Matriks Identitas & Akses",
+    "desc": "Manajemen terpusat seluruh otoritas pengguna dalam satu konsol. Semua manuver terpantau mesin Panopticon.",
+    "addBtn": "Tambah Identitas",
+    "ztTitle": "Zona Zero-Trust Aktif",
+    "ztDesc": "Segala mutasi tingkat dewa pada konsol ini dikunci secara permanen berlapis Kriptografi pada Audit Log."
   }
 }

@@ -5,7 +5,8 @@ import { fetchSandboxUsers, impersonateUser, clearImpersonation } from "@/app/ac
 import { EventBus, EVENTS } from "@/core/event-bus";
 
 export function Header({ toggleSidebar, activeUserId }: { toggleSidebar: () => void, activeUserId: string | null }) {
-  const t = useTranslations("home");
+  const tHome = useTranslations("home");
+  const tHeader = useTranslations("header");
   const [users, setUsers] = useState<any[]>([]);
   const [showSandbox, setShowSandbox] = useState(false);
   const [bellTing, setBellTing] = useState(false);
@@ -44,7 +45,7 @@ export function Header({ toggleSidebar, activeUserId }: { toggleSidebar: () => v
           <Menu className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </button>
         <span className="font-semibold text-sm tracking-wide hidden sm:block">
-          {t("title")}
+          {tHome("title")}
         </span>
       </div>
 
@@ -67,7 +68,7 @@ export function Header({ toggleSidebar, activeUserId }: { toggleSidebar: () => v
           </button>
           {bellTing && (
             <div className="absolute top-10 right-0 w-64 bg-red-600 text-white text-xs p-3 rounded-lg shadow-xl animate-in fade-in slide-in-from-top-2 z-50">
-               <strong>Signal Received:</strong> {alertMsg}
+               <strong>{tHeader("signalReceived")}:</strong> {alertMsg}
             </div>
           )}
         </div>
@@ -92,7 +93,7 @@ export function Header({ toggleSidebar, activeUserId }: { toggleSidebar: () => v
                
                {activeUserId && (
                  <button onClick={handleClear} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md mb-2">
-                   <LogOut className="w-3 h-3" /> Exit Sandbox (Return to Admin)
+                   <LogOut className="w-3 h-3" /> {tHeader("sandboxExit")}
                  </button>
                )}
 

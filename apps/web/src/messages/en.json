@@ -13,5 +13,35 @@
     "title": "UltraModul Enterprise Platform",
     "subtitle": "Zero Amnesia. Zero Redundancy.",
     "welcome": "Welcome to the Active Identity Console"
+  },
+  "nav": {
+    "Dashboard": "Command Center",
+    "IAM Console": "IAM Console",
+    "Keamanan Mandat": "Mandate Delegation",
+    "Active Identity Matrix": "Active Identity",
+    "Audit Logbook Intel": "Audit Logbook",
+    "Saraf Interaktif": "Event Bus Test",
+    "PUM Data Tailor": "PUM Tailor (BETA)"
+  },
+  "customizer": {
+    "title": "Display Settings",
+    "skin": "Exclusive Color Skin",
+    "layout": "Matrix Structure (Layout)",
+    "sidebar": "Sidebar",
+    "topbar": "Topbar",
+    "langTitle": "Workspace Language",
+    "langEn": "English (Default)",
+    "langId": "Bahasa Indonesia"
+  },
+  "header": {
+    "signalReceived": "Signal Received",
+    "sandboxExit": "Exit Sandbox (Return to Admin)"
+  },
+  "iam": {
+    "title": "Identity & Access Matrix",
+    "desc": "Centralized management of all user permissions in one console. All activities are automatically monitored by the Panopticon Logbook.",
+    "addBtn": "Add Identity",
+    "ztTitle": "Zero-Trust Zone Active",
+    "ztDesc": "All authorization changes in this console will be permanently recorded into the Audit Log ledger."
   }
 }

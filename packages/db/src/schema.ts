@@ -6,6 +6,8 @@ export const users = sqliteTable('users', {
   name: text('name').notNull(),
   role: text('role').notNull().default('user'),
   status: text('status').notNull().default('active'),
+  layoutTemplate: text('layout_template').notNull().default('sidebar'),
+  colorSkin: text('color_skin').notNull().default('default'),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull()
 });
 

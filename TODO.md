@@ -19,3 +19,4 @@ Gunakan tanda `[x]` jika selesai, `[/]` jika sedang dikerjakan, dan `[ ]` jika b
 - [x] Pembuatan IAM Console
 - [x] Active Identity Matrix
 - [x] Mandate & Delegasi
+- [x] Audit Logbook Dashboard

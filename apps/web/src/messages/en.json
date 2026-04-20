@@ -121,6 +121,15 @@
     "sourceLbl": "Source Target (Import)",
     "filterLbl": "Smart Filter",
     "targetLbl": "Forge Output (Export)",
-    "btnTempa": "EXECUTE FORGE"
+    "btnTempa": "EXECUTE FORGE",
+    "dropTitle": "Drop Corrupted Database Here",
+    "healerDesc": "Our Omni-Healer engine will scan for orphaned relations, broken UTF-8 encoding, missing commas in CSV, and illegal schema types, then automatically stitch them back.",
+    "btnRepair": "AUTO-REPAIR & WASH",
+    "btnRepairing": "SCANNING & REPAIRING...",
+    "forgeComplete": "Forge Complete",
+    "healedTitle": "Data Healed",
+    "serverDesc": "The operation was performed securely on the Next.js Server Instance. No mock data was used. Your operation hit the physical SQLite tables.",
+    "btnDownload": "DOWNLOAD FILE",
+    "btnAnother": "Perform Another Directive"
   }
 }

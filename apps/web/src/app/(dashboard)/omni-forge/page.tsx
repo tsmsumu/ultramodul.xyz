@@ -205,16 +205,16 @@ export default function OmniForgePage() {
                <div className="absolute inset-0 rounded-full border-r-2 border-red-500 animate-[spin_2s_linear_infinite]" />
                <Syringe className="w-10 h-10 text-red-500" />
              </div>
-             <h2 className="text-2xl font-black text-white mb-3">Drop Corrupted Database Here</h2>
+             <h2 className="text-2xl font-black text-white mb-3">{t("dropTitle")}</h2>
              <p className="text-zinc-400 max-w-lg mb-8">
-               Our Omni-Healer engine will scan for orphaned relations, broken UTF-8 encoding, missing commas in CSV, and illegal schema types, then automatically stitch them back.
+               {t("healerDesc")}
              </p>
              <button 
                onClick={executeForge}
                disabled={isProcessing}
                className="bg-emerald-600 hover:bg-emerald-500 text-white px-10 py-3 rounded-full font-bold uppercase tracking-widest text-sm transition-all shadow-[0_0_40px_rgba(16,185,129,0.3)]"
                >
-               {isProcessing ? 'SCANNING & REPAIRING...' : 'AUTO-REPAIR & WASH'}
+               {isProcessing ? t("btnRepairing") : t("btnRepair")}
              </button>
           </motion.div>
         )}
@@ -222,14 +222,14 @@ export default function OmniForgePage() {
         {/* ======================= */}
         {/* SUCCESS STATE           */}
         {/* ======================= */}
-        {finished && (
+         {finished && (
           <motion.div key="success" initial={{ opacity:0, scale:0.9 }} animate={{ opacity:1, scale:1 }} className="bg-emerald-950/20 border border-emerald-500/30 p-16 rounded-3xl text-center">
              <CheckCircle2 className="w-24 h-24 text-emerald-500 mx-auto mb-6" />
              <h2 className="text-3xl font-black text-white uppercase tracking-widest mb-4">
-               {activeTab === 'convert' ? 'Forge Complete' : 'Data Healed'}
+               {activeTab === 'convert' ? t("forgeComplete") : t("healedTitle")}
              </h2>
              <p className="text-emerald-400/80 mb-8 max-w-md mx-auto">
-               The operation was performed securely on the Next.js Server Wasm Instance. No mock data was used. Your operation hit the physical SQLite tables.
+               {t("serverDesc")}
              </p>
              <div className="flex justify-center gap-4">
                {activeTab === 'convert' && convertedData && (
@@ -237,14 +237,14 @@ export default function OmniForgePage() {
                    onClick={handleDownload}
                    className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-3 rounded-full font-bold uppercase tracking-widest text-sm transition-all"
                  >
-                   <Download className="w-4 h-4" /> DOWNLOAD FILE
+                   <Download className="w-4 h-4" /> {t("btnDownload")}
                  </button>
                )}
                <button 
                  onClick={() => setFinished(false)}
                  className="bg-[#0a0a0c] border border-emerald-500/50 hover:bg-emerald-900/30 text-emerald-400 px-8 py-3 rounded-full font-bold uppercase tracking-widest text-sm transition-all"
                >
-                 Perform Another Directive
+                 {t("btnAnother")}
                </button>
              </div>
           </motion.div>

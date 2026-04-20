@@ -121,6 +121,15 @@
     "sourceLbl": "Sumber Target (Impor)",
     "filterLbl": "Penyaring Cerdas",
     "targetLbl": "Hasil Tempa (Ekspor)",
-    "btnTempa": "EKSUSI TEMPA"
+    "btnTempa": "EKSEKUSI TEMPA",
+    "dropTitle": "Lepaskan Database Rusak di Sini",
+    "healerDesc": "Mesin Healer kami akan memindai relasi tak berinduk, anomali UTF-8, CSV yang retak teksnya, dan mengelas kembali barisannya secara absolut.",
+    "btnRepair": "OTOMATIS REPARASI & CUCI BERSIH",
+    "btnRepairing": "MEMINDAI & MENYEMBUHKAN...",
+    "forgeComplete": "Penempaan Selesai",
+    "healedTitle": "Sistem Sembuh Seutuhnya",
+    "serverDesc": "Operasi dilakukan dengan kemanan tingkat militer di dalam mesin Ingesti Node.js Pusat. Tidak ada lagi simulasi, perintah Anda menggetarkan kabel tabel server SQLite murni.",
+    "btnDownload": "UNDUH BERKAS FISIK",
+    "btnAnother": "Beri Aba-Aba Baru"
   }
 }

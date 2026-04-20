@@ -71,4 +71,9 @@ Jika ada perintah perancangan modul penarikan data (*Export*) atau pemasukan dat
     *   `JSON`
     *   `TXT`
 
+## 10. Hukum Kecerdasan Udara Tertutup (Local Query-LLM)
+*   Dilarang keras menanamkan *Prompting* ke server AI Eksternal (seperti OpenAI ChatGPT, Claude, atau Gemini API) untuk mengeksekusi data tabel/database milik sistem.
+*   AI yang diizinkan tertanam (*embedded*) di dalam PUM UltraModul haruslah berjenis **LLM Lite On-Premise (Local SLM)** seperti model Qwen 3B (berformat terkompresi ~4GB) yang sanggup menelan instruksi Bahasa Indonesia.
+*   **Fungsi Absolut LLM Lite:** Bertindak sebagai *Database Router* atau penterjemah pikiran manusia menjadi perintah mesin (**Text-to-SQL/Text-to-Query**). Tujuannya murni untuk mencari/menggali data secara interaktif tanpa menyentuh *cloud* pihak ketiga.
+
 **Amnesia Prevention Active: TRUE**

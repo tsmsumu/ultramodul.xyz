@@ -42,6 +42,15 @@
     "desc": "Manajemen terpusat seluruh otoritas pengguna dalam satu konsol. Semua manuver terpantau mesin Panopticon.",
     "addBtn": "Tambah Identitas",
     "ztTitle": "Zona Zero-Trust Aktif",
-    "ztDesc": "Segala mutasi tingkat dewa pada konsol ini dikunci secara permanen berlapis Kriptografi pada Audit Log."
+    "ztDesc": "Semua perubahan otorisasi di console ini akan dicangkokkan secara permanen ke dalam buku besar Audit Log."
+  },
+  "testbus": {
+    "alertSignal": "Sinyal Bahaya dari Modul Saraf! (Contoh Inter-Komunikasi)",
+    "pageTitle": "Pusat Uji Saraf Nirkabel",
+    "pageSubtitle": "Modul Dummy (Modul A) Mengirim Data ke Header (Modul B)",
+    "mfConcept": "Konsep Micro-Frontend (Event Bus):",
+    "mfDesc": "Halaman ini sama sekali tidak mengimpor kode `Header`. Namun jika Anda memencet tombol di bawah, Lonceng di sudut kanan atas seluruh aplikasi akan berdentang. Modul ini terdaftar secara gaib via <strong>Module Registry</strong>.",
+    "inputPlaceholder": "Ketik rahasia intelijen yang ingin dilempar lintas modul...",
+    "fireSignalBtn": "Tembakkan Sinyal ke Header (Pub/Sub)"
   }
 }

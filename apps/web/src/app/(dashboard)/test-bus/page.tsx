@@ -3,12 +3,14 @@
 import { EventBus, EVENTS } from "@/core/event-bus";
 import { ActivitySquare, Zap } from "lucide-react";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 export default function TestBusPage() {
+  const t = useTranslations("testbus");
   const [typedMsg, setTypedMsg] = useState("");
 
   const triggerGlobalEvent = () => {
-    EventBus.publish(EVENTS.NOTIFICATION_ALERT, typedMsg || "Sinyal Bahaya dari Modul Saraf! (Contoh Inter-Komunikasi)");
+    EventBus.publish(EVENTS.NOTIFICATION_ALERT, typedMsg || t("alertSignal"));
     setTypedMsg("");
   };
 
@@ -20,16 +22,14 @@ export default function TestBusPage() {
             <ActivitySquare className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
           </div>
           <div>
-            <h1 className="text-2xl font-black">Pusat Uji Saraf Nirkabel</h1>
-            <p className="text-gray-500">Modul Dummy (Modul A) Mengirim Data ke Header (Modul B)</p>
+            <h1 className="text-2xl font-black">{t("pageTitle")}</h1>
+            <p className="text-gray-500">{t("pageSubtitle")}</p>
           </div>
         </div>
 
         <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-900/30 p-5 rounded-2xl mb-8">
-          <p className="text-sm font-medium text-amber-800 dark:text-amber-500 mb-2">Konsep Micro-Frontend (Event Bus):</p>
-          <p className="text-xs text-amber-700/80 dark:text-amber-500/70">
-            Halaman ini sama sekali tidak mengimpor kode `Header`. Namun jika Anda memencet tombol di bawah, Lonceng di sudut kanan atas seluruh aplikasi akan berdentang. Modul ini terdaftar secara gaib via <strong>Module Registry</strong>.
-          </p>
+          <p className="text-sm font-medium text-amber-800 dark:text-amber-500 mb-2">{t("mfConcept")}</p>
+          <p className="text-xs text-amber-700/80 dark:text-amber-500/70" dangerouslySetInnerHTML={{__html: t("mfDesc")}} />
         </div>
 
         <div className="space-y-4">
@@ -37,7 +37,7 @@ export default function TestBusPage() {
             type="text"
             value={typedMsg}
             onChange={e => setTypedMsg(e.target.value)}
-            placeholder="Ketik rahasia intelijen yang ingin dilempar lintas modul..."
+            placeholder={t("inputPlaceholder")}
             className="w-full px-4 py-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
           />
           <button 
@@ -45,7 +45,7 @@ export default function TestBusPage() {
             className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold rounded-xl transition-all shadow-xl shadow-indigo-600/30 flex justify-center items-center gap-2"
           >
             <Zap className="w-5 h-5 fill-current" />
-            Tembakkan Sinyal ke Header (Pub/Sub)
+            {t("fireSignalBtn")}
           </button>
         </div>
       </div>

@@ -43,5 +43,14 @@
     "addBtn": "Add Identity",
     "ztTitle": "Zero-Trust Zone Active",
     "ztDesc": "All authorization changes in this console will be permanently recorded into the Audit Log ledger."
+  },
+  "testbus": {
+    "alertSignal": "Danger signal from Nerve Module! (Inter-Communication Example)",
+    "pageTitle": "Wireless Nerve Test Center",
+    "pageSubtitle": "Dummy Module (Module A) Sending Data to Header (Module B)",
+    "mfConcept": "Micro-Frontend Concept (Event Bus):",
+    "mfDesc": "This page absolutely does NOT import `Header` code. However, if you press the button below, the Bell in the top right corner of the entire app will chime. This module is registered invisibly via the <strong>Module Registry</strong>.",
+    "inputPlaceholder": "Type intelligence secret to throw across modules...",
+    "fireSignalBtn": "Fire Signal to Header (Pub/Sub)"
   }
 }

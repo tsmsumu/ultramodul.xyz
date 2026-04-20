@@ -47,9 +47,25 @@ export default function Home() {
         <h1 className="text-4xl font-bold tracking-tight sm:text-6xl mb-6">
           {t("home.welcome")}
         </h1>
-        <p className="text-xl text-neutral-500 dark:text-neutral-400">
+        <p className="text-xl text-neutral-500 dark:text-neutral-400 mb-12">
           {t("home.subtitle")}
         </p>
+        
+        <div className="flex justify-center flex-col sm:flex-row gap-4">
+          <button 
+            onClick={() => window.location.href = '/auth'}
+            className="px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold tracking-widest uppercase rounded-xl transition shadow-[0_0_20px_rgba(16,185,129,0.3)] shadow-emerald-500/50"
+          >
+            Enter Gateway
+          </button>
+          
+          <button 
+            onClick={() => window.location.href = '/register'}
+            className="px-8 py-4 bg-transparent border-2 border-emerald-600/30 hover:border-emerald-500 text-emerald-500 hover:text-emerald-400 font-bold tracking-widest uppercase rounded-xl transition"
+          >
+            Request Access
+          </button>
+        </div>
       </div>
     </main>
   );

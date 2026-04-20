@@ -6,6 +6,7 @@ import "@xyflow/react/dist/style.css";
 import { DatabaseNode } from "./nodes/database-node";
 import { FileNode } from "./nodes/file-node";
 import { MetadataNode } from "./nodes/metadata-node";
+import { SmartEdge } from "./edges/smart-edge";
 import { TailorPanel } from "./tailor-panel";
 
 // Register Custom Nodes Definition
@@ -13,6 +14,10 @@ const nodeTypes = {
   database: DatabaseNode,
   file: FileNode,
   metadata: MetadataNode,
+};
+
+const edgeTypes = {
+  smartEdge: SmartEdge,
 };
 
 const initialNodes: Node[] = [
@@ -37,7 +42,7 @@ export function TailorCanvas() {
   );
 
   const onConnect = useCallback(
-    (params: Connection) => setEdges((eds) => addEdge({ ...params, animated: true, style: { stroke: '#4f46e5', strokeWidth: 2 } }, eds)),
+    (params: Connection) => setEdges((eds) => addEdge({ ...params, type: 'smartEdge', animated: true, style: { stroke: '#4f46e5', strokeWidth: 3 } }, eds)),
     []
   );
 
@@ -61,6 +66,7 @@ export function TailorCanvas() {
            onEdgesChange={onEdgesChange}
            onConnect={onConnect}
            nodeTypes={nodeTypes}
+           edgeTypes={edgeTypes}
            fitView
            className="dark:bg-[#0a0a0c]"
          >

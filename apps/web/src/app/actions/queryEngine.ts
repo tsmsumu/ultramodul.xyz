@@ -23,7 +23,19 @@ export async function executeRawNexusQuery(query: string) {
       metadata: { query }
     });
 
-    return { success: true, data: result.rows };
+    // LibSQL rows are custom classes containing both index and keys. 
+    // Next.js Server Actions STRIP custom classes! We MUST convert it to a pristine JSON Array of Objects!
+    const plainRows = result.rows.map((row: any) => {
+      const obj: Record<string, any> = {};
+      for (const k of Object.keys(row)) {
+        if (isNaN(Number(k))) { // Only take column names, ignore numeric indices
+          obj[k] = row[k];
+        }
+      }
+      return obj;
+    });
+
+    return { success: true, data: plainRows };
   } catch (err: any) {
     return { success: false, error: err.message || "Failed to execute query", data: [] };
   }

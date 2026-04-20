@@ -4,7 +4,7 @@
  * didaftarkan di sini agar diakui oleh IAM (Matriks) dan Menu Sidebar.
  */
 
-import { LayoutDashboard, Shield, Key, Users, BookOpen, ActivitySquare } from "lucide-react";
+import { LayoutDashboard, Shield, Key, Users, BookOpen, ActivitySquare, GitMerge } from "lucide-react";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
 
 export interface OmniModule {
@@ -60,6 +60,15 @@ export const ModuleRegistry: OmniModule[] = [
     name: "Uji Saraf Ping",
     path: "/test-bus",
     icon: ActivitySquare,
+    isCore: false
+  },
+
+  // --- BUSINESS MODULES ---
+  {
+    id: "PUM Data Tailor",
+    name: "PUM Tailor (BETA)",
+    path: "/tailor",
+    icon: GitMerge,
     isCore: false
   }
 ];

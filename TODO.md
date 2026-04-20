@@ -21,6 +21,7 @@ Gunakan tanda `[x]` jika selesai, `[/]` jika sedang dikerjakan, dan `[ ]` jika b
 - [x] Mandate & Delegasi
 - [x] Audit Logbook Dashboard
 - [x] Template/Skin Engine (Kustomisasi Per-User)
-- [x] Granular Matrix Hak Akses Mikro (View/Modify/Print/Export)
 - [x] Otorisasi Hibrida (Grup + User) & Navigasi Gaib
 - [x] The Apex Omega Core (Passkeys, JIT, Maker-Checker, Geofencing)
+- [x] Omni-Data ETL Hub (Advanced Search & Multi-Format Bulk Export)
+- [x] Omni-Module Registry & Event Bus (Micro-Frontend Comm)

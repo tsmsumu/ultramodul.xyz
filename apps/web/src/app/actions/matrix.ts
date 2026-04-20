@@ -1,6 +1,6 @@
 "use server";
 
-import { db, accessMatrix, users } from "@ultra/db";
+import { db, accessMatrix, roleMatrix, users } from "@ultra/db";
 import { createAuditLog } from "@ultra/db/src/logger";
 import { and, eq } from "@ultra/db";
 import { randomUUID } from "crypto";
@@ -11,6 +11,35 @@ export async function getUserMatrix(userId: string) {
   } catch (error) {
     console.error("Failed to fetch matrix", error);
     return [];
+  }
+}
+
+export async function getResolvedPermissions(userId: string | null) {
+  try {
+    if (!userId) return {}; // Kosong jika belum ada user mock
+    const userAcc = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+    if (!userAcc.length) return {};
+
+    const userObj = userAcc[0];
+    const roleBase = await db.select().from(roleMatrix).where(eq(roleMatrix.roleName, userObj.role));
+    const userOverrides = await db.select().from(accessMatrix).where(eq(accessMatrix.userId, userId));
+
+    const finalMtx: Record<string, string[]> = {};
+
+    // Base Role injection
+    roleBase.forEach((rb: any) => {
+      try { finalMtx[rb.moduleName] = JSON.parse(rb.permissions); } catch(e){}
+    });
+
+    // Custom Overrides win unconditionally
+    userOverrides.forEach((uo: any) => {
+      try { finalMtx[uo.moduleName] = JSON.parse(uo.permissions); } catch(e){}
+    });
+
+    return finalMtx;
+  } catch (error) {
+    console.error("Resolve matrix fail", error);
+    return {};
   }
 }
 

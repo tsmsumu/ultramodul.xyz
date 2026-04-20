@@ -13,10 +13,11 @@ const MODULES = [
 ];
 
 const PERMISSIONS = [
-  { id: "VIEW", label: "Lihat (View)", color: "text-blue-500" },
-  { id: "MODIFY", label: "Ubah (Modify)", color: "text-amber-500" },
-  { id: "PRINT", label: "Cetak (Print)", color: "text-emerald-500" },
-  { id: "EXPORT", label: "Unduh (Export)", color: "text-purple-500" }
+  { id: "VIEW", label: "View (Lihat)", color: "text-blue-500" },
+  { id: "MODIFY", label: "Modify (Ubah)", color: "text-amber-500" },
+  { id: "UPLOAD", label: "Upload (Unggah)", color: "text-orange-500" },
+  { id: "PRINT", label: "Print (Cetak)", color: "text-emerald-500" },
+  { id: "EXPORT", label: "Export (Unduh)", color: "text-purple-500" }
 ];
 
 export function MatrixDrawer({ 

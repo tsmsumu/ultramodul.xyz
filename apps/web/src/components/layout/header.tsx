@@ -1,10 +1,28 @@
 "use client";
 
-import { Menu, Search, User } from "lucide-react";
+import { Menu, Search, User, LogOut } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useState, useEffect } from "react";
+import { fetchSandboxUsers, impersonateUser, clearImpersonation } from "@/app/actions/auth";
 
-export function Header({ toggleSidebar }: { toggleSidebar: () => void }) {
+export function Header({ toggleSidebar, activeUserId }: { toggleSidebar: () => void, activeUserId: string | null }) {
   const t = useTranslations("home");
+  const [users, setUsers] = useState<any[]>([]);
+  const [showSandbox, setShowSandbox] = useState(false);
+
+  useEffect(() => {
+    fetchSandboxUsers().then(setUsers);
+  }, []);
+
+  const handleImpersonate = async (id: string) => {
+    await impersonateUser(id);
+    window.location.reload();
+  };
+
+  const handleClear = async () => {
+    await clearImpersonation();
+    window.location.reload();
+  };
 
   return (
     <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-white/70 dark:bg-[#09090b]/80 border-b border-gray-200 dark:border-white/10 flex items-center justify-between px-4 h-16">
@@ -29,8 +47,45 @@ export function Header({ toggleSidebar }: { toggleSidebar: () => void }) {
             className="pl-9 pr-4 py-1.5 text-sm bg-gray-100 dark:bg-white/5 border border-transparent dark:border-white/10 rounded-full focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all w-64"
           />
         </div>
-        <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white cursor-pointer hover:ring-2 hover:ring-blue-400 transition-all">
-          <User className="w-4 h-4" />
+        <div className="relative">
+          <button 
+            onClick={() => setShowSandbox(!showSandbox)}
+            title={activeUserId ? "Sandbox Aktif" : "Auth Sandbox Mode"}
+            className={`w-8 h-8 rounded-full flex items-center justify-center text-white cursor-pointer transition-all border-2 
+              ${activeUserId ? "bg-red-500 border-red-300 animate-pulse" : "bg-indigo-600 border-transparent hover:ring-2 hover:ring-indigo-400"}
+            `}
+          >
+            <User className="w-4 h-4" />
+          </button>
+          
+          {/* SANDBOX DROPDOWN */}
+          {showSandbox && (
+            <div className="absolute top-10 right-0 w-64 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-white/10 shadow-xl rounded-xl p-2 z-50">
+               <div className="px-3 py-2 border-b border-gray-100 dark:border-white/10 mb-2 font-mono text-[10px] text-gray-400 uppercase tracking-wider">
+                 Test Sandbox (Impersonation)
+               </div>
+               
+               {activeUserId && (
+                 <button onClick={handleClear} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md mb-2">
+                   <LogOut className="w-3 h-3" /> Cabut Impersonasi (Balik ke Master/Dewa)
+                 </button>
+               )}
+
+               <div className="max-h-40 overflow-y-auto space-y-1">
+                 {users.map(u => (
+                   <button 
+                     key={u.id} 
+                     onClick={() => handleImpersonate(u.id)}
+                     className={`w-full text-left px-3 py-2 text-xs rounded-md truncate
+                       ${activeUserId === u.id ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 font-bold' : 'hover:bg-gray-100 dark:hover:bg-zinc-800'}
+                     `}
+                   >
+                     {u.name} <span className="opacity-50 ml-1">({u.role})</span>
+                   </button>
+                 ))}
+               </div>
+            </div>
+          )}
         </div>
       </div>
     </header>

@@ -26,9 +26,16 @@ export const accessMatrix = sqliteTable('access_matrix', {
   id: text('id').primaryKey(),
   userId: text('user_id').notNull(), // Relates to users.id
   moduleName: text('module_name').notNull(), // e.g. "KEUANGAN", "PEGAWAI"
-  permissions: text('permissions').notNull().default('[]'), // JSON Array: ["VIEW", "MODIFY", "PRINT", "EXPORT"]
+  permissions: text('permissions').notNull().default('[]'), // JSON Array: ["VIEW", "MODIFY", "PRINT", "EXPORT", "UPLOAD"]
   grantedBy: text('granted_by').notNull(), // The Admin who granted this
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull()
+});
+
+export const roleMatrix = sqliteTable('role_matrix', {
+  id: text('id').primaryKey(),
+  roleName: text('role_name').notNull(), // 'admin', 'user', 'viewer'
+  moduleName: text('module_name').notNull(), // e.g. "Keuangan", "IAM Console"
+  permissions: text('permissions').notNull().default('[]'), // JSON Array default per module
 });
 
 export const mandates = sqliteTable('mandates', {

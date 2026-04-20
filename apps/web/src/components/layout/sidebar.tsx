@@ -6,15 +6,21 @@ import NextLink from "next/link";
 import { usePathname } from "next/navigation";
 
 const menuItems = [
-  { name: "Command Center", icon: LayoutDashboard, href: "/dashboard" },
-  { name: "IAM Console", icon: Shield, href: "/iam" },
-  { name: "Active Identity", icon: Users, href: "/identity" },
-  { name: "Access Matrix", icon: Key, href: "/access" },
-  { name: "Audit Logbook", icon: BookOpen, href: "/logbook" },
+  { name: "Command Center", icon: LayoutDashboard, href: "/dashboard", moduleName: "Dashboard" },
+  { name: "IAM Console", icon: Shield, href: "/iam", moduleName: "IAM Console" },
+  { name: "Delegasi Mandat", icon: Key, href: "/mandate", moduleName: "Keamanan Mandat" },
+  { name: "Active Identity", icon: Users, href: "/access", moduleName: "Active Identity Matrix" },
+  { name: "Audit Logbook", icon: BookOpen, href: "/logbook", moduleName: "Audit Logbook Intel" },
 ];
 
-export function Sidebar({ isOpen }: { isOpen: boolean }) {
+export function Sidebar({ isOpen, permissions }: { isOpen: boolean, permissions: Record<string, string[]> | null }) {
   const pathname = usePathname();
+
+  const canSee = (moduleName: string) => {
+    // Fallback: If no permissions bound (no logged in user active), show all menus for dev preview
+    if (!permissions) return true;
+    return permissions[moduleName]?.includes("VIEW");
+  };
 
   return (
     <aside 
@@ -24,6 +30,8 @@ export function Sidebar({ isOpen }: { isOpen: boolean }) {
     >
       <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
         {menuItems.map((item) => {
+          if (!canSee(item.moduleName)) return null; // GAIB LOGIC: Menu disappears entirely!
+
           const isActive = pathname?.startsWith(item.href);
           return (
             <NextLink

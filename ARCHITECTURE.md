@@ -27,4 +27,9 @@ Semua pekerjaan wajib diisolasi dengan ketat:
 *   `src/app/(dashboard)/` : Khusus pengaturan rute dan halaman statis.
 *   `src/lib/` : Khusus otak logika komputasi, analitik DuckDB, dan koneksi API.
 
+## 5. Hukum Mutlak Akses (The IAM Absolute Gatekeeper)
+*   **Sentralisasi Kehormatan:** Semua modul, halaman, fitur, dan *tools* (seperti PUM Nexus, Data Sanitizer, dll) **WAJIB** bermuara pada persetujuan modul *IAM (Identity & Access Management)*.
+*   **Zero Bypass:** Tidak boleh ada satu pun halaman atau kanvas yang dapat diakses jika hak aksesnya (Role Matrix / Access Matrix) belum dicentang hijau atau tidak ada di dalam *database* IAM.
+*   **Pemisahan Tugas:** Jika *User* hanya petugas Sanitizer, arahkan ke rute spesifik tanpa mencampurnya dengan akses tingkat *Engineer* (Zoning Menu). 
+
 **Amnesia Prevention Active: TRUE**

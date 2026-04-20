@@ -23,7 +23,8 @@
     "Saraf Interaktif": "Event Bus Test",
     "PUM Nexus Engine": "Nexus Engine (PNE)",
     "Data Sanitizer Pabrik": "Data Washing Station",
-    "Layanan Pengaduan": "Public Complaints"
+    "Layanan Pengaduan": "Public Complaints",
+    "Aegis Panopticon (DB)": "Aegis Panopticon (DB)"
   },
   "customizer": {
     "title": "Display Settings",
@@ -73,5 +74,16 @@
     "topicLabel": "Complaint Topic",
     "contentLabel": "Detailed Chronology",
     "submitBtn": "Send Official Report"
+  },
+  "maintenance": {
+    "title": "Aegis Database Panopticon",
+    "desc": "Ultra-secure bunker for 1-click database maintenance. DANGER: Extreme actions possible.",
+    "telemetry": "Live Vitals Telemetry",
+    "vacuumTitle": "Quantum Vacuum Engine",
+    "vacuumBtn": "Purge Dead Tuples",
+    "indexTitle": "Tachyon Index Rebuilder",
+    "indexBtn": "Rebuild Architecture",
+    "backupTitle": "Time-Machine Snapshot",
+    "backupBtn": "Flash-Dump Core Data"
   }
 }

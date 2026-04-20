@@ -4,7 +4,7 @@
  * didaftarkan di sini agar diakui oleh IAM (Matriks) dan Menu Sidebar.
  */
 
-import { LayoutDashboard, Shield, Key, Users, BookOpen, ActivitySquare, GitMerge } from "lucide-react";
+import { LayoutDashboard, Shield, Key, Users, BookOpen, ActivitySquare, GitMerge, ServerCog } from "lucide-react";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
 
 export interface OmniModule {
@@ -84,6 +84,13 @@ export const ModuleRegistry: OmniModule[] = [
     path: "/pengaduan",
     icon: ActivitySquare, // Will adapt icon as needed
     isCore: false
+  },
+  {
+    id: "Aegis Panopticon (DB)",
+    name: "Maintenance Panopticon",
+    path: "/maintenance",
+    icon: ServerCog,
+    isCore: true // Maintenance mutlak System Core
   }
 ];
 

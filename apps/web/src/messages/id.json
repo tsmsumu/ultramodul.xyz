@@ -23,7 +23,8 @@
     "Saraf Interaktif": "Uji Bus Event",
     "PUM Nexus Engine": "Mesin Nexus (PNE)",
     "Data Sanitizer Pabrik": "Mesin Cuci Data",
-    "Layanan Pengaduan": "Layanan Pengaduan"
+    "Layanan Pengaduan": "Layanan Pengaduan",
+    "Aegis Panopticon (DB)": "Aegis Panopticon (DB)"
   },
   "customizer": {
     "title": "Pengaturan Tampilan",
@@ -73,5 +74,16 @@
     "topicLabel": "Topik Aduan",
     "contentLabel": "Detail Kronologi",
     "submitBtn": "Kirim Laporan Resmi"
+  },
+  "maintenance": {
+    "title": "Aegis Database Panopticon",
+    "desc": "Bunker khusus untuk pemeliharaan database mutlak. DANGER: Zona ini memegang kendali inti server.",
+    "telemetry": "Telemetri Detak Nadi Live",
+    "vacuumTitle": "Mesin Vakum Kuadran",
+    "vacuumBtn": "Sedot Sampah Anomali",
+    "indexTitle": "Rekonstruktor Indeks Laju",
+    "indexBtn": "Rakit Ulang Sendi Akses",
+    "backupTitle": "Pencadangan Mesin Waktu",
+    "backupBtn": "Flash-Dump Titik Nol"
   }
 }

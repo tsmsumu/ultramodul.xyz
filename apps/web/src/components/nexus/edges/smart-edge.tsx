@@ -1,8 +1,8 @@
 "use client";
 
 import { BaseEdge, EdgeLabelRenderer, EdgeProps, getBezierPath, useReactFlow } from '@xyflow/react';
-import { Link, Check, Settings2, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { Link, Check, Settings2, Trash2, Cpu } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 export function SmartEdge({
   id,
@@ -14,13 +14,49 @@ export function SmartEdge({
   targetPosition,
   style = {},
   markerEnd,
+  source,
+  target,
 }: EdgeProps) {
-  const { setEdges } = useReactFlow();
+  const { setEdges, getNode } = useReactFlow();
   const [edgePath, labelX, labelY] = getBezierPath({
     sourceX, sourceY, sourcePosition, targetX, targetY, targetPosition,
   });
 
   const [isOpen, setIsOpen] = useState(false);
+  
+  // State Manual Override
+  const [joinType, setJoinType] = useState('LEFT JOIN');
+  const [leftCol, setLeftCol] = useState('');
+  const [rightCol, setRightCol] = useState('');
+  const [sourceCols, setSourceCols] = useState<any[]>([]);
+  const [targetCols, setTargetCols] = useState<any[]>([]);
+
+  // Neural Auto-Detect Logic (Mata Elang + Saraf Cerdas)
+  useEffect(() => {
+    if (isOpen) {
+      const sourceNode = getNode(source);
+      const targetNode = getNode(target);
+      
+      const sCols = sourceNode?.data?.schema || [];
+      const tCols = targetNode?.data?.schema || [];
+      
+      setSourceCols(sCols);
+      setTargetCols(tCols);
+
+      // Auto-detect kolom yang namanya sama
+      const commonCol = sCols.find((sc: any) => 
+        tCols.some((tc: any) => tc.column_name.toLowerCase() === sc.column_name.toLowerCase())
+      );
+
+      if (commonCol && !leftCol && !rightCol) {
+        setLeftCol(commonCol.column_name);
+        setRightCol(commonCol.column_name);
+      } else if (sCols.length > 0 && tCols.length > 0 && !leftCol && !rightCol) {
+        setLeftCol(sCols[0].column_name);
+        setRightCol(tCols[0].column_name);
+      }
+    }
+  }, [isOpen, source, target, getNode]);
 
   const onEdgeClick = (evt: React.MouseEvent) => {
     evt.stopPropagation();
@@ -54,16 +90,52 @@ export function SmartEdge({
 
            {/* Kaca Panel Pintar (Muncul Saat Kabel Diklik) */}
            {isOpen && (
-             <div className="absolute top-10 w-64 bg-white/90 dark:bg-[#0a0a0c]/95 backdrop-blur-xl border border-gray-200 dark:border-white/10 rounded-2xl shadow-2xl p-4 overflow-hidden animate-in zoom-in-95 duration-200">
-                <div className="flex justify-between items-center mb-3">
-                   <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-xs"><Settings2 className="w-3 h-3"/> AUTO-JOIN SUGGESTION</div>
-                   <button onClick={onEdgeDelete} className="text-red-500 hover:text-red-700 bg-red-50 dark:bg-red-900/20 p-1.5 rounded-full transition"><Trash2 className="w-3 h-3"/></button>
-                </div>
+               <div className="absolute top-10 w-72 bg-white/95 dark:bg-[#0a0a0c]/98 backdrop-blur-2xl border border-blue-500/30 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] p-4 overflow-hidden animate-in zoom-in-95 duration-200 z-[60]">
+                  <div className="flex justify-between items-center mb-3">
+                     <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-[11px] uppercase tracking-wider">
+                       <Cpu className="w-3 h-3"/> Neural Joiner (PNE)
+                     </div>
+                     <button onClick={onEdgeDelete} className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 p-1 rounded transition"><Trash2 className="w-3 h-3"/></button>
+                  </div>
 
-                <div className="bg-indigo-50 dark:bg-indigo-900/10 border border-indigo-100 dark:border-indigo-900/30 p-2 rounded-lg text-xs mb-3 text-indigo-800 dark:text-indigo-300">
-                  <p className="font-semibold mb-1">Analyzing common columns...</p>
-                  <p className="text-[10px] opacity-80">( DuckDB Simulation: 'NIK' column detected in both nodes. Using INNER JOIN )</p>
-                </div>
+                  {leftCol === rightCol && leftCol !== '' ? (
+                    <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 p-2 rounded-lg text-[10px] mb-3 text-emerald-800 dark:text-emerald-300">
+                      <p className="font-bold flex items-center gap-1">✨ MATA ELANG AKTIF</p>
+                      <p className="opacity-90 mt-1">Sistem otomatis mendeteksi kolom yang sama: <strong className="font-mono bg-emerald-100 dark:bg-emerald-800 px-1 rounded">{leftCol}</strong></p>
+                    </div>
+                  ) : null}
+
+                  {/* FORM MANUAL OVERRIDE (Sesuai Permintaan Bapak) */}
+                  <div className="flex flex-col gap-3 mb-4">
+                     <div className="flex flex-col gap-1">
+                       <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Metode Relasi (Join Type)</label>
+                       <select value={joinType} onChange={e => setJoinType(e.target.value)} className="text-xs p-1.5 bg-gray-50 dark:bg-black border border-gray-200 dark:border-white/10 rounded-md focus:outline-none focus:border-indigo-500 font-mono">
+                         <option value="LEFT JOIN">LEFT JOIN</option>
+                         <option value="INNER JOIN">INNER JOIN</option>
+                         <option value="RIGHT JOIN">RIGHT JOIN</option>
+                         <option value="FULL OUTER JOIN">FULL OUTER JOIN</option>
+                       </select>
+                     </div>
+                     
+                     <div className="grid grid-cols-2 gap-2 relative">
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-white dark:bg-[#111113] border border-gray-200 dark:border-white/10 rounded-full flex items-center justify-center z-10 text-[8px] font-bold text-gray-500">=</div >
+                        
+                        <div className="flex flex-col gap-1">
+                          <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest truncate">A (Target Kiri)</label>
+                          <select value={leftCol} onChange={e => setLeftCol(e.target.value)} className="text-[10px] p-1.5 bg-gray-50 dark:bg-black border border-gray-200 dark:border-white/10 rounded-md focus:outline-none focus:border-indigo-500 font-mono truncate">
+                            <option value="">-- Pilih --</option>
+                            {sourceCols.map((c:any) => <option key={c.column_name} value={c.column_name}>{c.column_name}</option>)}
+                          </select>
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest truncate">B (Target Kanan)</label>
+                          <select value={rightCol} onChange={e => setRightCol(e.target.value)} className="text-[10px] p-1.5 bg-gray-50 dark:bg-black border border-gray-200 dark:border-white/10 rounded-md focus:outline-none focus:border-indigo-500 font-mono truncate">
+                            <option value="">-- Pilih --</option>
+                            {targetCols.map((c:any) => <option key={c.column_name} value={c.column_name}>{c.column_name}</option>)}
+                          </select>
+                        </div>
+                     </div>
+                  </div>
 
                 <button 
                   onClick={() => setIsOpen(false)}

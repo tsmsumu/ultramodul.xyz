@@ -2,7 +2,7 @@ import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 
 export const users = sqliteTable('users', {
   id: text('id').primaryKey(),
-  nik: text('nik').unique().notNull(), // As requested in past projects
+  username: text('username').unique().notNull(), // Universal SSO ID / Business Identity Code
   name: text('name').notNull(),
   role: text('role').notNull().default('user'),
   status: text('status').notNull().default('active'),
@@ -117,7 +117,7 @@ export const nexusBlueprints = sqliteTable('nexus_blueprints', {
 // Member Public Facing Feature
 export const pengaduanPublik = sqliteTable('pengaduan_publik', {
   id: text('id').primaryKey(), // UUID laporan
-  reporterNik: text('reporter_nik').notNull(), // Mengikat aduan ke NIK (Bukan anonim)
+  reporterId: text('reporter_id').notNull(), // Mengikat aduan ke ID Universal (Bukan anonim)
   topic: text('topic').notNull(), // Kategori laporan (Infrastruktur, Pelayanan, dll)
   content: text('content').notNull(), // Isi detail pengaduan
   channelSource: text('channel_source').notNull().default('WEB_PORTAL'), // Future-proof: WEB_PORTAL, WHATSAPP_API, TELEGRAM

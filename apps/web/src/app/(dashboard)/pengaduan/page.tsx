@@ -39,7 +39,7 @@ export default function PengaduanPage() {
             </div>
             <h3 className="text-xl font-bold text-emerald-800 dark:text-emerald-400 mb-2">Laporan Berhasil Masuk!</h3>
             <p className="text-emerald-600 dark:text-emerald-500/80 text-sm max-w-md">
-              Tiket pengaduan Anda mengikat pada NIK secara paten dan telah dikirim ke Multi-Channel Gateway. Pantau terus statusnya.
+              Tiket pengaduan Anda mengikat pada ID Universal secara paten dan telah dikirim ke Multi-Channel Gateway. Pantau terus statusnya.
             </p>
             <button 
               onClick={() => setSubmitted(false)}

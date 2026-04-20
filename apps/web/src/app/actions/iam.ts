@@ -13,7 +13,7 @@ export async function getUsers() {
   }
 }
 
-export async function createIdentity(data: { nik: string; name: string; role: string; plainPassword?: string }) {
+export async function createIdentity(data: { username: string; name: string; role: string; plainPassword?: string }) {
   try {
     const newId = randomUUID();
     let passwordHash = null;
@@ -23,7 +23,7 @@ export async function createIdentity(data: { nik: string; name: string; role: st
 
     await db.insert(users).values({
       id: newId,
-      nik: data.nik,
+      username: data.username,
       name: data.name,
       role: data.role,
       status: "active",
@@ -35,11 +35,11 @@ export async function createIdentity(data: { nik: string; name: string; role: st
     await createAuditLog({
       action: "CREATE_IDENTITY",
       actorId: "SYSTEM", // Placeholder for actual logged-in user
-      target: data.nik,
+      target: data.username,
       metadata: { role: data.role, origin: "IAM Console" }
     });
 
-    return { success: true, message: `Identity ${data.nik} created.` };
+    return { success: true, message: `Identity ${data.username} created.` };
   } catch (error) {
     console.error("Creation failed", error);
     return { success: false, message: "Transaction failed." };

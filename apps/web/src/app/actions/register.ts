@@ -17,22 +17,22 @@ function isValidIdentityFormat(identityStr: string): boolean {
 
 export async function registerPublicMember(formData: FormData) {
   try {
-    const nik = formData.get("nik") as string; // Kolom di DB saat ini bernama 'nik', kita set sebagai 'Identity Code'
+    const ssoId = formData.get("username") as string; 
     const name = formData.get("name") as string;
     const plainPassword = formData.get("password") as string;
 
-    if (!nik || !name || !plainPassword) {
+    if (!ssoId || !name || !plainPassword) {
       return { success: false, message: "Semua kolom merah wajib diisi." };
     }
 
     // Cek duplikasi Identity Code
-    const existing = await db.select().from(users).where(eq(users.nik, nik)).get();
+    const existing = await db.select().from(users).where(eq(users.username, ssoId)).get();
     if (existing) {
       return { success: false, message: "Peringatan: ID Universal ini sudah terdaftar dalam radar sistem!" };
     }
 
     // EKSEKUSI MESIN VERVAL UNIVERSAL
-    const isValid = isValidIdentityFormat(nik);
+    const isValid = isValidIdentityFormat(ssoId);
     const assignedStatus = isValid ? "active" : "pending";
 
     // Hash Kriptografi Password
@@ -42,7 +42,7 @@ export async function registerPublicMember(formData: FormData) {
     // Injeksi ke Database Utama (Zero-Redundancy)
     await db.insert(users).values({
       id: newId,
-      nik,
+      username: ssoId,
       name,
       role: "member", // Kuncian takhta Publik
       branchCode: "PUBLIC",

@@ -65,7 +65,7 @@ export default function RegisterPage() {
             <div>
               <label className="block text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1.5">{t("nikLabel")}</label>
               <input 
-                name="nik" 
+                name="username" 
                 required 
                 maxLength={30}
                 placeholder={t("nikPlaceholder")}

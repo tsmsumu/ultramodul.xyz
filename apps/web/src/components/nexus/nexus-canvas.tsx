@@ -8,6 +8,7 @@ import Link from "next/link";
 import { DatabaseNode } from "./nodes/database-node";
 import { FileNode } from "./nodes/file-node";
 import { MetadataNode } from "./nodes/metadata-node";
+import { PublishNode } from "./nodes/publish-node";
 import { SmartEdge } from "./edges/smart-edge";
 import { NexusPanel } from "./nexus-panel";
 import { HologramTerminal } from "./hologram-terminal";
@@ -17,6 +18,7 @@ const nodeTypes = {
   database: DatabaseNode,
   file: FileNode,
   metadata: MetadataNode,
+  publish: PublishNode
 };
 
 const edgeTypes = {
@@ -44,14 +46,45 @@ export function NexusCanvas() {
     setActiveTable(tableName); // Langsung otomatis buka terminal untuk melihat suksesnya
   }, []);
 
+  const onNodeClick = useCallback((_: React.MouseEvent, node: Node) => {
+    const data = node.data as { tableName?: string };
+    if (data.tableName) {
+      setActiveTable(data.tableName);
+    } else {
+      setActiveTable(null); // Tutup terminal jika node tak punya tabel
+    }
+  }, []);
+
+  const addNode = useCallback((type: string, payload: any, x?: number, y?: number) => {
+     const newNode: Node = {
+       id: `node_${nodes.length + 1}_${Date.now()}`,
+       type,
+       position: { x: x ?? 350, y: y ?? (150 + (nodes.length * 50)) },
+       data: { ...payload, onFileIngested }
+     };
+     setNodes((nds) => [...nds, newNode]);
+  }, [nodes.length, onFileIngested]);
+
   // Mendengarkan siaran sakti dari Tali Saraf saat Join Selesai
   useEffect(() => {
     const handleJoinEvent = (e: any) => {
-      setActiveTable(e.detail); // Tancapkan Hologram Terminal
+      const payload = e.detail;
+      if (typeof payload === 'object') {
+        setActiveTable(payload.tableName); 
+        // SPAWN VIRTUAL NODE RESULT SECARA OTOMATIS!
+        addNode('database', { 
+            label: "Virtual View", 
+            dbName: payload.tableName,
+            isVirtual: true,
+            sqlQuery: payload.sqlQuery
+        }, payload.sourceX, payload.sourceY);
+      } else {
+        setActiveTable(payload);
+      }
     };
     window.addEventListener('NEXUS_TABLE_JOINED', handleJoinEvent);
     return () => window.removeEventListener('NEXUS_TABLE_JOINED', handleJoinEvent);
-  }, []);
+  }, [addNode]);
 
   const onNodesChange = useCallback(
     (changes: any) => setNodes((nds) => applyNodeChanges(changes, nds)),
@@ -67,25 +100,6 @@ export function NexusCanvas() {
     (params: Connection) => setEdges((eds) => addEdge({ ...params, type: 'smartEdge', animated: true, style: { stroke: '#4f46e5', strokeWidth: 3 } }, eds)),
     []
   );
-
-  const onNodeClick = useCallback((_: React.MouseEvent, node: Node) => {
-    const data = node.data as { tableName?: string };
-    if (data.tableName) {
-      setActiveTable(data.tableName);
-    } else {
-      setActiveTable(null); // Tutup terminal jika node tak punya tabel
-    }
-  }, []);
-
-  const addNode = (type: string, payload: any) => {
-     const newNode: Node = {
-       id: `node_${nodes.length + 1}_${Date.now()}`,
-       type,
-       position: { x: 350, y: 150 + (nodes.length * 50) },
-       data: { ...payload, onFileIngested }
-     };
-     setNodes([...nodes, newNode]);
-  };
 
   return (
     <div className="w-full h-full relative bg-[#fafafa] dark:bg-[#09090b]">

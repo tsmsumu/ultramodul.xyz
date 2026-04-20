@@ -36,40 +36,6 @@ export function SmartEdge({
   // Neural Auto-Detect Logic (Mata Elang + Saraf Cerdas)
   useEffect(() => {
     if (isOpen) {
-      const sourceNode = getNode(source);
-      const targetNode = getNode(target);
-      
-      const sCols: any[] = (sourceNode?.data as any)?.schema || [];
-      const tCols: any[] = (targetNode?.data as any)?.schema || [];
-      
-      setSourceCols(sCols);
-      setTargetCols(tCols);
-
-      // Auto-detect kolom yang namanya sama
-      const commonCol = sCols.find((sc: any) => 
-        tCols.some((tc: any) => tc.column_name.toLowerCase() === sc.column_name.toLowerCase())
-      );
-
-      if (commonCol && !leftCol && !rightCol) {
-        setLeftCol(commonCol.column_name);
-        setRightCol(commonCol.column_name);
-      } else if (sCols.length > 0 && tCols.length > 0 && !leftCol && !rightCol) {
-        setLeftCol(sCols[0].column_name);
-        setRightCol(tCols[0].column_name);
-      }
-    }
-  }, [isOpen, source, target, getNode]);
-
-  const onEdgeClick = (evt: React.MouseEvent) => {
-    evt.stopPropagation();
-    setIsOpen(!isOpen);
-  };
-
-  const onEdgeDelete = (evt: React.MouseEvent) => {
-    evt.stopPropagation();
-    setEdges((edges) => edges.filter((e) => e.id !== id));
-  };
-
   const executeJoinLogic = async () => {
     if (!leftCol || !rightCol) return alert("Pilih kolom sumber dan target!");
     
@@ -86,17 +52,23 @@ export function SmartEdge({
         return;
       }
 
-      const joinedName = `joined_${id.replace(/[^a-zA-Z0-9]/g, '_')}`;
+      const hash = Math.floor(Math.random() * 10000);
+      const joinedName = `v_gabungan_${hash}`;
       
-      // RACIKAN KODE SQL DEWA 
-      // Karena gabungan akan mewarisi semua kolom, kita pakai SELECT *
-      // Di enterprise asli biasanya di-aliaskan jika kolom bentrok, namun DuckDB punya keajaiban.
       const sql = `CREATE OR REPLACE TABLE ${joinedName} AS SELECT * FROM ${sTable} ${joinType} ${tTable} ON ${sTable}.${leftCol} = ${tTable}.${rightCol};`;
       
       await duckEngine.executeRaw(sql);
 
       // Pancarkan Sinyal ke Kanvas Induk
-      const event = new CustomEvent('NEXUS_TABLE_JOINED', { detail: joinedName });
+      const event = new CustomEvent('NEXUS_TABLE_JOINED', { 
+        detail: { 
+          tableName: joinedName,
+          sqlQuery: sql,
+          sourceType: 'EDGE_JOIN',
+          sourceX: targetNode ? targetNode.position.x + 250 : sourceX + 200,
+          sourceY: targetNode ? targetNode.position.y : sourceY
+        } 
+      });
       window.dispatchEvent(event);
 
       setIsOpen(false);

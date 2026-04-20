@@ -1,6 +1,6 @@
 "use client";
 
-import { Database, FileSpreadsheet, PlusCircle, Link, Download, BookOpen, FileText } from "lucide-react";
+import { Database, FileSpreadsheet, PlusCircle, Link, Download, BookOpen, FileText, UploadCloud } from "lucide-react";
 
 export function NexusPanel({ onAddNode }: { onAddNode: (type: string, payload: any) => void }) {
   return (
@@ -63,6 +63,17 @@ export function NexusPanel({ onAddNode }: { onAddNode: (type: string, payload: a
               <PlusCircle className="w-3 h-3 opacity-50" />
             </button>
          </div>
+       </div>
+
+       <div className="mt-4">
+         <h3 className="font-bold text-xs tracking-wide text-gray-500 mb-2">5. THE ENDGAME</h3>
+         <button 
+           onClick={() => onAddNode('publish', {})}
+           className="w-full px-3 py-2 bg-yellow-50 dark:bg-yellow-900/10 text-yellow-700 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-900/30 rounded-xl text-left text-xs font-bold transition flex items-center justify-between"
+         >
+           <span className="flex items-center gap-2"><UploadCloud className="w-4 h-4"/> Publish Hub</span>
+           <PlusCircle className="w-3 h-3 opacity-50" />
+         </button>
        </div>
     </>
   );

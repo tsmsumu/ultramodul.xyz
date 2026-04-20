@@ -88,3 +88,15 @@ export const mandates = sqliteTable('mandates', {
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull()
 });
+
+// Nexus Engine Virtual Datasets (Publish Hub)
+export const nexusBlueprints = sqliteTable('nexus_blueprints', {
+  id: text('id').primaryKey(),
+  name: text('name').unique().notNull(), // e.g. 'Dataset_Gabungan_Penduduk_Miskin'
+  description: text('description'),
+  sqlQuery: text('sql_query').notNull(), // Raw SQL recipe
+  sourceMetadata: text('source_metadata'), // JSON Array of Parquet links or DB refs
+  schemaSnapshot: text('schema_snapshot'), // JSON Object of final column schemas
+  authorId: text('author_id').notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull()
+});

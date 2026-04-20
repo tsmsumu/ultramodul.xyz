@@ -35,6 +35,7 @@ Semua pekerjaan wajib diisolasi dengan ketat:
 ## 6. Hukum Kepatuhan Bahasa (Zero-Hardcode i18n)
 *   Segala bentuk tulisan, label, instruksi, placeholder, dan teks peringatan di *Frontend* **TIDAK BOLEH** di-*hardcode* memakai bahasa tertentu (Misal: langsung mengetik bahasa Indonesia di dalam komponen file `.tsx`).
 *   Semuanya **WAJIB** diregistrasikan dan ditarik melalui *Dictionary* Kamus Internasional (`messages/en.json` dan `id.json`) menggunakan `next-intl`.
+*   **HUKUM MUTLAK DEFAULT BAHASA:** Bahasa Indonesia (id) HANYALAH pilihan (*Optional Skin*). Bahasa baku **DEFAULT** untuk seluruh URL (*Routing*), Nama Kolom Database, Struktur Internal, dan Variabel Sistem adalah **BAHASA INGGRIS (en)**. Sumpah ini harus diingat selamanya untuk menjaga standar Arsitektur Skala Global tanpa Amnesia.
 
 ## 7. Skalabilitas Publik (The Citizen Expansion Rule)
 *   Perancangan skema database, otentikasi, dan rute navigasi untuk struktur ke depannya harus **selalu menyediakan ruang** *(Future-Proof)* untuk kedatangan entitas eksternal di luar otoritas internal.

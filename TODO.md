@@ -20,3 +20,4 @@ Gunakan tanda `[x]` jika selesai, `[/]` jika sedang dikerjakan, dan `[ ]` jika b
 - [x] Active Identity Matrix
 - [x] Mandate & Delegasi
 - [x] Audit Logbook Dashboard
+- [x] Template/Skin Engine (Kustomisasi Per-User)

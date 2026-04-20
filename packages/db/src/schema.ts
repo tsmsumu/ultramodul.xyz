@@ -26,7 +26,7 @@ export const accessMatrix = sqliteTable('access_matrix', {
   id: text('id').primaryKey(),
   userId: text('user_id').notNull(), // Relates to users.id
   moduleName: text('module_name').notNull(), // e.g. "KEUANGAN", "PEGAWAI"
-  permissionLevel: text('permission_level').notNull().default('READ'), // READ, WRITE, ADMIN
+  permissions: text('permissions').notNull().default('[]'), // JSON Array: ["VIEW", "MODIFY", "PRINT", "EXPORT"]
   grantedBy: text('granted_by').notNull(), // The Admin who granted this
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull()
 });

@@ -1,12 +1,18 @@
 "use client";
 
 import { toggleIdentityStatus } from "@/app/actions/iam";
-import { Lock, Unlock, ShieldAlert } from "lucide-react";
+import { Lock, Unlock, ShieldAlert, Settings } from "lucide-react";
 import { useState } from "react";
+import { MatrixDrawer } from "./matrix-drawer";
 
 export function DataTable({ initialUsers }: { initialUsers: any[] }) {
   const [users, setUsers] = useState(initialUsers);
   const [loadingId, setLoadingId] = useState<string | null>(null);
+  
+  // Matrix Drawer State
+  const [matrixOpen, setMatrixOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<{id: string, name: string} | null>(null);
+
 
   const handleToggle = async (id: string, currentStatus: string) => {
     setLoadingId(id);
@@ -62,7 +68,14 @@ export function DataTable({ initialUsers }: { initialUsers: any[] }) {
                   {user.status === 'active' ? 'Aktif' : 'Terblokir'}
                 </span>
               </td>
-              <td className="px-6 py-4 text-right">
+              <td className="px-6 py-4 text-right flex items-center justify-end gap-2">
+                <button 
+                  onClick={() => { setSelectedUser({id: user.id, name: user.name}); setMatrixOpen(true); }}
+                  className="p-2 text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition"
+                  title="Atur Hak Akses Matrix"
+                >
+                  <Settings className="w-4 h-4" />
+                </button>
                 <button 
                   disabled={loadingId === user.id}
                   onClick={() => handleToggle(user.id, user.status)}
@@ -76,6 +89,14 @@ export function DataTable({ initialUsers }: { initialUsers: any[] }) {
           ))}
         </tbody>
       </table>
+
+      {/* MATRIX DRAWER RENDERER */}
+      <MatrixDrawer 
+        isOpen={matrixOpen} 
+        onClose={() => setMatrixOpen(false)} 
+        userId={selectedUser?.id || null}
+        userName={selectedUser?.name || null}
+      />
     </div>
   );
 }

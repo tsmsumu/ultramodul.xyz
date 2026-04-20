@@ -86,8 +86,8 @@ export function UserModal({ isOpen, onClose, onRefresh }: { isOpen: boolean; onC
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium mb-1.5 opacity-80">Universal ID (SSO/KTP/Passport)</label>
-                    <input required name="username" className="w-full px-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Enter universal ID..." />
+                    <label className="block text-sm font-medium mb-1.5 opacity-80">Nomor Induk Kependudukan (NIK)</label>
+                    <input required name="username" pattern="[0-9]{16}" title="16 Digit NIK" className="w-full px-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Masukkan 16 angka NIK..." />
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-1.5 opacity-80">Nama Lengkap</label>

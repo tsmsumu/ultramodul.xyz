@@ -83,7 +83,7 @@ export function DataTable({ initialUsers }: { initialUsers: any[] }) {
   };
 
   const handleGeneratePassword = async (id: string, username: string) => {
-    if (confirm(`Apakah Anda yakin ingin men-generate password baru untuk ID ${username}? Sandi lama akan hangus.`)) {
+    if (confirm(`Apakah Anda yakin ingin men-generate password baru untuk NIK ${username}? Sandi lama akan hangus.`)) {
       setLoadingId(id);
       
       const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*";
@@ -94,7 +94,7 @@ export function DataTable({ initialUsers }: { initialUsers: any[] }) {
       setLoadingId(null);
       
       if (result.success) {
-        alert(`SUKSES! Password Sementara untuk ID ${username}:\n\n${pass}\n\nSilakan segera copy/salin sekarang! Sandi ini tidak akan ditampilkan lagi demi keamanan Audit.`);
+        alert(`SUKSES! Password Sementara untuk NIK ${username}:\n\n${pass}\n\nSilakan segera copy/salin sekarang! Sandi ini tidak akan ditampilkan lagi demi keamanan Audit.`);
       } else {
         alert("Gagal membuat password. Hubungi sysadmin.");
       }
@@ -119,7 +119,7 @@ export function DataTable({ initialUsers }: { initialUsers: any[] }) {
             <Search className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
             <input 
               type="text" 
-              placeholder="Omni-Search: Cari Nama, ID, atau Cabang..." 
+              placeholder="Omni-Search: Cari Nama, NIK, atau Cabang..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-9 pr-4 py-2 text-sm bg-white dark:bg-zinc-900 border border-gray-200 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm"
@@ -149,7 +149,7 @@ export function DataTable({ initialUsers }: { initialUsers: any[] }) {
                 className="w-4 h-4 rounded appearance-none border border-gray-300 dark:border-gray-600 checked:bg-indigo-600 checked:border-indigo-600 focus:ring-0 cursor-pointer"
               />
             </th>
-            <th className="px-6 py-4 font-semibold tracking-wider">Universal ID</th>
+            <th className="px-6 py-4 font-semibold tracking-wider">Identitas NIK</th>
             <th className="px-6 py-4 font-semibold tracking-wider">Nama Lengkap</th>
             <th className="px-6 py-4 font-medium">Domain Otoritas</th>
             <th className="px-6 py-4 font-medium">Batas Izin (Status)</th>

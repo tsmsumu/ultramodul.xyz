@@ -67,7 +67,7 @@ export default function RegisterPage() {
               <input 
                 name="username" 
                 required 
-                maxLength={30}
+                maxLength={16}
                 placeholder={t("nikPlaceholder")}
                 className="w-full px-4 py-3.5 bg-black/50 border border-white/10 rounded-xl focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition text-white placeholder:text-gray-600 font-mono"
               />

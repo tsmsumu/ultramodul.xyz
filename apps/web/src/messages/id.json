@@ -58,8 +58,8 @@
   "public": {
     "registerTitle": "Pendaftaran Identitas Universal",
     "registerSubtitle": "Daftar mandiri untuk akses Universal Platform.",
-    "nikLabel": "Kode Identitas Universal (ID/SSO)",
-    "nikPlaceholder": "Masukkan ID Alfanumerik",
+    "nikLabel": "Nomor Induk Kependudukan (NIK)",
+    "nikPlaceholder": "Masukkan 16 Digit NIK",
     "nameLabel": "Nama Lengkap",
     "namePlaceholder": "Nama Resmi Pengguna",
     "passwordLabel": "Kata Sandi",

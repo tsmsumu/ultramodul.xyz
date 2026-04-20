@@ -58,8 +58,8 @@
   "public": {
     "registerTitle": "Universal Identity Registration",
     "registerSubtitle": "Self-register for Universal Platform access.",
-    "nikLabel": "Universal Identity Code (ID/SSO)",
-    "nikPlaceholder": "Enter Alphanumeric ID",
+    "nikLabel": "National Identity Number (NIK)",
+    "nikPlaceholder": "Enter 16 Digit NIK",
     "nameLabel": "Full Name",
     "namePlaceholder": "Your Official Name",
     "passwordLabel": "Password",

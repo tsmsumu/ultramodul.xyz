@@ -6,7 +6,7 @@ Gunakan tanda `[x]` jika selesai, `[/]` jika sedang dikerjakan, dan `[ ]` jika b
 ## Tahap 1: Fondasi Zero-Amnesia (Tahap Saat Ini)
 - [x] Inisiasi Local Git.
 - [x] Penciptaan 3 Dokumen Otak Buatan Utama (`ARCHITECTURE.md`, `SYSTEM_PROMPT.md`, `TODO.md`).
-- [ ] Inisialisasi dasar Next.js Framework (Scaffolding).
+- [x] Inisialisasi dasar Next.js Framework (Scaffolding).
 - [x] Pengikatan repositori lokal ke GitHub Cloud (`Push` pertama).
 
 ## Tahap 2: Komponen Dasar Estetika

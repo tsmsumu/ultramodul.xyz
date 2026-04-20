@@ -1,0 +1,17 @@
+{
+  "theme": {
+    "toggle": "Ganti Tema",
+    "light": "Terang",
+    "dark": "Gelap"
+  },
+  "language": {
+    "toggle": "Ganti Bahasa",
+    "en": "Bahasa Inggris",
+    "id": "Bahasa Indonesia"
+  },
+  "home": {
+    "title": "Platform Enterprise UltraModul",
+    "subtitle": "Nir-Amnesia. Nir-Redundansi.",
+    "welcome": "Selamat datang di Konsol Identitas Aktif"
+  }
+}

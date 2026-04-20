@@ -1,0 +1,17 @@
+{
+  "theme": {
+    "toggle": "Toggle Theme",
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "language": {
+    "toggle": "Change Language",
+    "en": "English",
+    "id": "Indonesian"
+  },
+  "home": {
+    "title": "UltraModul Enterprise Platform",
+    "subtitle": "Zero Amnesia. Zero Redundancy.",
+    "welcome": "Welcome to the Active Identity Console"
+  }
+}

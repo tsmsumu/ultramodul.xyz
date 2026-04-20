@@ -2,9 +2,13 @@
   "name": "@ultra/db",
   "version": "1.0.0",
   "private": true,
-  "main": "index.ts",
+  "main": "src/index.ts",
   "dependencies": {
-    "drizzle-orm": "^0.30.0",
-    "better-sqlite3": "^9.0.0"
+    "@libsql/client": "^0.6.2",
+    "drizzle-orm": "^0.31.2"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.22.8",
+    "typescript": "^5.5.0"
   }
 }

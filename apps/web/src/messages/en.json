@@ -24,7 +24,9 @@
     "PUM Nexus Engine": "Nexus Engine (PNE)",
     "Data Sanitizer Pabrik": "Data Washing Station",
     "Layanan Pengaduan": "Public Complaints",
-    "Aegis Panopticon (DB)": "Aegis Panopticon (DB)"
+    "Layanan Pengaduan": "Public Complaints",
+    "Aegis Panopticon (DB)": "Aegis Panopticon (DB)",
+    "Data Evolution Center": "Data Evolution Center"
   },
   "customizer": {
     "title": "Display Settings",
@@ -85,5 +87,13 @@
     "indexBtn": "Rebuild Architecture",
     "backupTitle": "Time-Machine Snapshot",
     "backupBtn": "Flash-Dump Core Data"
+  },
+  "evolution": {
+    "title": "Data Evolution Center",
+    "desc": "World-class Quarterly Performance Routine. 1-Way Linear Stepper Protocol.",
+    "step1": "Upload",
+    "step2": "Compare",
+    "step3": "Report",
+    "step4": "Absolute Export"
   }
 }

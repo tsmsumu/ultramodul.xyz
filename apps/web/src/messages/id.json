@@ -24,7 +24,9 @@
     "PUM Nexus Engine": "Mesin Nexus (PNE)",
     "Data Sanitizer Pabrik": "Mesin Cuci Data",
     "Layanan Pengaduan": "Layanan Pengaduan",
-    "Aegis Panopticon (DB)": "Aegis Panopticon (DB)"
+    "Layanan Pengaduan": "Layanan Pengaduan",
+    "Aegis Panopticon (DB)": "Aegis Panopticon (DB)",
+    "Data Evolution Center": "Data Evolution Center"
   },
   "customizer": {
     "title": "Pengaturan Tampilan",
@@ -85,5 +87,13 @@
     "indexBtn": "Rakit Ulang Sendi Akses",
     "backupTitle": "Pencadangan Mesin Waktu",
     "backupBtn": "Flash-Dump Titik Nol"
+  },
+  "evolution": {
+    "title": "Data Evolution Center",
+    "desc": "Rutinitas Kinerja Triwulanan Kelas Dunia. Proses 1-Arah The Linear Stepper.",
+    "step1": "Upload",
+    "step2": "Bandingkan",
+    "step3": "Laporkan",
+    "step4": "Ekspor Mutlak"
   }
 }

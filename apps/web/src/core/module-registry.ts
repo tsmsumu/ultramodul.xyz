@@ -4,7 +4,7 @@
  * didaftarkan di sini agar diakui oleh IAM (Matriks) dan Menu Sidebar.
  */
 
-import { LayoutDashboard, Shield, Key, Users, BookOpen, ActivitySquare, GitMerge, ServerCog } from "lucide-react";
+import { LayoutDashboard, Shield, Key, Users, BookOpen, ActivitySquare, GitMerge, ServerCog, Dna } from "lucide-react";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
 
 export interface OmniModule {
@@ -91,6 +91,13 @@ export const ModuleRegistry: OmniModule[] = [
     path: "/maintenance",
     icon: ServerCog,
     isCore: true // Maintenance mutlak System Core
+  },
+  {
+    id: "Data Evolution Center",
+    name: "Evolution Center",
+    path: "/evolution",
+    icon: Dna,
+    isCore: false
   }
 ];
 

@@ -25,8 +25,10 @@
     "Data Sanitizer Pabrik": "Mesin Cuci Data",
     "Layanan Pengaduan": "Layanan Pengaduan",
     "Layanan Pengaduan": "Layanan Pengaduan",
+    "Layanan Pengaduan": "Layanan Pengaduan",
     "Aegis Panopticon (DB)": "Aegis Panopticon (DB)",
-    "Data Evolution Center": "Data Evolution Center"
+    "Data Evolution Center": "Data Evolution Center",
+    "Omni-Forge (Alat Data)": "Omni-Forge (Alat Data)"
   },
   "customizer": {
     "title": "Pengaturan Tampilan",
@@ -110,5 +112,15 @@
     "iam": "Benteng Identitas",
     "data": "Laboratorium Data",
     "infra": "Ruang Mesin (Infra)"
+  },
+  "omniforge": {
+    "title": "The Omni-Forge",
+    "desc": "Terminal Konversi Ganda & Mesin Sabotase Perbaikan Data Universal.",
+    "tabConvert": "Alchemist Chamber",
+    "tabRepair": "Healer's Chamber",
+    "sourceLbl": "Sumber Target (Impor)",
+    "filterLbl": "Penyaring Cerdas",
+    "targetLbl": "Hasil Tempa (Ekspor)",
+    "btnTempa": "EKSUSI TEMPA"
   }
 }

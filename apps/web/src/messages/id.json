@@ -20,8 +20,10 @@
     "Keamanan Mandat": "Delegasi Mandat",
     "Active Identity Matrix": "Identitas Aktif",
     "Audit Logbook Intel": "Buku Log Audit",
-    "Saraf Interaktif": "Tes Saraf API",
-    "PUM Nexus Engine": "Nexus Engine (PNE)"
+    "Saraf Interaktif": "Uji Bus Event",
+    "PUM Nexus Engine": "Mesin Nexus (PNE)",
+    "Data Sanitizer Pabrik": "Mesin Cuci Data",
+    "Layanan Pengaduan": "Layanan Pengaduan"
   },
   "customizer": {
     "title": "Pengaturan Tampilan",

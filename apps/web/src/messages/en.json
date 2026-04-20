@@ -21,7 +21,9 @@
     "Active Identity Matrix": "Active Identity",
     "Audit Logbook Intel": "Audit Logbook",
     "Saraf Interaktif": "Event Bus Test",
-    "PUM Nexus Engine": "Nexus Engine (PNE)"
+    "PUM Nexus Engine": "Nexus Engine (PNE)",
+    "Data Sanitizer Pabrik": "Data Washing Station",
+    "Layanan Pengaduan": "Public Complaints"
   },
   "customizer": {
     "title": "Display Settings",

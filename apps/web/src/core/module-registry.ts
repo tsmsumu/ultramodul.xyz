@@ -31,7 +31,6 @@ export const ModuleRegistry: OmniModule[] = [
   { id: "PUM Nexus Engine", name: "Nexus Engine (PNE)", path: "/nexus", icon: GitMerge, isCore: false, category: "data" },
   { id: "Data Evolution Center", name: "Evolution Center", path: "/evolution", icon: Dna, isCore: false, category: "data" },
   { id: "Omni-Forge (Alat Data)", name: "Omni-Forge", path: "/omni-forge", icon: Hammer, isCore: false, category: "data" },
-  { id: "Data Sanitizer Pabrik", name: "Data Washing Station", path: "/sanitizer", icon: ActivitySquare, isCore: false, category: "data" },
 
   // --- KATEGORI: INFRA (RUANG MESIN BAWAH TANAH) ---
   { id: "Aegis Panopticon (DB)", name: "Maintenance Panopticon", path: "/maintenance", icon: ServerCog, isCore: true, category: "infra" },

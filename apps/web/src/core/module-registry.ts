@@ -39,5 +39,5 @@ export const ModuleRegistry: OmniModule[] = [
 
 // Helper Function: Mengeluarkan Seluruh ID Modul (Untuk Dirender di Kaca Drawer IAM)
 export const getRegisteredModuleIds = () => {
-   return ModuleRegistry.map(m => m.id);
+  return ModuleRegistry.map(m => m.id);
 };

@@ -22,8 +22,8 @@ export function ApprovalInbox() {
     load();
   };
 
-  if (approvals.length === 0) return null;
-
+  // Hapus return null agar Kotak Persidangan selalu muncul
+  // if (approvals.length === 0) return null;
   return (
     <div className="mb-8 border border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-900/10 rounded-xl p-5">
        <div className="flex items-center gap-2 mb-4">
@@ -31,27 +31,35 @@ export function ApprovalInbox() {
          <h2 className="font-semibold text-amber-800 dark:text-amber-500">Antrean Persidangan Hak Akses ({approvals.length})</h2>
        </div>
 
-       <div className="space-y-3">
-         {approvals.map(ap => (
-           <div key={ap.id} className="flex justify-between items-center bg-white dark:bg-zinc-900 border border-amber-100 dark:border-white/5 rounded-lg p-3">
-             <div>
-               <p className="text-sm font-medium">Modul: {ap.moduleName}</p>
-               <div className="flex gap-2 text-xs text-gray-500 mt-1">
-                 <span>User ID: {ap.targetUserId}</span>
-                 <span>| Aturan Waktu: {ap.proposedTimeRule}</span>
-                 <span>| Hak: {ap.proposedPermissions}</span>
-               </div>
-             </div>
-             <div className="flex items-center gap-2">
-                <button onClick={() => handleResolve(ap.id, false)} className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition" title="Tolak">
-                  <XCircle className="w-5 h-5" />
-                </button>
-                <button onClick={() => handleResolve(ap.id, true)} className="p-2 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-md transition" title="Setujui">
-                  <CheckCircle className="w-5 h-5" />
-                </button>
-             </div>
-           </div>
-         ))}
+          {approvals.length === 0 ? (
+            <div className="text-center py-6 text-amber-700/60 dark:text-amber-500/50 text-sm font-medium">
+               Bebas Tugas! Tidak ada antrean mandat otorisasi yang menunggu persetujuan Bapak.
+            </div>
+          ) : (
+            approvals.map(ap => (
+              <div key={ap.id} className="flex justify-between items-center bg-white dark:bg-zinc-900 border border-amber-100 dark:border-white/5 rounded-lg p-3 shadow-sm hover:shadow transition">
+                <div>
+                  <p className="text-sm font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                    Modul: {ap.moduleName}
+                  </p>
+                  <div className="flex flex-wrap gap-2 text-xs text-gray-500 mt-2 font-mono">
+                    <span className="bg-gray-100 dark:bg-white/5 px-2 py-0.5 rounded">ID: {ap.targetUserId.split('-')[0]}</span>
+                    <span className="bg-gray-100 dark:bg-white/5 px-2 py-0.5 rounded">Otoritas Opsi: {ap.proposedPermissions}</span>
+                    <span className="bg-amber-100/50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded border border-amber-200/50">Waktu: {ap.proposedTimeRule}</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 shrink-0 ml-4">
+                  <button onClick={() => handleResolve(ap.id, false)} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-red-500 hover:bg-red-600 rounded-md transition shadow-sm shadow-red-500/20" title="Tolak">
+                    <XCircle className="w-4 h-4" /> Tolak
+                  </button>
+                  <button onClick={() => handleResolve(ap.id, true)} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-emerald-500 hover:bg-emerald-600 rounded-md transition shadow-sm shadow-emerald-500/20" title="Setujui">
+                    <CheckCircle className="w-4 h-4" /> Setujui
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
        </div>
     </div>
   );

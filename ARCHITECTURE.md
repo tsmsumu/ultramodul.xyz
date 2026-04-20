@@ -28,8 +28,16 @@ Semua pekerjaan wajib diisolasi dengan ketat:
 *   `src/lib/` : Khusus otak logika komputasi, analitik DuckDB, dan koneksi API.
 
 ## 5. Hukum Mutlak Akses (The IAM Absolute Gatekeeper)
-*   **Sentralisasi Kehormatan:** Semua modul, halaman, fitur, dan *tools* (seperti PUM Nexus, Data Sanitizer, dll) **WAJIB** bermuara pada persetujuan modul *IAM (Identity & Access Management)*.
-*   **Zero Bypass:** Tidak boleh ada satu pun halaman atau kanvas yang dapat diakses jika hak aksesnya (Role Matrix / Access Matrix) belum dicentang hijau atau tidak ada di dalam *database* IAM.
-*   **Pemisahan Tugas:** Jika *User* hanya petugas Sanitizer, arahkan ke rute spesifik tanpa mencampurnya dengan akses tingkat *Engineer* (Zoning Menu). 
+*   **Sentralisasi Kehormatan IAM:** Semua menu, modul, fitur, dan *tools* (seperti PUM Nexus, Data Sanitizer, dll) **WAJIB** bermuara pada persetujuan sistem *IAM (Identity & Access Management)*. IAM adalah **The Ultimate Gatekeeper**.
+*   **Anti-Hardcode Menu:** Dilarang keras menanamkan *(Hardcode)* menu navigasi di *Sidebar*. Setiap kemunculan rute UI harus berdasarkan hak akses *(Role/Access Matrix)* yang terdaftar resmi di IAM.
+*   **Zero Bypass:** Tidak boleh ada satupun halaman/kanvas yang bocor atau bisa diakses jika belum dicentang hijau.
+
+## 6. Hukum Kepatuhan Bahasa (Zero-Hardcode i18n)
+*   Segala bentuk tulisan, label, instruksi, placeholder, dan teks peringatan di *Frontend* **TIDAK BOLEH** di-*hardcode* memakai bahasa tertentu (Misal: langsung mengetik bahasa Indonesia di dalam komponen file `.tsx`).
+*   Semuanya **WAJIB** diregistrasikan dan ditarik melalui *Dictionary* Kamus Internasional (`messages/en.json` dan `id.json`) menggunakan `next-intl`.
+
+## 7. Skalabilitas Publik (The Citizen Expansion Rule)
+*   Perancangan skema database, otentikasi, dan rute navigasi untuk struktur ke depannya harus **selalu menyediakan ruang** *(Future-Proof)* untuk kedatangan entitas eksternal di luar otoritas internal.
+*   Sistem harus bisa mewadahi *Role* seperti **"User Member / Client / Masyarakat Umum"** yang menggunakan aplikasi ini sebagai portal publik, bukan hanya melayani pegawai instansi secara manajerial.
 
 **Amnesia Prevention Active: TRUE**

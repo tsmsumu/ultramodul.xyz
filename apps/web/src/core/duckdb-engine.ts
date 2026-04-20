@@ -35,14 +35,30 @@ class DuckDBEngine {
         this.db = db;
         
         // THE OPFS IMMORTALITY INJECTION (Zero-Amnesia)
-        await db.open({ path: 'opfs://pum-nexus.db' });
+        // THE OPFS IMMORTALITY INJECTION (Zero-Amnesia)
+        try {
+          await db.open({ 
+            path: 'opfs://pum-nexus.db',
+            accessMode: duckdb.DuckDBAccessMode.READ_WRITE
+          });
+          console.log("🔥 [DuckDB OPFS] Jantung Persistent Engine AKTIF secara KEKAL!");
+        } catch (opfsError) {
+          console.warn("⚠️ [DuckDB] OPFS tidak didukung atau terblokir. Fallback ke RAM (:memory:) murni.", opfsError);
+          await db.open({ 
+             path: ':memory:',
+             accessMode: duckdb.DuckDBAccessMode.READ_WRITE
+          });
+        }
+
         this.connection = await db.connect();
         
         // Memaksa sistem untuk langsung mengukir perubahan ke harddisk (SSD lokal pengguna)
-        await this.connection.query("SET checkpoint_threshold = '0KB';");
-        await this.connection.query("SET wal_autocheckpoint = '0KB';");
-        
-        console.log("🔥 [DuckDB OPFS] Jantung Persistent Engine AKTIF secara KEKAL!");
+        try {
+          await this.connection.query("SET checkpoint_threshold = '0KB';");
+          await this.connection.query("SET wal_autocheckpoint = '0KB';");
+        } catch (e) {
+          // Abaikan jika :memory:
+        }
       } catch (error) {
         console.error("🔥 [DuckDB Wasm] Gagal Mengidupkan Engine:", error);
         throw error;

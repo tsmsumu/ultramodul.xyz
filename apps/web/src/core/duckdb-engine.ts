@@ -143,9 +143,9 @@ class DuckDBEngine {
     try {
       const result = await this.connection.query(`SELECT * FROM ${tableName} LIMIT ${limit};`);
       return result.toArray().map(r => r.toJSON());
-    } catch (e) {
+    } catch (e: any) {
       console.error(`[DuckDB] Gagal preview ${tableName}:`, e);
-      return [];
+      throw new Error(`Data kosong atau Tabel belum disedot! (${e.message})`);
     }
   }
 

@@ -12,6 +12,7 @@ import { PublishNode } from "./nodes/publish-node";
 import { SanitizerNode } from "./nodes/sanitizer-node";
 import { SqlNode } from "./nodes/sql-node";
 import SlicerNode from "./nodes/slicer-node";
+import { OmniDBNode } from "./nodes/omni-db-node";
 import { SmartEdge } from "./edges/smart-edge";
 import { NexusPanel } from "./nexus-panel";
 import { HologramTerminal } from "./hologram-terminal";
@@ -24,7 +25,8 @@ const nodeTypes = {
   publish: PublishNode,
   sanitizer: SanitizerNode,
   sql: SqlNode,
-  slicer: SlicerNode
+  slicer: SlicerNode,
+  omnidb: OmniDBNode
 };
 
 const edgeTypes = {

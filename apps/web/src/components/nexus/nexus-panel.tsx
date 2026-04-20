@@ -22,6 +22,13 @@ export function NexusPanel({ onAddNode }: { onAddNode: (type: string, payload: a
               <span className="flex items-center gap-2"><FileSpreadsheet className="w-3.5 h-3.5"/> File Drop Node</span>
               <PlusCircle className="w-3 h-3 opacity-50" />
             </button>
+            <button 
+              onClick={() => onAddNode('omnidb', { label: 'Universal DB Ingestor' })}
+              className="w-full px-3 py-2 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/40 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-900/30 rounded-xl text-left text-[11px] font-bold transition flex items-center justify-between"
+            >
+              <span className="flex items-center gap-2"><Database className="w-3.5 h-3.5"/> External DB Connector</span>
+              <PlusCircle className="w-3 h-3 opacity-50" />
+            </button>
          </div>
        </div>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { Database, FileSpreadsheet, PlusCircle, PenTool, Link, Activity, Zap, FileText, UploadCloud, ShieldCheck } from "lucide-react";
+import { Database, FileSpreadsheet, PlusCircle, PenTool, Link, Activity, Zap, FileText, UploadCloud, ShieldCheck, Scissors } from "lucide-react";
 
 export function NexusPanel({ onAddNode }: { onAddNode: (type: string, payload: any) => void }) {
   return (
@@ -33,6 +33,13 @@ export function NexusPanel({ onAddNode }: { onAddNode: (type: string, payload: a
               className="w-full px-3 py-2 bg-amber-50 hover:bg-amber-100 dark:bg-amber-900/20 dark:hover:bg-amber-900/40 text-amber-700 dark:text-amber-500 border border-amber-200 dark:border-amber-900/30 rounded-xl text-left text-[11px] font-bold transition flex items-center justify-between shadow-[0_0_15px_-3px_rgba(245,158,11,0.2)]"
             >
               <span className="flex items-center gap-2"><PenTool className="w-3.5 h-3.5"/> Raw SQL Override</span>
+              <PlusCircle className="w-3 h-3 opacity-50" />
+            </button>
+            <button 
+              onClick={() => onAddNode('slicer', { slicePercentage: 50 })}
+              className="w-full px-3 py-2 bg-fuchsia-50 hover:bg-fuchsia-100 dark:bg-fuchsia-900/20 dark:hover:bg-fuchsia-900/40 text-fuchsia-700 dark:text-fuchsia-500 border border-fuchsia-200 dark:border-fuchsia-900/30 rounded-xl text-left text-[11px] font-bold transition flex items-center justify-between"
+            >
+              <span className="flex items-center gap-2"><Scissors className="w-3.5 h-3.5"/> Quantum Slicer</span>
               <PlusCircle className="w-3 h-3 opacity-50" />
             </button>
             <button 

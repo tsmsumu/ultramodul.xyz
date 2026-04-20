@@ -11,6 +11,7 @@ import { MetadataNode } from "./nodes/metadata-node";
 import { PublishNode } from "./nodes/publish-node";
 import { SanitizerNode } from "./nodes/sanitizer-node";
 import { SqlNode } from "./nodes/sql-node";
+import SlicerNode from "./nodes/slicer-node";
 import { SmartEdge } from "./edges/smart-edge";
 import { NexusPanel } from "./nexus-panel";
 import { HologramTerminal } from "./hologram-terminal";
@@ -22,7 +23,8 @@ const nodeTypes = {
   metadata: MetadataNode,
   publish: PublishNode,
   sanitizer: SanitizerNode,
-  sql: SqlNode
+  sql: SqlNode,
+  slicer: SlicerNode
 };
 
 const edgeTypes = {

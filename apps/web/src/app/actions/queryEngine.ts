@@ -29,7 +29,15 @@ export async function executeRawNexusQuery(query: string) {
     const plainRows = result.rows.map((row: any) => {
       const obj: Record<string, any> = {};
       columns.forEach((col: string) => {
-         obj[col] = row[col];
+         let val = row[col];
+         // Aman dari pelahap NextJS Server Action dan JSON.stringify!
+         if (typeof val === 'bigint') {
+           val = Number(val); // Turunkan kasta BigInt ke Number (aman untuk timestamp)
+         } else if (val instanceof ArrayBuffer || val instanceof Buffer || (val && val.buffer && val.buffer instanceof ArrayBuffer)) {
+           // Jika LibSQL menganggap sesuatu sbg Blob, jadikan String!
+           val = Buffer.from(val).toString('base64');
+         }
+         obj[col] = val;
       });
       return obj;
     });

@@ -95,5 +95,11 @@
     "step2": "Bandingkan",
     "step3": "Laporkan",
     "step4": "Ekspor Mutlak"
+  },
+  "categories": {
+    "hub": "Pusat Penggerak",
+    "iam": "Benteng Identitas",
+    "data": "Laboratorium Data",
+    "infra": "Ruang Mesin (Infra)"
   }
 }

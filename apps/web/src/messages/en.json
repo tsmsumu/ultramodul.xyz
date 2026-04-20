@@ -95,5 +95,11 @@
     "step2": "Compare",
     "step3": "Report",
     "step4": "Absolute Export"
+  },
+  "categories": {
+    "hub": "Core Hub",
+    "iam": "Identity Matrix",
+    "data": "Data Laboratory",
+    "infra": "Infrastructure Vault"
   }
 }

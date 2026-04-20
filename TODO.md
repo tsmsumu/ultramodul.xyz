@@ -23,3 +23,4 @@ Gunakan tanda `[x]` jika selesai, `[/]` jika sedang dikerjakan, dan `[ ]` jika b
 - [x] Template/Skin Engine (Kustomisasi Per-User)
 - [x] Granular Matrix Hak Akses Mikro (View/Modify/Print/Export)
 - [x] Otorisasi Hibrida (Grup + User) & Navigasi Gaib
+- [x] The Apex Omega Core (Passkeys, JIT, Maker-Checker, Geofencing)

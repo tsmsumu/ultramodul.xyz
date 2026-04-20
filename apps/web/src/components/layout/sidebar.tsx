@@ -2,16 +2,10 @@
 
 import { Shield, LayoutDashboard, Key, Users, BookOpen } from "lucide-react";
 import { useTranslations } from "next-intl";
-import NextLink from "next/link";
+import { useState } from "react";
 import { usePathname } from "next/navigation";
-
-const menuItems = [
-  { name: "Command Center", icon: LayoutDashboard, href: "/dashboard", moduleName: "Dashboard" },
-  { name: "IAM Console", icon: Shield, href: "/iam", moduleName: "IAM Console" },
-  { name: "Delegasi Mandat", icon: Key, href: "/mandate", moduleName: "Keamanan Mandat" },
-  { name: "Active Identity", icon: Users, href: "/access", moduleName: "Active Identity Matrix" },
-  { name: "Audit Logbook", icon: BookOpen, href: "/logbook", moduleName: "Audit Logbook Intel" },
-];
+import { ModuleRegistry } from "@/core/module-registry";
+import NextLink from "next/link";
 
 export function Sidebar({ isOpen, permissions }: { isOpen: boolean, permissions: Record<string, string[]> | null }) {
   const pathname = usePathname();
@@ -30,26 +24,27 @@ export function Sidebar({ isOpen, permissions }: { isOpen: boolean, permissions:
       `}
     >
       <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
-        {menuItems.map((item) => {
-          if (!canSee(item.moduleName)) return null; // GAIB LOGIC: Menu disappears entirely!
+        {ModuleRegistry.map((mod) => {
+          if (!canSee(mod.id)) return null; // GAIB LOGIC
 
-          const isActive = pathname?.startsWith(item.href);
+          const isActive = pathname?.startsWith(mod.path);
+          const Icon = mod.icon;
           return (
             <NextLink
-              key={item.href}
-              href={item.href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all group overflow-hidden
+              key={mod.id}
+              href={mod.path}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group relative overflow-hidden
                 ${isActive 
-                  ? "bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300" 
-                  : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5"}
+                  ? "bg-indigo-600 dark:bg-indigo-600 text-white shadow-lg shadow-indigo-600/20" 
+                  : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white"
+                }
               `}
-              title={item.name}
             >
-              <item.icon className={`min-w-[20px] w-5 h-5 ${isActive ? "text-blue-600 dark:text-blue-400" : ""}`} />
-              <span className={`whitespace-nowrap transition-opacity duration-200
-                ${isOpen ? "opacity-100" : "opacity-0 lg:hidden"}
-              `}>
-                {item.name}
+              <div className="relative z-10 flex items-center justify-center">
+                <Icon className={`w-5 h-5 ${isActive ? "text-white" : "group-hover:text-indigo-600 dark:group-hover:text-indigo-400"}`} />
+              </div>
+              <span className={`relative z-10 whitespace-nowrap transition-opacity duration-300 ${isOpen ? "opacity-100" : "lg:opacity-0"}`}>
+                {mod.name}
               </span>
             </NextLink>
           );

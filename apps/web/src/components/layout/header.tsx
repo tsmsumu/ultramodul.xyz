@@ -1,17 +1,27 @@
-"use client";
-
-import { Menu, Search, User, LogOut } from "lucide-react";
+import { Menu, Search, User, LogOut, Bell } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState, useEffect } from "react";
 import { fetchSandboxUsers, impersonateUser, clearImpersonation } from "@/app/actions/auth";
+import { EventBus, EVENTS } from "@/core/event-bus";
 
 export function Header({ toggleSidebar, activeUserId }: { toggleSidebar: () => void, activeUserId: string | null }) {
   const t = useTranslations("home");
   const [users, setUsers] = useState<any[]>([]);
   const [showSandbox, setShowSandbox] = useState(false);
+  const [bellTing, setBellTing] = useState(false);
+  const [alertMsg, setAlertMsg] = useState("");
 
   useEffect(() => {
     fetchSandboxUsers().then(setUsers);
+
+    // MENDENGAR SINYAL EVENT DARI UDARA (Pub/Sub)
+    const unsubscribe = EventBus.subscribe(EVENTS.NOTIFICATION_ALERT, (payload) => {
+      setAlertMsg(payload);
+      setBellTing(true);
+      setTimeout(() => setBellTing(false), 5000); // Matikan sirine setelah 5 detik.
+    });
+
+    return () => unsubscribe(); // Cabut jaringan saat komponen Header dibersihkan
   }, []);
 
   const handleImpersonate = async (id: string) => {
@@ -47,6 +57,21 @@ export function Header({ toggleSidebar, activeUserId }: { toggleSidebar: () => v
             className="pl-9 pr-4 py-1.5 text-sm bg-gray-100 dark:bg-white/5 border border-transparent dark:border-white/10 rounded-full focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all w-64"
           />
         </div>
+        <div className="relative">
+          <button 
+            className={`w-8 h-8 rounded-full flex items-center justify-center transition-all border-2 
+              ${bellTing ? "bg-red-500 border-red-300 text-white animate-bounce" : "bg-gray-100 dark:bg-white/5 border-transparent text-gray-500"}
+            `}
+          >
+            <Bell className="w-4 h-4" />
+          </button>
+          {bellTing && (
+            <div className="absolute top-10 right-0 w-64 bg-red-600 text-white text-xs p-3 rounded-lg shadow-xl animate-in fade-in slide-in-from-top-2 z-50">
+               <strong>Sinyal Saraf Diterima:</strong> {alertMsg}
+            </div>
+          )}
+        </div>
+
         <div className="relative">
           <button 
             onClick={() => setShowSandbox(!showSandbox)}

@@ -4,13 +4,9 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Shield, X, Save, BoxSelect, CheckSquare } from "lucide-react";
 import { getUserMatrix, saveUserMatrix } from "@/app/actions/matrix";
+import { getRegisteredModuleIds } from "@/core/module-registry";
 
-const MODULES = [
-  "Keuangan",
-  "Kepegawaian",
-  "Pelaporan & Export",
-  "Master Data"
-];
+const MODULES = getRegisteredModuleIds();
 
 const PERMISSIONS = [
   { id: "VIEW", label: "View (Lihat)", color: "text-blue-500" },

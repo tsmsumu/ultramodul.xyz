@@ -1,19 +1,69 @@
-"use client";
-
 import { toggleIdentityStatus } from "@/app/actions/iam";
 import { triggerEmergencyJit } from "@/app/actions/matrix";
-import { Lock, Unlock, ShieldAlert, Settings, Siren } from "lucide-react";
-import { useState } from "react";
+import { processBulkExport } from "@/app/actions/export";
+import { Lock, Unlock, ShieldAlert, Settings, Siren, Search, CheckSquare, HardDriveDownload, BoxSelect } from "lucide-react";
+import { useState, useMemo } from "react";
 import { MatrixDrawer } from "./matrix-drawer";
+import { OmniEtlModal } from "./omni-etl-modal";
 
 export function DataTable({ initialUsers }: { initialUsers: any[] }) {
   const [users, setUsers] = useState(initialUsers);
   const [loadingId, setLoadingId] = useState<string | null>(null);
   
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
   // Matrix Drawer State
   const [matrixOpen, setMatrixOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<{id: string, name: string} | null>(null);
 
+  // Omni ETL State
+  const [etlOpen, setEtlOpen] = useState(false);
+
+  // Advanced Search Logic
+  const filteredUsers = useMemo(() => {
+    if (!searchQuery) return users;
+    const lowerQ = searchQuery.toLowerCase();
+    return users.filter(u => 
+      u.name.toLowerCase().includes(lowerQ) || 
+      u.nik.includes(searchQuery) || 
+      u.role.toLowerCase().includes(lowerQ) ||
+      u.branchCode.toLowerCase().includes(lowerQ)
+    );
+  }, [users, searchQuery]);
+
+  const toggleSelectAll = () => {
+    if (selectedIds.size === filteredUsers.length) {
+      setSelectedIds(new Set()); // Uncheck all
+    } else {
+      setSelectedIds(new Set(filteredUsers.map(u => u.id))); // Check all
+    }
+  };
+
+  const toggleSelectRow = (id: string) => {
+    const next = new Set(selectedIds);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    setSelectedIds(next);
+  };
+
+  const executeExport = async (type: string, format: string) => {
+    const ids = Array.from(selectedIds);
+    const result = await processBulkExport(ids, format);
+    if (result.success && result.payload) {
+      // Construct native blob download
+      const blob = new Blob([result.payload], { type: result.mime });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `UM_EXPORT_${new Date().getTime()}.${result.ext}`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+      setEtlOpen(false);
+    } else {
+      alert("Format Belum Diaktifkan untuk Front-end Download. Menunggu integrasi DuckDB Wasm.");
+    }
+  };
 
   const handleToggle = async (id: string, currentStatus: string) => {
     setLoadingId(id);
@@ -43,21 +93,65 @@ export function DataTable({ initialUsers }: { initialUsers: any[] }) {
   }
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-white/10 shadow-sm bg-white dark:bg-[#0a0a0c]">
-      <table className="w-full text-left text-sm whitespace-nowrap">
-        <thead className="bg-gray-50 dark:bg-white/5 border-b border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400">
+    <div className="w-full">
+      {/* Omni-Toolbar */}
+      <div className="p-4 border-b border-gray-100 dark:border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4 bg-gray-50/50 dark:bg-white/[0.01]">
+         <div className="relative w-full sm:w-96">
+            <Search className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
+            <input 
+              type="text" 
+              placeholder="Omni-Search: Cari Nama, NIK, atau Cabang..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-9 pr-4 py-2 text-sm bg-white dark:bg-zinc-900 border border-gray-200 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm"
+            />
+         </div>
+
+         <div className="animate-in fade-in zoom-in duration-300">
+           {selectedIds.size > 0 && (
+             <button 
+               onClick={() => setEtlOpen(true)}
+               className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-lg shadow-indigo-600/20 text-sm font-bold transition"
+             >
+               <HardDriveDownload className="w-4 h-4" /> Export {selectedIds.size} Identitas
+             </button>
+           )}
+         </div>
+      </div>
+
+      <table className="w-full text-sm text-left">
+        <thead className="text-xs text-gray-500 uppercase bg-gray-50/50 dark:bg-white/5 border-b border-gray-200 dark:border-white/10">
           <tr>
-            <th className="px-6 py-4 font-medium">Nomor Induk (NIK)</th>
-            <th className="px-6 py-4 font-medium">Nama Lengkap</th>
+            <th className="px-6 py-4 w-10">
+              <input 
+                type="checkbox" 
+                checked={selectedIds.size === filteredUsers.length && filteredUsers.length > 0}
+                onChange={toggleSelectAll}
+                className="w-4 h-4 rounded appearance-none border border-gray-300 dark:border-gray-600 checked:bg-indigo-600 checked:border-indigo-600 focus:ring-0 cursor-pointer"
+              />
+            </th>
+            <th className="px-6 py-4 font-semibold tracking-wider">Identitas NIK</th>
+            <th className="px-6 py-4 font-semibold tracking-wider">Nama Lengkap</th>
             <th className="px-6 py-4 font-medium">Otoritas</th>
             <th className="px-6 py-4 font-medium">Status</th>
             <th className="px-6 py-4 font-medium text-right">Tindakan</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100 dark:divide-white/5">
-          {users.map((user) => (
-            <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors">
-              <td className="px-6 py-4 font-mono text-xs">{user.nik}</td>
+          {filteredUsers.map((user) => (
+            <tr key={user.id} className={`group border-b border-gray-100 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors ${selectedIds.has(user.id) ? 'bg-indigo-50/30 dark:bg-indigo-900/10' : ''}`}>
+              <td className="px-6 py-4">
+                <input 
+                  type="checkbox" 
+                  checked={selectedIds.has(user.id)}
+                  onChange={() => toggleSelectRow(user.id)}
+                  className="w-4 h-4 rounded appearance-none border border-gray-300 dark:border-gray-600 checked:bg-indigo-600 checked:border-indigo-600 focus:ring-0 cursor-pointer"
+                />
+              </td>
+              <td className="px-6 py-4 font-mono font-medium text-gray-900 dark:text-gray-100">
+                {user.nik}
+                <div className="text-xs text-gray-400 mt-1 flex items-center gap-1 font-sans"><BoxSelect className="w-3 h-3"/> {user.branchCode}</div>
+              </td>
               <td className="px-6 py-4 font-medium">{user.name}</td>
               <td className="px-6 py-4">
                 <span className={`px-2.5 py-1 rounded-full text-xs font-medium border
@@ -112,6 +206,13 @@ export function DataTable({ initialUsers }: { initialUsers: any[] }) {
         onClose={() => setMatrixOpen(false)} 
         userId={selectedUser?.id || null}
         userName={selectedUser?.name || null}
+      />
+
+      <OmniEtlModal 
+        isOpen={etlOpen}
+        onClose={() => setEtlOpen(false)}
+        selectedCount={selectedIds.size}
+        onExport={executeExport}
       />
     </div>
   );

@@ -26,19 +26,55 @@ export function MetadataNode({ data, id }: { data: any, id: string }) {
       const firstSheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[firstSheetName];
       
-      // Parsing Header Baris Pertama dari Excel
-      const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-      const headers = jsonData[0] as string[];
+      // Parsing Baris dari Excel (Array of Arrays)
+      const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as any[][];
       
-      if (headers && headers.length > 0) {
-        setDictionaryVariables(headers);
+      let discoveredVars: string[] = [];
+      let headerRowIndex = -1;
+      let varNameColIndex = -1;
+      
+      // 1. Auto-Discovery: Cari baris mana yang merupakan Header Utama
+      for (let i = 0; i < Math.min(jsonData.length, 20); i++) {
+         const row = jsonData[i];
+         if (!row) continue;
+         for (let j = 0; j < row.length; j++) {
+            const cell = String(row[j] || '').toLowerCase().trim();
+            // Biasanya di kamus resmi ada 'Nama Variabel' (Label) dan 'Nama variabel' (Kolom DB)
+            if (cell === 'nama variabel') {
+               headerRowIndex = i;
+               varNameColIndex = j; // Ambil index kolom ini
+            }
+         }
+         if (headerRowIndex !== -1) break;
+      }
+      
+      // 2. Ekstrak Data
+      if (headerRowIndex !== -1 && varNameColIndex !== -1) {
+         for (let i = headerRowIndex + 1; i < jsonData.length; i++) {
+            const row = jsonData[i];
+            if (row && row[varNameColIndex]) {
+               const varName = String(row[varNameColIndex]).trim();
+               if (varName && isNaN(Number(varName))) {
+                 discoveredVars.push(varName);
+               }
+            }
+         }
+      } else {
+         // Fallback: Anggap baris pertama adalah header rata (Flat CSV Style)
+         const headers = jsonData[0];
+         if (headers && headers.length > 0) {
+            discoveredVars = headers.map(h => String(h)).filter(h => h && isNaN(Number(h)));
+         }
+      }
+      
+      if (discoveredVars.length > 0) {
+        setDictionaryVariables(discoveredVars);
         if (data.onFileIngested) {
-           // Register metadata to global node state
            data.onFileIngested(id, `kamus_${file.name.replace(/[^a-zA-Z0-9]/g, '_')}`);
         }
         setAutoMode(true);
       } else {
-        setFileAttached("Excel Kosong / Invalid!");
+        setFileAttached("Format Kamus Tidak Dikenali!");
       }
     } catch (e) {
       console.error(e);

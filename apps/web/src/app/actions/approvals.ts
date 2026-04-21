@@ -53,24 +53,29 @@ export async function resolveApproval(approvalId: string, checkerId: string, isA
     const apv = apps[0];
 
     if (isApproved) {
-       const existingMtx = await db.select().from(accessMatrix).where(
-         and(eq(accessMatrix.userId, apv.targetUserId), eq(accessMatrix.moduleName, apv.moduleName))
-       );
-
-       if (existingMtx.length > 0) {
-         await db.update(accessMatrix)
-           .set({ permissions: apv.proposedPermissions, timeRule: apv.proposedTimeRule })
-           .where(eq(accessMatrix.id, existingMtx[0].id));
+       if (apv.moduleName === "PASSWORD_RESET") {
+          // GANTI SANDI
+          await db.update(users).set({ passwordHash: apv.proposedPermissions }).where(eq(users.id, apv.targetUserId));
        } else {
-         await db.insert(accessMatrix).values({
-           id: randomUUID(),
-           userId: apv.targetUserId,
-           moduleName: apv.moduleName,
-           permissions: apv.proposedPermissions,
-           timeRule: apv.proposedTimeRule,
-           grantedBy: checkerId,
-           createdAt: new Date()
-         });
+         const existingMtx = await db.select().from(accessMatrix).where(
+           and(eq(accessMatrix.userId, apv.targetUserId), eq(accessMatrix.moduleName, apv.moduleName))
+         );
+
+         if (existingMtx.length > 0) {
+           await db.update(accessMatrix)
+             .set({ permissions: apv.proposedPermissions, timeRule: apv.proposedTimeRule })
+             .where(eq(accessMatrix.id, existingMtx[0].id));
+         } else {
+           await db.insert(accessMatrix).values({
+             id: randomUUID(),
+             userId: apv.targetUserId,
+             moduleName: apv.moduleName,
+             permissions: apv.proposedPermissions,
+             timeRule: apv.proposedTimeRule,
+             grantedBy: checkerId,
+             createdAt: new Date()
+           });
+         }
        }
     }
 

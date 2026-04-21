@@ -1,12 +1,14 @@
-import { Menu, Search, User, LogOut, Bell } from "lucide-react";
+import { Menu, Search, User, LogOut, Bell, Sun, Moon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState, useEffect } from "react";
+import { useTheme } from "next-themes";
 import { logoutAction } from "@/app/actions/auth";
 import { EventBus, EVENTS } from "@/core/event-bus";
 
 export function Header({ toggleSidebar, activeUserId }: { toggleSidebar: () => void, activeUserId: string | null }) {
   const tHome = useTranslations("home");
   const tHeader = useTranslations("header");
+  const { theme, setTheme } = useTheme();
   const [showSandbox, setShowSandbox] = useState(false);
   const [bellTing, setBellTing] = useState(false);
   const [alertMsg, setAlertMsg] = useState("");
@@ -62,6 +64,16 @@ export function Header({ toggleSidebar, activeUserId }: { toggleSidebar: () => v
                <strong>{tHeader("signalReceived")}:</strong> {alertMsg}
             </div>
           )}
+        </div>
+
+        <div className="relative">
+          <button 
+             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+             title="Toggle Tema"
+             className="w-8 h-8 rounded-full flex items-center justify-center bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/20 transition-all border-transparent"
+          >
+            {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </button>
         </div>
 
         <div className="relative">

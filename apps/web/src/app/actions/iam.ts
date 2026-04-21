@@ -1,6 +1,6 @@
 "use server";
 
-import { db, users, eq } from "@ultra/db";
+import { db, users, eq, matrixApprovals } from "@ultra/db";
 import { createAuditLog } from "@ultra/db/src/logger";
 import { randomUUID, createHash } from "crypto";
 
@@ -68,13 +68,24 @@ export async function toggleIdentityStatus(id: string, currentStatus: string) {
 export async function setRandomPassword(id: string, plainText: string) {
   try {
     const passwordHash = createHash("sha256").update(plainText).digest("hex");
-    await db.update(users).set({ passwordHash }).where(eq(users.id, id));
+    
+    // Alih-alih di-set langsung, ajukan pengubahan sandi ke Majelis (Inbox Matrix)
+    await db.insert(matrixApprovals).values({
+      id: randomUUID(),
+      targetUserId: id,
+      moduleName: "PASSWORD_RESET",
+      proposedPermissions: passwordHash, // Menyusupkan hash sandi di kolom ini
+      proposedTimeRule: "-",
+      status: "PENDING",
+      makerId: "SYSTEM",
+      createdAt: new Date(),
+    });
 
     await createAuditLog({
-      action: "GENERATE_TEMPORARY_PASSWORD",
+      action: "PROPOSE_PASSWORD_RESET",
       actorId: "SYSTEM",
       target: id,
-      metadata: { note: "Admin generated new temp password" }
+      metadata: { note: "Pengajuan sandi baru dilempar ke Approval Inbox" }
     });
 
     return { success: true };

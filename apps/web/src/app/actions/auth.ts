@@ -8,8 +8,8 @@ import { createAuditLog } from "@ultra/db/src/logger";
 
 export async function loginAction(data: FormData) {
   try {
-    const identCode = data.get("identity") as string;
-    const pass = data.get("password") as string;
+    const identCode = (data.get("identity") as string).trim();
+    const pass = (data.get("password") as string).trim();
 
     if (!identCode || !pass) return { success: false, message: "Identity Code dan Password wajib diisi." };
 

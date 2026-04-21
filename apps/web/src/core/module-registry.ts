@@ -4,7 +4,7 @@
  * didaftarkan di sini agar diakui oleh IAM (Matriks) dan Menu Sidebar.
  */
 
-import { LayoutDashboard, Shield, Key, Users, BookOpen, ActivitySquare, GitMerge, ServerCog, Dna, Hammer, Clock, BookMarked } from "lucide-react";
+import { LayoutDashboard, Shield, Key, Users, BookOpen, ActivitySquare, GitMerge, ServerCog, Dna, Hammer, Clock, BookMarked, LineChart } from "lucide-react";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
 
 export interface OmniModule {
@@ -30,6 +30,7 @@ export const ModuleRegistry: OmniModule[] = [
 
   // --- KATEGORI: DATA (LABORATORIUM DATA) ---
   { id: "PUM Nexus Engine", name: "Nexus Engine (PNE)", path: "/nexus", icon: GitMerge, isCore: false, category: "data" },
+  { id: "Omni-Analytics", name: "Analytics Omniverse", path: "/omni-analytics", icon: LineChart, isCore: false, category: "data" },
   { id: "Data Evolution Center", name: "Evolution Center", path: "/evolution", icon: Dna, isCore: false, category: "data" },
   { id: "Omni-Forge (Alat Data)", name: "Omni-Forge", path: "/omni-forge", icon: Hammer, isCore: false, category: "data" },
 

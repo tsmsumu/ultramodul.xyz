@@ -178,6 +178,24 @@ export default function DashboardPage() {
              </div>
           </div>
 
+          {/* Live Traffic Engine Hologram (60 FPS Framer Motion) */}
+          <div className="h-32 bg-zinc-50 dark:bg-black border border-gray-100 dark:border-zinc-900 rounded-2xl relative overflow-hidden mb-6 flex items-end px-4 gap-2 pt-10 shrink-0">
+             {Array.from({ length: 40 }).map((_, i) => {
+               const height = Math.floor(Math.random() * 80) + 10;
+               return (
+                 <motion.div 
+                   key={i}
+                   initial={{ height: 0 }}
+                   animate={{ height: `${height}%` }}
+                   transition={{ duration: 1, delay: i * 0.05, repeat: Infinity, repeatType: "reverse", repeatDelay: Math.random() * 2 }}
+                   className="flex-1 bg-gradient-to-t from-emerald-600/80 to-teal-400/40 rounded-t-sm opacity-50"
+                 />
+               )
+             })}
+             <div className="absolute inset-0 bg-gradient-to-t from-zinc-50 dark:from-black via-transparent to-transparent pointer-events-none" />
+             <div className="absolute top-4 left-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">NETWORK TRAFFIC FLOW</div>
+          </div>
+
           <div className="flex-1 relative z-10 overflow-y-auto custom-scrollbar pr-2 space-y-2">
              {loading ? (
                 <div className="animate-pulse space-y-2">

@@ -49,17 +49,24 @@ export const accessMatrix = sqliteTable('access_matrix', {
 });
 
 // Alpha Pillar: Maker-Checker System
-export const matrixApprovals = sqliteTable('matrix_approvals', {
-  id: text('id').primaryKey(),
-  targetUserId: text('target_user_id').notNull(),
-  moduleName: text('module_name').notNull(),
-  proposedPermissions: text('proposed_permissions').notNull(),
-  proposedTimeRule: text('proposed_time_rule').notNull().default('24/7'),
-  status: text('status').notNull().default('PENDING'), // PENDING, APPROVED, REJECTED
-  makerId: text('maker_id').notNull(), // Admin yang mengusulkan
-  checkerId: text('checker_id'), // Admin yang menyetujui
+export const matrixApprovals = sqliteTable("matrix_approvals", {
+  id: text("id").primaryKey(), // UUID
+  targetUserId: text("target_user_id").notNull(),
+  moduleName: text("module_name").notNull(),
+  proposedPermissions: text("proposed_permissions").notNull(), // JSON string e.g. '["VIEW", "MODIFY"]'
+  proposedTimeRule: text("proposed_time_rule"), // e.g. '24/7'
+  status: text("status", { enum: ['PENDING', 'APPROVED', 'REJECTED'] }).default('PENDING').notNull(),
+  makerId: text("maker_id").notNull(), // User UUID yang merequest
+  checkerId: text("checker_id"), // User UUID yang memverifikasi
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
-  resolvedAt: integer('resolved_at', { mode: 'timestamp' })
+  resolvedAt: integer('resolved_at', { mode: 'timestamp' }),
+});
+
+export const timeMachineNotes = sqliteTable("time_machine_notes", {
+  id: text("id").primaryKey(), // Menggunakan Hash Git Commit (UUID eksternal)
+  authorId: text("author_id"), // Pembuat catatan (opsional/otomatis)
+  note: text("note").notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
 });
 
 export const systemLogs = sqliteTable("system_logs", {

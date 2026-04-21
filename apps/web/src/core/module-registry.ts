@@ -4,7 +4,7 @@
  * didaftarkan di sini agar diakui oleh IAM (Matriks) dan Menu Sidebar.
  */
 
-import { LayoutDashboard, Shield, Key, Users, BookOpen, ActivitySquare, GitMerge, ServerCog, Dna, Hammer } from "lucide-react";
+import { LayoutDashboard, Shield, Key, Users, BookOpen, ActivitySquare, GitMerge, ServerCog, Dna, Hammer, Clock } from "lucide-react";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
 
 export interface OmniModule {
@@ -26,6 +26,7 @@ export const ModuleRegistry: OmniModule[] = [
   { id: "Keamanan Mandat", name: "Mandate Delegation", path: "/mandate", icon: Key, isCore: true, category: "iam" },
   { id: "Active Identity Matrix", name: "Active Identity", path: "/access", icon: Users, isCore: true, category: "iam" },
   { id: "Audit Logbook Intel", name: "Audit Logbook", path: "/logbook", icon: BookOpen, isCore: true, category: "iam" },
+  { id: "Time-Machine Nexus", name: "Nexus Time-Machine", path: "/recovery", icon: Clock, isCore: true, category: "iam" },
 
   // --- KATEGORI: DATA (LABORATORIUM DATA) ---
   { id: "PUM Nexus Engine", name: "Nexus Engine (PNE)", path: "/nexus", icon: GitMerge, isCore: false, category: "data" },

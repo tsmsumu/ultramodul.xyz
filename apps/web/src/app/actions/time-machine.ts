@@ -2,9 +2,7 @@
 
 import { exec } from "child_process";
 import { promisify } from "util";
-import { db } from "@repo/db";
-import { timeMachineNotes } from "@repo/db/schema";
-import { eq } from "drizzle-orm";
+import { db, timeMachineNotes, eq } from "@ultra/db";
 import { revalidatePath } from "next/cache";
 
 const execAsync = promisify(exec);

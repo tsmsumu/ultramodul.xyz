@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useLocale } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { BookMarked, Terminal, ShieldAlert, Cpu, Network, Dna, FileTerminal, ChevronDown, Languages } from "lucide-react";
 
@@ -252,7 +253,8 @@ function GitBranchIcon(props: any) { return <svg {...props} xmlns="http://www.w3
 
 export default function OmniCodexPage() {
   const [openChapter, setOpenChapter] = useState<string>("chapter-1");
-  const [lang, setLang] = useState<"en" | "id">("en");
+  const locale = useLocale();
+  const lang = locale === "id" ? "id" : "en";
 
   const data = contentMap[lang];
 
@@ -263,22 +265,6 @@ export default function OmniCodexPage() {
       <div className="relative overflow-hidden rounded-3xl bg-zinc-950 border border-emerald-900/30 p-8 shadow-[0_0_40px_-15px_rgba(16,185,129,0.3)]">
         <div className="absolute -right-10 -top-10 opacity-10 pointer-events-none">
           <BookMarked className="w-64 h-64 text-emerald-500" />
-        </div>
-        
-        {/* Language Switcher */}
-        <div className="absolute top-6 right-6 z-20 flex bg-black border border-emerald-900/50 rounded-lg overflow-hidden shadow-[0_0_15px_-3px_rgba(16,185,129,0.3)]">
-           <button 
-             onClick={() => setLang("en")}
-             className={`px-3 py-1.5 text-xs font-black tracking-widest transition-colors ${lang === 'en' ? 'bg-emerald-600 text-black' : 'text-gray-500 hover:text-white'}`}
-           >
-             ENG
-           </button>
-           <button 
-             onClick={() => setLang("id")}
-             className={`px-3 py-1.5 text-xs font-black tracking-widest transition-colors ${lang === 'id' ? 'bg-emerald-600 text-black' : 'text-gray-500 hover:text-white'}`}
-           >
-             IND
-           </button>
         </div>
 
         <div className="relative z-10 pt-4">

@@ -1,188 +1,311 @@
-"use strict";
 "use client";
 
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { UploadCloud, Zap, FileText, Download, CheckCircle2, AlertTriangle, ArrowRight, Dna } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { executeEvolutionDiff } from "../../actions/evolution";
+import { useState, useCallback } from "react";
+import { useDropzone } from "react-dropzone";
+import { duckEngine } from "@/core/duckdb-engine";
+import { Dna, UploadCloud, CheckCircle2, AlertTriangle, Loader2, Syringe, Trash2, DownloadCloud, Stethoscope } from "lucide-react";
 
-const STEPS = [
-  { id: 1, label: "step1", icon: UploadCloud, color: "blue", title: "Data Ingestor" },
-  { id: 2, label: "step2", icon: Zap, color: "fuchsia", title: "Quantum Diff" },
-  { id: 3, label: "step3", icon: FileText, color: "amber", title: "Smart Report" },
-  { id: 4, label: "step4", icon: Download, color: "emerald", title: "Publish & Export" }
-];
-
-export default function EvolutionCenter() {
-  const t = useTranslations("evolution");
-  const [currentStep, setCurrentStep] = useState(1);
-  const [isProcessing, setIsProcessing] = useState(false);
-
-  // Mock State Data
-  const [diffData, setDiffData] = useState<any>(null);
+export default function EvolutionCenterPage() {
+  const [loading, setLoading] = useState(false);
+  const [tableName, setTableName] = useState<string>('');
   
-  const handleNextStep = async () => {
-    setIsProcessing(true);
-    
-    // TAHAP 1 -> 2: Ingestor & Quantum Collision (REAL SERVER ACTION EXECUTION)
-    if (currentStep === 1) {
-       const res = await executeEvolutionDiff();
-       if (res.success && res.stats) {
-          setDiffData(res.stats);
-       } else {
-          setDiffData({ newRows: 0, missingRows: 0, unchangedRows: 0 });
-       }
-    }
+  // Profiler State
+  const [totalRows, setTotalRows] = useState<number>(0);
+  const [duplicateCount, setDuplicateCount] = useState<number>(0);
+  const [schemaRows, setSchemaRows] = useState<any[]>([]);
+  const [nullCounts, setNullCounts] = useState<Record<string, number>>({});
+  
+  const [healingLog, setHealingLog] = useState<string[]>([]);
 
-    // TAHAP LAIN: UI Transition
-    setTimeout(() => {
-      setIsProcessing(false);
-      setCurrentStep(prev => Math.min(prev + 1, 4));
-    }, 500); 
+  // 1. INGESTION ZONA
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
+    const file = acceptedFiles[0];
+    if (!file) return;
+
+    setLoading(true);
+    setHealingLog(prev => [...prev, `[Sistem] Menelan file ${file.name}...`]);
+    
+    try {
+      const buffer = await file.arrayBuffer();
+      const safeTableName = "t_" + file.name.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+      
+      const success = await duckEngine.ingestFile(safeTableName, new Uint8Array(buffer), file.name);
+      
+      if (success) {
+        setTableName(safeTableName);
+        setHealingLog(prev => [...prev, `[Sistem] File berhasil diekstrak ke RAM DuckDB WASM.`]);
+        await runDNAProfiler(safeTableName);
+      } else {
+        alert("Gagal menelan file Parquet/CSV!");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Error ingestion!");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, accept: { 'application/octet-stream': ['.parquet'], 'text/csv': ['.csv'] } });
+
+  // 2. DNA PROFILER (SCANNER)
+  const runDNAProfiler = async (table: string) => {
+    setLoading(true);
+    setHealingLog(prev => [...prev, `[Scanner] Menjalankan rontgen matriks pada tabel...`]);
+    
+    try {
+      // Get Schema
+      const schema = await duckEngine.discoverSchema(table);
+      setSchemaRows(schema);
+
+      // Get Total Rows
+      const rowCountRes = await duckEngine.executeRaw(`SELECT COUNT(*) as total FROM ${table}`);
+      const total = Number(rowCountRes[0].total);
+      setTotalRows(total);
+
+      // Get Duplicates
+      // A quick way: COUNT(*) - COUNT(DISTINCT *) for entire row.
+      // In DuckDB: SELECT (SELECT COUNT(*) FROM t) - (SELECT COUNT(*) FROM (SELECT DISTINCT * FROM t)) as dups
+      const dupRes = await duckEngine.executeRaw(`SELECT (SELECT COUNT(*) FROM ${table}) - (SELECT COUNT(*) FROM (SELECT DISTINCT * FROM ${table})) as dups`);
+      const dups = Number(dupRes[0].dups);
+      setDuplicateCount(dups);
+
+      // Count NULLs per column (only first 10 columns for speed if many)
+      const colsToScan = schema.slice(0, 15);
+      let nullSelects = colsToScan.map(c => `SUM(CASE WHEN ${c.column_name} IS NULL THEN 1 ELSE 0) as null_${c.column_name}`).join(', ');
+      
+      if (nullSelects) {
+        const nullRes = await duckEngine.executeRaw(`SELECT ${nullSelects} FROM ${table}`);
+        if (nullRes.length > 0) {
+          const counts: Record<string, number> = {};
+          colsToScan.forEach(c => {
+            counts[c.column_name] = Number(nullRes[0][`null_${c.column_name}`]);
+          });
+          setNullCounts(counts);
+        }
+      }
+
+      setHealingLog(prev => [...prev, `[Scanner] Profiling selesai. Terdeteksi ${total} baris dan ${dups} duplikat.`]);
+    } catch (error) {
+      console.error(error);
+      setHealingLog(prev => [...prev, `[Error] Gagal menjalankan profil: ${String(error)}`]);
+    } finally {
+      setLoading(false);
+    }
   };
 
+  // 3. MUTATION ENGINE
+  const purgeDuplicates = async () => {
+    if(!tableName) return;
+    setLoading(true);
+    setHealingLog(prev => [...prev, `[Mutasi] Mengeksekusi Operasi Pembersihan Duplikat...`]);
+    try {
+      await duckEngine.executeRaw(`CREATE OR REPLACE TABLE ${tableName} AS SELECT DISTINCT * FROM ${tableName}`);
+      setHealingLog(prev => [...prev, `[Mutasi] Sukses! Seluruh baris ganda telah dimusnahkan.`]);
+      await runDNAProfiler(tableName); // Rescan
+    } catch (e) {
+      setHealingLog(prev => [...prev, `[Error] Mutasi Gagal: ${String(e)}`]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const imputeNulls = async () => {
+    if(!tableName) return;
+    setLoading(true);
+    setHealingLog(prev => [...prev, `[Mutasi] Mengeksekusi Auto-Imputation (Penambalan Data Kosong)...`]);
+    try {
+      // For each column that has NULLs, patch it.
+      for (const col of schemaRows) {
+        const nullCnt = nullCounts[col.column_name] || 0;
+        if (nullCnt > 0) {
+          if (col.column_type.includes('INT') || col.column_type.includes('DOUBLE') || col.column_type.includes('DECIMAL')) {
+            // numeric -> patch with median/avg or 0. Simple: 0
+            await duckEngine.executeRaw(`UPDATE ${tableName} SET ${col.column_name} = 0 WHERE ${col.column_name} IS NULL`);
+            setHealingLog(prev => [...prev, `[Suntikan] Menambal NULL pada kolom numerik '${col.column_name}' dengan angka 0.`]);
+          } else {
+            // string -> UNKNOWN
+            await duckEngine.executeRaw(`UPDATE ${tableName} SET ${col.column_name} = 'UNKNOWN' WHERE ${col.column_name} IS NULL`);
+            setHealingLog(prev => [...prev, `[Suntikan] Menambal NULL pada kolom teks '${col.column_name}' dengan 'UNKNOWN'.`]);
+          }
+        }
+      }
+      setHealingLog(prev => [...prev, `[Mutasi] Auto-Imputation selesai.`]);
+      await runDNAProfiler(tableName);
+    } catch (e) {
+      setHealingLog(prev => [...prev, `[Error] Imputasi Gagal: ${String(e)}`]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 4. CRYO-EXPORT
+  const exportParquet = async () => {
+    if(!tableName) return;
+    setLoading(true);
+    setHealingLog(prev => [...prev, `[Cryo-Export] Membekukan tabel ke format Parquet...`]);
+    try {
+      const buffer = await duckEngine.exportToParquet(tableName, 'Clean_Data.parquet');
+      if (buffer) {
+        const blob = new Blob([buffer as any], { type: 'application/octet-stream' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Clean_${tableName}.parquet`;
+        a.click();
+        URL.revokeObjectURL(url);
+        setHealingLog(prev => [...prev, `[Cryo-Export] Berhasil mengunduh Parquet murni.`]);
+      }
+    } catch (e) {
+      setHealingLog(prev => [...prev, `[Error] Ekspor Gagal: ${String(e)}`]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const overallHealth = totalRows === 0 ? 0 : Math.max(0, 100 - ((duplicateCount / totalRows) * 100) - (Object.values(nullCounts).reduce((a,b)=>a+b,0) / (totalRows * schemaRows.length) * 100));
+
   return (
-    <div className="max-w-5xl mx-auto space-y-8 pb-10">
+    <div className="max-w-[1600px] mx-auto min-h-screen p-8 text-zinc-100 flex flex-col gap-6">
       
-      {/* HEADER TUBE */}
-      <div className="flex items-center gap-4 bg-zinc-900/40 border border-white/5 p-6 rounded-3xl backdrop-blur-md relative overflow-hidden">
-        <Dna className="w-48 h-48 absolute -right-10 opacity-5 text-blue-500 animate-pulse" />
-        <div className="w-16 h-16 bg-blue-600/10 rounded-2xl flex items-center justify-center border border-blue-500/30 relative z-10">
-          <Dna className="w-8 h-8 text-blue-500" />
+      {/* HEADER */}
+      <div className="flex items-center gap-6 bg-blue-950/20 p-6 rounded-3xl border border-blue-500/20 shadow-[0_0_50px_rgba(59,130,246,0.1)]">
+        <div className="w-16 h-16 bg-blue-900/30 border border-blue-500/50 rounded-2xl flex items-center justify-center">
+          <Dna className="w-8 h-8 text-blue-400" />
         </div>
-        <div className="relative z-10">
-          <h1 className="text-3xl font-black text-white tracking-widest uppercase">{t("title")}</h1>
-          <p className="text-blue-400 text-sm font-mono mt-1 opacity-80">{t("desc")}</p>
+        <div className="flex-1">
+          <h1 className="text-3xl font-black uppercase tracking-widest text-white mb-1">Data Evolution Center</h1>
+          <p className="text-blue-400/80 text-sm">Mesin Cuci Laboratorium Data (Zero-Backend DuckDB). Membersihkan, menambal, dan menyembuhkan data secara lokal.</p>
         </div>
+        {tableName && (
+          <div className="text-right">
+             <div className="text-xs text-blue-500 font-bold uppercase tracking-widest">DNA Health Score</div>
+             <div className={`text-4xl font-black ${overallHealth > 90 ? 'text-emerald-400' : overallHealth > 70 ? 'text-amber-400' : 'text-red-500'}`}>
+               {overallHealth.toFixed(1)}%
+             </div>
+          </div>
+        )}
       </div>
 
-      {/* LINEAR STEPPER WIZARD */}
-      <div className="flex justify-between items-center relative px-4">
-        {/* Connection Line */}
-        <div className="absolute top-1/2 left-0 w-full h-1 bg-zinc-800 -z-10 -translate-y-1/2 rounded-full" />
-        <div 
-          className="absolute top-1/2 left-0 h-1 bg-gradient-to-r from-blue-500 via-fuchsia-500 to-emerald-500 -z-10 -translate-y-1/2 rounded-full transition-all duration-700 ease-in-out"
-          style={{ width: `${((currentStep - 1) / 3) * 100}%` }}
-        />
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 min-h-0">
+        
+        {/* LEFT PANEL: DROPZONE & PROFILER */}
+        <div className="col-span-5 flex flex-col gap-6">
+           
+           {!tableName ? (
+             <div {...getRootProps()} className={`flex-1 border-2 border-dashed rounded-3xl p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all ${isDragActive ? 'border-blue-500 bg-blue-900/20' : 'border-zinc-800 bg-zinc-900/30 hover:border-blue-500/50'}`}>
+               <input {...getInputProps()} />
+               {loading ? (
+                 <Loader2 className="w-16 h-16 text-blue-500 animate-spin mb-4" />
+               ) : (
+                 <UploadCloud className="w-16 h-16 text-zinc-600 mb-4" />
+               )}
+               <h3 className="text-xl font-bold text-white mb-2">Drop Zona Karantina Data</h3>
+               <p className="text-zinc-500 text-sm max-w-xs">Seret Parquet/CSV mentah ke sini. Semua proses cuci data akan dilakukan di RAM Browser Anda tanpa menggunakan Bandwidth/Server VPS.</p>
+             </div>
+           ) : (
+             <div className="bg-zinc-900/40 border border-white/5 rounded-3xl p-6 flex-1 overflow-hidden flex flex-col">
+               <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2 mb-6">
+                 <Stethoscope className="w-4 h-4 text-blue-400" /> Hasil Profiler Matriks
+               </h3>
 
-        {STEPS.map((step) => {
-          const isActive = currentStep === step.id;
-          const isPassed = currentStep > step.id;
-          
-          return (
-            <div key={step.id} className="flex flex-col items-center gap-3 bg-[#0a0a0c] p-2">
-              <div className={`w-14 h-14 rounded-full flex items-center justify-center border-[3px] transition-all duration-500
-                ${isActive ? `border-${step.color}-500 bg-${step.color}-950 shadow-[0_0_20px_rgba(var(--tw-colors-${step.color}-500),0.3)] scale-110` : 
-                  isPassed ? `border-emerald-500 bg-emerald-950/30` : 
-                  `border-zinc-800 bg-zinc-900 opacity-50`}`}
-              >
-                {isPassed ? <CheckCircle2 className="w-6 h-6 text-emerald-500" /> : <step.icon className={`w-6 h-6 ${isActive ? `text-${step.color}-400` : `text-zinc-600`}`} />}
-              </div>
-              <div className="text-center">
-                <div className={`text-xs font-black uppercase tracking-widest ${isActive ? 'text-white' : 'text-zinc-600'}`}>
-                  {t(step.label)}
-                </div>
-              </div>
-            </div>
-          )
-        })}
-      </div>
-
-      {/* TUBE CONTENT ENGINE */}
-      <div className="bg-zinc-900/20 border border-white/5 rounded-3xl p-8 min-h-[400px] flex flex-col justify-center relative">
-         <AnimatePresence mode="wait">
-            
-            {/* STEP 1: UPLOAD */}
-            {currentStep === 1 && (
-              <motion.div key="s1" initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0, y:-20 }} className="text-center flex flex-col items-center gap-6">
-                <div className="w-full max-w-xl mx-auto border-2 border-dashed border-zinc-700 hover:border-blue-500 bg-zinc-900/50 rounded-3xl p-16 transition-colors cursor-pointer group">
-                   <UploadCloud className="w-16 h-16 text-zinc-600 group-hover:text-blue-500 mx-auto mb-4 transition-colors" />
-                   <h3 className="text-xl font-bold text-white mb-2">Drop New Quarterly Data</h3>
-                   <p className="text-zinc-500 text-sm">Supported formats: .parquet, .csv (Max 10TB Data Engine)</p>
-                </div>
-              </motion.div>
-            )}
-
-            {/* STEP 2: DIFF MATRiX */}
-            {currentStep === 2 && (
-              <motion.div key="s2" initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0, y:-20 }} className="space-y-6">
-                <div className="text-center mb-8">
-                  <h3 className="text-2xl font-black text-white tracking-wide uppercase">Quantum Collision Results</h3>
-                  <p className="text-fuchsia-400 font-mono text-sm opacity-80">DuckDB EXCEPT / INTERSECT Analyzer</p>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                   <div className="bg-emerald-950/20 border border-emerald-500/20 p-6 rounded-2xl flex flex-col items-center text-center">
-                     <span className="text-emerald-400 text-xs font-bold uppercase tracking-widest mb-4">Inclusion (New Rows)</span>
-                     <span className="text-5xl font-black text-emerald-400 font-mono">+{diffData?.newRows.toLocaleString()}</span>
-                   </div>
-                   <div className="bg-red-950/20 border border-red-500/20 p-6 rounded-2xl flex flex-col items-center text-center">
-                     <span className="text-red-400 text-xs font-bold uppercase tracking-widest mb-4">Friction (Missing/Deleted)</span>
-                     <span className="text-5xl font-black text-red-400 font-mono">-{diffData?.missingRows.toLocaleString()}</span>
-                   </div>
-                   <div className="bg-blue-950/20 border border-blue-500/20 p-6 rounded-2xl flex flex-col items-center text-center">
-                     <span className="text-blue-400 text-xs font-bold uppercase tracking-widest mb-4">Stagnant (Unchanged)</span>
-                     <span className="text-5xl font-black text-blue-400 font-mono">{diffData?.unchangedRows.toLocaleString()}</span>
-                   </div>
-                </div>
-              </motion.div>
-            )}
-
-            {/* STEP 3: REPORT BUILDER */}
-            {currentStep === 3 && (
-              <motion.div key="s3" initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0, y:-20 }}>
-                <div className="mb-6"><h3 className="text-xl font-bold text-white mb-2">Smart Report Synthesis</h3><p className="text-amber-400/80 text-sm">Select official template to auto-populate metrics.</p></div>
-                <div className="grid grid-cols-3 gap-4 mb-6">
-                  <button className="bg-amber-950/40 border border-amber-500/50 p-4 rounded-xl text-left hover:bg-amber-900/40 transition">
-                    <span className="font-bold text-amber-400 block mb-1">Executive Summary</span>
-                    <span className="text-xs text-zinc-400">High-level demographic shifts.</span>
-                  </button>
-                  <button className="bg-zinc-900/50 border border-zinc-800 p-4 rounded-xl text-left hover:border-zinc-600 transition">
-                    <span className="font-bold text-white block mb-1">Technical Diff Audit</span>
-                  </button>
-                  <button className="bg-zinc-900/50 border border-zinc-800 p-4 rounded-xl text-left hover:border-zinc-600 transition">
-                    <span className="font-bold text-white block mb-1">Anomaly Log Sheet</span>
-                  </button>
-                </div>
-                <div className="bg-[#0a0a0c] border border-zinc-800 p-6 rounded-xl font-mono text-sm text-zinc-300 leading-relaxed">
-                  <span className="text-amber-400"># REPORT: EXECUTIVE DEMOGRAPHY SHIFT Q2</span><br/><br/>
-                  Based on the collision engine results, the system detected a massive inclusion of <strong className="text-emerald-400">+{diffData?.newRows.toLocaleString()}</strong> new identities into the region. 
-                  Simultaneously, <strong className="text-red-400">{diffData?.missingRows.toLocaleString()}</strong> records were purged through natural friction rules...
-                </div>
-              </motion.div>
-            )}
-
-            {/* STEP 4: EXPORT */}
-            {currentStep === 4 && (
-              <motion.div key="s4" initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0, y:-20 }} className="text-center">
-                 <CheckCircle2 className="w-20 h-20 text-emerald-500 mx-auto mb-6" />
-                 <h3 className="text-3xl font-black text-white tracking-widest uppercase mb-4">Pipeline Completed</h3>
-                 <p className="text-zinc-400 mb-8 max-w-xl mx-auto">The quarterly data has been forged, verified, and formulated. Select the export protocol to distribute the payload.</p>
-                 
-                 <div className="flex justify-center gap-4">
-                   <button className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-full font-bold uppercase tracking-widest text-sm flex items-center gap-2 transition"><Download className="w-4 h-4"/> Extract Parquet Core</button>
-                   <button className="bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-3 rounded-full font-bold uppercase tracking-widest text-sm flex items-center gap-2 transition"><FileText className="w-4 h-4"/> Print PDF Report</button>
+               <div className="grid grid-cols-2 gap-4 mb-6 shrink-0">
+                 <div className="bg-black/50 border border-white/5 p-4 rounded-2xl text-center">
+                   <div className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Total Populasi</div>
+                   <div className="text-2xl font-black text-white">{totalRows.toLocaleString()}</div>
                  </div>
-              </motion.div>
-            )}
+                 <div className="bg-black/50 border border-red-500/20 p-4 rounded-2xl text-center">
+                   <div className="text-[10px] text-red-500 uppercase tracking-widest font-bold">Sel Duplikat</div>
+                   <div className="text-2xl font-black text-red-400">{duplicateCount.toLocaleString()}</div>
+                 </div>
+               </div>
 
-         </AnimatePresence>
-      </div>
+               <div className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-3">Infeksi Kolom Kosong (NULL)</div>
+               <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 space-y-2">
+                 {schemaRows.slice(0, 15).map((col, i) => {
+                   const nulls = nullCounts[col.column_name] || 0;
+                   const pct = totalRows ? ((nulls/totalRows)*100).toFixed(1) : "0.0";
+                   return (
+                     <div key={i} className="flex justify-between items-center bg-black/40 p-3 rounded-xl border border-white/5">
+                       <div className="flex flex-col">
+                         <span className="text-xs font-mono font-bold text-zinc-300">{col.column_name}</span>
+                         <span className="text-[10px] text-zinc-600">{col.column_type}</span>
+                       </div>
+                       {nulls > 0 ? (
+                         <div className="text-right">
+                           <span className="text-xs font-bold text-amber-500">{nulls.toLocaleString()} NULL</span>
+                           <div className="text-[10px] text-amber-500/50">{pct}% dari total</div>
+                         </div>
+                       ) : (
+                         <div className="flex items-center gap-1 text-emerald-500 text-xs font-bold">
+                           <CheckCircle2 className="w-3 h-3" /> SEHAT
+                         </div>
+                       )}
+                     </div>
+                   );
+                 })}
+                 {schemaRows.length > 15 && <div className="text-center text-xs text-zinc-500 py-2">... dan {schemaRows.length - 15} kolom lainnya</div>}
+               </div>
+             </div>
+           )}
 
-      {/* CONTINUATION TUBE (Next Button) */}
-      {currentStep < 4 && (
-        <div className="flex justify-end pt-4">
-          <button 
-            disabled={isProcessing}
-            onClick={handleNextStep}
-            className="group bg-white text-black hover:bg-gray-200 px-8 py-4 rounded-full font-black uppercase tracking-widest text-sm flex items-center gap-3 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_30px_rgba(255,255,255,0.1)] hover:shadow-[0_0_40px_rgba(255,255,255,0.2)]"
-          >
-            {isProcessing ? 'Executing...' : `Continue to Phase ${currentStep + 1}`}
-            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </button>
         </div>
-      )}
+
+        {/* RIGHT PANEL: MUTATION & LOGS */}
+        <div className="col-span-7 flex flex-col gap-6">
+           
+           <div className="bg-zinc-900/40 border border-white/5 rounded-3xl p-6">
+             <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2 mb-6">
+                <Syringe className="w-4 h-4 text-emerald-400" /> Operasi Mutasi Bedah
+             </h3>
+
+             <div className="grid grid-cols-3 gap-4">
+               <button 
+                 disabled={!tableName || loading || duplicateCount === 0} 
+                 onClick={purgeDuplicates}
+                 className="flex flex-col items-center text-center p-4 bg-red-950/30 hover:bg-red-900/50 disabled:opacity-50 border border-red-500/30 rounded-2xl transition"
+               >
+                 <Trash2 className="w-6 h-6 text-red-400 mb-2" />
+                 <span className="text-xs font-bold uppercase tracking-widest text-red-300">Purge Duplicates</span>
+               </button>
+               
+               <button 
+                 disabled={!tableName || loading} 
+                 onClick={imputeNulls}
+                 className="flex flex-col items-center text-center p-4 bg-amber-950/30 hover:bg-amber-900/50 disabled:opacity-50 border border-amber-500/30 rounded-2xl transition"
+               >
+                 <Syringe className="w-6 h-6 text-amber-400 mb-2" />
+                 <span className="text-xs font-bold uppercase tracking-widest text-amber-300">Auto-Impute Nulls</span>
+               </button>
+
+               <button 
+                 disabled={!tableName || loading} 
+                 onClick={exportParquet}
+                 className="flex flex-col items-center text-center p-4 bg-blue-950/30 hover:bg-blue-900/50 disabled:opacity-50 border border-blue-500/30 rounded-2xl transition"
+               >
+                 <DownloadCloud className="w-6 h-6 text-blue-400 mb-2" />
+                 <span className="text-xs font-bold uppercase tracking-widest text-blue-300">Cryo-Export Parquet</span>
+               </button>
+             </div>
+           </div>
+
+           <div className="bg-black flex-1 border border-white/5 rounded-3xl p-4 flex flex-col overflow-hidden">
+             <div className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-4 px-2">Log Mesin Evolusi</div>
+             <div className="flex-1 overflow-y-auto custom-scrollbar px-2 space-y-2 font-mono text-xs">
+               {healingLog.map((log, idx) => {
+                  let color = "text-zinc-400";
+                  if(log.includes("Mutasi]")) color = "text-emerald-400";
+                  if(log.includes("Error]")) color = "text-red-500 font-bold";
+                  if(log.includes("Suntikan]")) color = "text-amber-400";
+                  if(log.includes("Scanner]")) color = "text-blue-400";
+                  return <div key={idx} className={color}>{log}</div>
+               })}
+             </div>
+           </div>
+
+        </div>
+
+      </div>
     </div>
   );
 }

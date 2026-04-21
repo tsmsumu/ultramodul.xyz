@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { X, Database, Play, Loader2 } from "lucide-react";
+import { X, Database, Play, Loader2, DownloadCloud } from "lucide-react";
 import { duckEngine } from "@/core/duckdb-engine";
 import { executeRawNexusQuery } from "@/app/actions/queryEngine";
 
@@ -10,6 +10,32 @@ export function HologramTerminal({ nodeData, onClose }: { nodeData: any | null, 
   const [columns, setColumns] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const handleDownload = async () => {
+    const tableName = nodeData.tableName || nodeData.dbName;
+    if (!tableName) return;
+    setIsDownloading(true);
+    try {
+      const fileName = `Ekstrak_${tableName}_${Date.now()}.parquet`;
+      const buffer = await duckEngine.exportToParquet(tableName, fileName);
+      if (buffer) {
+        const blob = new Blob([buffer as any], { type: 'application/octet-stream' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        a.click();
+        URL.revokeObjectURL(url);
+      } else {
+        alert("Gagal merakit file Parquet.");
+      }
+    } catch (err: any) {
+      alert("Error Download: " + err.message);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   useEffect(() => {
     if (!nodeData) return;
@@ -65,7 +91,17 @@ export function HologramTerminal({ nodeData, onClose }: { nodeData: any | null, 
           </span>
         </div>
         <div className="flex items-center gap-3">
-          <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded flex items-center gap-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400`}>
+          {(nodeData.tableName || nodeData.dbName) && (
+            <button 
+              onClick={handleDownload}
+              disabled={isDownloading}
+              className="text-[10px] uppercase font-bold px-3 py-1 rounded flex items-center gap-1.5 bg-purple-600 hover:bg-purple-500 text-white transition disabled:opacity-50"
+            >
+              {isDownloading ? <Loader2 className="w-3 h-3 animate-spin" /> : <DownloadCloud className="w-3 h-3"/>}
+              {isDownloading ? 'MEMADATKAN...' : 'DOWNLOAD FISIK'}
+            </button>
+          )}
+          <span className={`text-[10px] uppercase font-bold px-2 py-1 rounded flex items-center gap-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400`}>
             <Play className="w-3 h-3"/> DUCKDB WASM LOCALLY COMPILED
           </span>
           <button onClick={onClose} className="p-1 hover:bg-black/10 dark:hover:bg-white/10 rounded cursor-pointer transition">

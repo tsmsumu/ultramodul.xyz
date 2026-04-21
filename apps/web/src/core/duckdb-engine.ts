@@ -178,6 +178,21 @@ class DuckDBEngine {
       return [];
     }
   }
+
+  // Ekstraktor: Ekspor Tabel / View menjadi File Parquet Fisik
+  async exportToParquet(tableName: string, fileName: string = 'Ekstrak_Data.parquet'): Promise<Uint8Array | null> {
+    await this.init();
+    if (!this.db || !this.connection) return null;
+    try {
+      // Perintah sakti DuckDB untuk mem-pack tabel/view menjadi file Parquet
+      await this.connection.query(`COPY (SELECT * FROM ${tableName}) TO '${fileName}' (FORMAT PARQUET);`);
+      const buffer = await this.db.copyFileToBuffer(fileName);
+      return buffer;
+    } catch (e) {
+      console.error(`[DuckDB] Gagal mengekstrak Parquet:`, e);
+      return null;
+    }
+  }
 }
 
 export const duckEngine = new DuckDBEngine();

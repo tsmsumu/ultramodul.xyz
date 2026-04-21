@@ -23,15 +23,15 @@ export function PublishNode({ data, id }: any) {
   };
 
   return (
-    <div className="w-72 bg-[#09090b] text-white rounded-xl shadow-[0_10px_40px_rgba(234,179,8,0.3)] border border-yellow-500/50 p-4 transition-all hover:border-yellow-400">
-      <Handle type="target" position={Position.Left} className="w-3 h-3 bg-yellow-500 border-2 border-black" />
+    <div className="w-72 bg-[#09090b] text-white rounded-xl shadow-[0_10px_40px_rgba(168,85,247,0.3)] border border-purple-500/50 p-4 transition-all hover:border-purple-400">
+      <Handle type="target" position={Position.Left} className="w-3 h-3 bg-purple-500 border-2 border-black" />
       
       <div className="flex items-center gap-3 mb-3 border-b border-white/10 pb-3">
-        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-yellow-400 to-amber-600 flex items-center justify-center text-black shadow-lg shadow-yellow-500/20">
+        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-400 to-fuchsia-600 flex items-center justify-center text-white shadow-lg shadow-purple-500/20">
           <UploadCloud className="w-5 h-5" />
         </div>
         <div>
-          <div className="text-[10px] font-mono text-yellow-500 uppercase tracking-widest font-bold">The Endgame</div>
+          <div className="text-[10px] font-mono text-purple-400 uppercase tracking-widest font-bold">The Endgame</div>
           <div className="font-bold tracking-wide">Publish Hub</div>
         </div>
       </div>
@@ -44,7 +44,7 @@ export function PublishNode({ data, id }: any) {
              onChange={e => setBlueprintName(e.target.value)} 
              placeholder="Contoh: Gabungan_Sensus_Final"
              disabled={isPublished}
-             className="w-full bg-black/50 border border-white/10 rounded-md p-2 text-xs text-white focus:outline-none focus:border-yellow-500 transition font-mono"
+             className="w-full bg-black/50 border border-white/10 rounded-md p-2 text-xs text-white focus:outline-none focus:border-purple-500 transition font-mono"
            />
          </div>
          
@@ -57,7 +57,7 @@ export function PublishNode({ data, id }: any) {
                <CheckCircle2 className="w-4 h-4" /> PUBLISHED TO CORE
             </div>
          ) : (
-            <button onClick={handlePublish} className="w-full py-2 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-black rounded-lg text-xs font-bold transition flex items-center justify-center gap-2 shadow-xl shadow-yellow-500/20 hover:scale-[1.02]">
+            <button onClick={handlePublish} className="w-full py-2 bg-gradient-to-r from-purple-500 to-fuchsia-600 hover:from-purple-400 hover:to-fuchsia-500 text-white rounded-lg text-xs font-bold transition flex items-center justify-center gap-2 shadow-xl shadow-purple-500/20 hover:scale-[1.02]">
                <LockKeyhole className="w-4 h-4" /> BUNGKUS KE DALAM BRANKAS!
             </button>
          )}

@@ -11,8 +11,15 @@ export default getRequestConfig(async () => {
 
   const locale = localeCookie && locales.includes(localeCookie) ? localeCookie : defaultLocale;
 
+  let messages;
+  if (locale === 'id') {
+    messages = (await import('../messages/id.json')).default;
+  } else {
+    messages = (await import('../messages/en.json')).default;
+  }
+
   return {
     locale,
-    messages: (await import(`../messages/${locale}.json`)).default
+    messages
   };
 });

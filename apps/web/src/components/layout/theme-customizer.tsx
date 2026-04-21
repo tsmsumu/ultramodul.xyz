@@ -32,8 +32,15 @@ export function ThemeCustomizer({ currentSkin, currentLayout }: { currentSkin: s
   };
 
   const applyLanguage = async (value: string) => {
-    await setLanguageCookie(value);
-    window.location.reload();
+    try {
+      console.log("Setting language to", value);
+      await setLanguageCookie(value);
+      setTimeout(() => {
+        window.location.reload();
+      }, 300);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (

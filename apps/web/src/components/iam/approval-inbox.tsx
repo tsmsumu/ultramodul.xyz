@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { getPendingApprovals, resolveApproval } from "@/app/actions/approvals";
-import { CheckCircle, XCircle, Clock } from "lucide-react";
+import { CheckCircle, XCircle, Clock, Search } from "lucide-react";
 
 export function ApprovalInbox() {
   const [approvals, setApprovals] = useState<any[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     load();
@@ -26,22 +27,48 @@ export function ApprovalInbox() {
     }
   };
 
+  const filteredApprovals = useMemo(() => {
+    if (!searchQuery) return approvals;
+    const q = searchQuery.toLowerCase();
+    return approvals.filter(ap => 
+      ap.targetUserId.toLowerCase().includes(q) || 
+      (ap.moduleName || "").toLowerCase().includes(q) ||
+      ap.type.toLowerCase().includes(q)
+    );
+  }, [approvals, searchQuery]);
+
   // Hapus return null agar Kotak Persidangan selalu muncul
   // if (approvals.length === 0) return null;
   return (
     <div className="mb-8 border border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-900/10 rounded-xl p-5">
-       <div className="flex items-center gap-2 mb-4">
-         <Clock className="w-5 h-5 text-amber-600 dark:text-amber-500" />
-         <h2 className="font-semibold text-amber-800 dark:text-amber-500">Antrean Persidangan Hak Akses ({approvals.length})</h2>
+       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
+         <div className="flex items-center gap-2">
+           <Clock className="w-5 h-5 text-amber-600 dark:text-amber-500" />
+           <h2 className="font-semibold text-amber-800 dark:text-amber-500">Antrean Persidangan Hak Akses ({approvals.length})</h2>
+         </div>
+         <div className="relative w-full sm:w-64">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-amber-500" />
+            <input 
+              type="text" 
+              placeholder="Cari antrean..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-9 pr-3 py-1.5 text-xs bg-white/60 dark:bg-black/20 border border-amber-200 dark:border-amber-900/50 rounded-lg focus:outline-none focus:ring-1 focus:ring-amber-500 text-amber-900 dark:text-amber-200 placeholder:text-amber-600/50 transition"
+            />
+         </div>
        </div>
 
        <div className="space-y-3">
-          {approvals.length === 0 ? (
+          {filteredApprovals.length === 0 && approvals.length > 0 ? (
+             <div className="text-center py-4 text-amber-700/60 dark:text-amber-500/50 text-sm font-medium">
+               Tidak ada antrean yang cocok dengan pencarian "{searchQuery}".
+             </div>
+          ) : filteredApprovals.length === 0 ? (
             <div className="text-center py-6 text-amber-700/60 dark:text-amber-500/50 text-sm font-medium">
                Bebas Tugas! Tidak ada antrean mandat otorisasi yang menunggu persetujuan Bapak.
             </div>
           ) : (
-            approvals.map(ap => (
+            filteredApprovals.map(ap => (
               <div key={ap.id} className="flex justify-between items-center bg-white dark:bg-zinc-900 border border-amber-100 dark:border-white/5 rounded-lg p-3 shadow-sm hover:shadow transition">
                 <div>
                   <p className="text-sm font-bold text-gray-900 dark:text-white flex items-center gap-2">

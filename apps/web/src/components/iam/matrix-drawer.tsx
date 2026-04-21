@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Shield, X, Save, BoxSelect, CheckSquare } from "lucide-react";
+import { Shield, X, Save, BoxSelect, CheckSquare, Search } from "lucide-react";
 import { getUserMatrix, saveUserMatrix } from "@/app/actions/matrix";
 import { getRegisteredModuleIds } from "@/core/module-registry";
 
@@ -31,6 +31,7 @@ export function MatrixDrawer({
   const [initialMatrixData, setInitialMatrixData] = useState<Record<string, string[]>>({});
   const [timeRules, setTimeRules] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     if (isOpen && userId) {
@@ -126,6 +127,19 @@ export function MatrixDrawer({
               </button>
             </div>
 
+            <div className="px-5 pt-4 pb-2 border-b border-gray-100 dark:border-white/10">
+               <div className="relative">
+                  <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input 
+                    type="text" 
+                    placeholder="Cari Spesifik Modul..." 
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-9 pr-4 py-2 text-sm bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500 transition"
+                  />
+               </div>
+            </div>
+
             <div className="flex-1 overflow-y-auto p-5 space-y-6">
               {loading ? (
                 <div className="animate-pulse space-y-4">
@@ -133,7 +147,10 @@ export function MatrixDrawer({
                   <div className="h-24 bg-gray-100 dark:bg-white/5 rounded-xl"></div>
                 </div>
               ) : (
-                MODULES.map(mod => (
+                MODULES.filter(mod => mod.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 ? (
+                   <div className="text-center py-10 text-gray-400 text-sm">Modul tidak ditemukan.</div>
+                ) : (
+                MODULES.filter(mod => mod.toLowerCase().includes(searchQuery.toLowerCase())).map(mod => (
                   <div key={mod} className="border border-gray-200 dark:border-white/10 rounded-xl p-4 bg-gray-50/50 dark:bg-white/[0.01]">
                      <div className="flex justify-between items-center mb-4">
                         <h3 className="flex items-center gap-2 font-medium text-sm"><BoxSelect className="w-4 h-4 opacity-50"/> Modul {mod}</h3>
@@ -169,6 +186,7 @@ export function MatrixDrawer({
                      </div>
                   </div>
                 ))
+                )
               )}
             </div>
 

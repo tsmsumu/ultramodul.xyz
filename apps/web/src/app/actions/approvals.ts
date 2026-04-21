@@ -66,7 +66,7 @@ export async function resolveApproval(approvalId: string, checkerId: string, isA
 
          if (existingMtx.length > 0) {
            await db.update(accessMatrix)
-             .set({ permissions: apv.proposedPermissions, timeRule: apv.proposedTimeRule })
+             .set({ permissions: apv.proposedPermissions, timeRule: apv.proposedTimeRule || "24/7" })
              .where(eq(accessMatrix.id, existingMtx[0].id));
          } else {
            await db.insert(accessMatrix).values({
@@ -74,7 +74,7 @@ export async function resolveApproval(approvalId: string, checkerId: string, isA
              userId: apv.targetUserId,
              moduleName: apv.moduleName,
              permissions: apv.proposedPermissions,
-             timeRule: apv.proposedTimeRule,
+             timeRule: apv.proposedTimeRule || "24/7",
              grantedBy: checkerId,
              createdAt: new Date()
            });

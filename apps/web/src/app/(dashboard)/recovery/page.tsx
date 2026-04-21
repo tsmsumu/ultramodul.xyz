@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { getTimelineHologram, attachMemoryNote, executeQuantumRollback } from "@/app/actions/time-machine";
 import { motion, AnimatePresence } from "framer-motion";
-import { Clock, ShieldAlert, Download, UploadCloud, RotateCcw, AlertTriangle, Save, Loader2 } from "lucide-react";
+import { Clock, ShieldAlert, Download, UploadCloud, RotateCcw, AlertTriangle, Save, Loader2, X } from "lucide-react";
 
 export default function NexusRecoveryPage() {
   const [timeline, setTimeline] = useState<any[]>([]);
@@ -29,7 +29,7 @@ export default function NexusRecoveryPage() {
     setLoading(true);
     const res = await getTimelineHologram();
     if (res.success) {
-      setTimeline(res.payload);
+      setTimeline(res.payload || []);
     }
     setLoading(false);
   };

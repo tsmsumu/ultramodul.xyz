@@ -94,7 +94,13 @@ export function DataTable({ initialUsers }: { initialUsers: any[] }) {
       setLoadingId(null);
       
       if (result.success) {
-        alert(`SUKSES! Password Sementara untuk NIK ${username}:\n\n${pass}\n\nSilakan segera copy/salin sekarang! Sandi ini tidak akan ditampilkan lagi demi keamanan Audit.`);
+        try {
+          await navigator.clipboard.writeText(pass);
+          alert(`SUKSES! Sandi baru untuk NIK ${username} adalah:\n\n${pass}\n\n✔️ Sandi telah OTOMATIS DISALIN (Copied) ke perangkat Anda! Silakan tekan Paste (Ctrl+V) di tempat yang aman.`);
+        } catch (e) {
+          // Fallback jika browser memblokir clipboard API
+          prompt(`SUKSES! Sandi baru NIK ${username} berhasil dibuat.\n\nSilakan block dan COPY (Salin) sandi di kotak bawah ini SEKARANG:`, pass);
+        }
       } else {
         alert("Gagal membuat password. Hubungi sysadmin.");
       }

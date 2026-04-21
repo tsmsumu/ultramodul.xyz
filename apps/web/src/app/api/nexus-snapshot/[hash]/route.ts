@@ -9,10 +9,10 @@ const execAsync = promisify(exec);
 
 export async function GET(
   req: NextRequest, 
-  { params }: { params: { hash: string } }
+  { params }: { params: Promise<{ hash: string }> }
 ) {
   try {
-    const hash = params.hash;
+    const { hash } = await params;
     if (!hash || hash.length < 5) {
       return new NextResponse("Invalid Hash", { status: 400 });
     }

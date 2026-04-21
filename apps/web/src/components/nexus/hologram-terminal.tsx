@@ -13,12 +13,21 @@ export function HologramTerminal({ nodeData, onClose }: { nodeData: any | null, 
   const [isDownloading, setIsDownloading] = useState(false);
 
   const handleDownload = async () => {
-    const tableName = nodeData.tableName || nodeData.dbName;
-    if (!tableName) return;
+    // Cari nama tabel dari berbagai kemungkinan property
+    const tableName = nodeData.tableName || nodeData.dbName || (nodeData.sqlQuery ? 'Hasil_Kueri_Khusus' : null);
+    if (!tableName) return alert("Sistem tidak mendeteksi tabel untuk diekstrak.");
     setIsDownloading(true);
     try {
-      const fileName = `Ekstrak_${tableName}_${Date.now()}.parquet`;
-      const buffer = await duckEngine.exportToParquet(tableName, fileName);
+      let targetTable = tableName;
+      
+      // Jika ini adalah SQL Bebas, kita buatkan view sementara untuk diekstrak
+      if (nodeData.sqlQuery && !nodeData.tableName && !nodeData.dbName) {
+         targetTable = `temp_extract_${Date.now()}`;
+         await duckEngine.executeRaw(`CREATE OR REPLACE VIEW ${targetTable} AS ${nodeData.sqlQuery}`);
+      }
+
+      const fileName = `Ekstrak_${targetTable}_${Date.now()}.parquet`;
+      const buffer = await duckEngine.exportToParquet(targetTable, fileName);
       if (buffer) {
         const blob = new Blob([buffer as any], { type: 'application/octet-stream' });
         const url = URL.createObjectURL(blob);
@@ -91,16 +100,14 @@ export function HologramTerminal({ nodeData, onClose }: { nodeData: any | null, 
           </span>
         </div>
         <div className="flex items-center gap-3">
-          {(nodeData.tableName || nodeData.dbName) && (
             <button 
               onClick={handleDownload}
               disabled={isDownloading}
-              className="text-[10px] uppercase font-bold px-3 py-1 rounded flex items-center gap-1.5 bg-purple-600 hover:bg-purple-500 text-white transition disabled:opacity-50"
+              className="text-[10px] uppercase font-bold px-4 py-1.5 rounded flex items-center gap-1.5 bg-fuchsia-600 hover:bg-fuchsia-500 text-white transition disabled:opacity-50 shadow-[0_0_15px_rgba(192,38,211,0.5)] border border-fuchsia-400"
             >
-              {isDownloading ? <Loader2 className="w-3 h-3 animate-spin" /> : <DownloadCloud className="w-3 h-3"/>}
+              {isDownloading ? <Loader2 className="w-3 h-3 animate-spin" /> : <DownloadCloud className="w-4 h-4"/>}
               {isDownloading ? 'MEMADATKAN...' : 'DOWNLOAD FISIK'}
             </button>
-          )}
           <span className={`text-[10px] uppercase font-bold px-2 py-1 rounded flex items-center gap-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400`}>
             <Play className="w-3 h-3"/> DUCKDB WASM LOCALLY COMPILED
           </span>

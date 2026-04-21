@@ -96,20 +96,29 @@ export async function setRandomPassword(id: string, plainText: string) {
 
 export async function deleteIdentity(id: string) {
   try {
-    // SECURITY: Di tahap produksi asli, kita perlu mengecek relasi matrix & mandate sebelum dihapus
-    await db.delete(users).where(eq(users.id, id));
+    // KABINET RESOLUSI: Tidak lagi dihapus langsung! Lempar ke Majelis Persidangan.
+    await db.insert(matrixApprovals).values({
+      id: randomUUID(),
+      targetUserId: id,
+      moduleName: "DELETE_ACCOUNT",
+      proposedPermissions: "PERMADEATH", // Penanda kehancuran mutlak
+      proposedTimeRule: "-",
+      status: "PENDING",
+      makerId: "SYSTEM",
+      createdAt: new Date(),
+    });
 
     await createAuditLog({
-      action: "DELETE_IDENTITY",
+      action: "PROPOSE_DELETE_IDENTITY",
       actorId: "SYSTEM",
       target: id,
-      metadata: { note: "Karakter/User Berhasil Ditarik dari Database Utama" }
+      metadata: { note: "Pengajuan hukuman mati identitas dilempar ke Approval Inbox" }
     });
 
     return { success: true };
   } catch (error) {
-    console.error("Delete failed:", error);
-    return { success: false, error: "Gagal menghapus user, mungkin berkaitan dengan data lain." };
+    console.error("Delete proposal failed:", error);
+    return { success: false, error: "Gagal memproses antrean hapus user." };
   }
 }
 

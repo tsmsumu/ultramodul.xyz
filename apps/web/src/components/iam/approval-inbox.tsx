@@ -45,13 +45,14 @@ export function ApprovalInbox() {
               <div key={ap.id} className="flex justify-between items-center bg-white dark:bg-zinc-900 border border-amber-100 dark:border-white/5 rounded-lg p-3 shadow-sm hover:shadow transition">
                 <div>
                   <p className="text-sm font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-                    {ap.type === 'IDENTITY' ? "Pendaftaran Karakter Baru" : ap.moduleName === 'PASSWORD_RESET' ? "Permohonan Ganti Sandi" : "Akses Matriks: " + ap.moduleName}
+                    <span className={`w-2 h-2 rounded-full animate-pulse ${ap.moduleName === 'DELETE_ACCOUNT' ? 'bg-red-500' : 'bg-amber-500'}`}></span>
+                    {ap.type === 'IDENTITY' ? "Pendaftaran Karakter Baru" : ap.moduleName === 'PASSWORD_RESET' ? "Permohonan Ganti Sandi" : ap.moduleName === 'DELETE_ACCOUNT' ? "Vonis Pemusnahan Identitas" : "Akses Matriks: " + ap.moduleName}
                   </p>
                   <div className="flex flex-wrap gap-2 text-xs text-gray-500 mt-2 font-mono">
                     <span className="bg-gray-100 dark:bg-white/5 px-2 py-0.5 rounded">ID: {ap.targetUserId.split('-')[0]}</span>
-                    {ap.moduleName !== 'PASSWORD_RESET' && <span className="bg-gray-100 dark:bg-white/5 px-2 py-0.5 rounded">Otoritas Opsi: {ap.proposedPermissions}</span>}
+                    {ap.moduleName !== 'PASSWORD_RESET' && ap.moduleName !== 'DELETE_ACCOUNT' && <span className="bg-gray-100 dark:bg-white/5 px-2 py-0.5 rounded">Otoritas Opsi: {ap.proposedPermissions}</span>}
                     {ap.moduleName === 'PASSWORD_RESET' && <span className="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 px-2 py-0.5 rounded border border-indigo-200">Setel Ulang Sandi Ekstrem</span>}
+                    {ap.moduleName === 'DELETE_ACCOUNT' && <span className="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 px-2 py-0.5 rounded border border-red-200 uppercase font-black">Hapus Permanen!</span>}
                     <span className="bg-amber-100/50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded border border-amber-200/50">Waktu: {ap.proposedTimeRule}</span>
                   </div>
                 </div>

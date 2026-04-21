@@ -56,6 +56,9 @@ export async function resolveApproval(approvalId: string, checkerId: string, isA
        if (apv.moduleName === "PASSWORD_RESET") {
           // GANTI SANDI
           await db.update(users).set({ passwordHash: apv.proposedPermissions }).where(eq(users.id, apv.targetUserId));
+       } else if (apv.moduleName === "DELETE_ACCOUNT") {
+          // PEMUSNAHAN IDENTITAS (PERMADEATH)
+          await db.delete(users).where(eq(users.id, apv.targetUserId));
        } else {
          const existingMtx = await db.select().from(accessMatrix).where(
            and(eq(accessMatrix.userId, apv.targetUserId), eq(accessMatrix.moduleName, apv.moduleName))

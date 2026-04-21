@@ -45,17 +45,19 @@ export function SmartEdge({
       setSourceCols(sCols);
       setTargetCols(tCols);
 
-      // Auto-detect kolom yang namanya sama
-      const commonCol = sCols.find((sc: any) => 
-        tCols.some((tc: any) => tc.column_name.toLowerCase() === sc.column_name.toLowerCase())
-      );
+      if (sCols.length > 0 && tCols.length > 0) {
+        // Auto-detect kolom yang namanya sama
+        const commonCol = sCols.find((sc: any) => 
+          tCols.some((tc: any) => tc.column_name.toLowerCase() === sc.column_name.toLowerCase())
+        );
 
-      if (commonCol && !leftCol && !rightCol) {
-        setLeftCol(commonCol.column_name);
-        setRightCol(commonCol.column_name);
-      } else if (sCols.length > 0 && tCols.length > 0 && !leftCol && !rightCol) {
-        setLeftCol(sCols[0].column_name);
-        setRightCol(tCols[0].column_name);
+        if (commonCol && !leftCol && !rightCol) {
+          setLeftCol(commonCol.column_name);
+          setRightCol(commonCol.column_name);
+        } else if (!leftCol && !rightCol) {
+          setLeftCol(sCols[0].column_name);
+          setRightCol(tCols[0].column_name);
+        }
       }
     }
   }, [isOpen, source, target, getNode, leftCol, rightCol]);
@@ -91,7 +93,8 @@ export function SmartEdge({
       const hash = Math.floor(Math.random() * 10000);
       const joinedName = `v_gabungan_${hash}`;
       
-      const sql = `CREATE OR REPLACE TABLE ${joinedName} AS SELECT * FROM ${sTable} ${joinType} ${tTable} ON ${sTable}.${leftCol} = ${tTable}.${rightCol};`;
+      // GUNAKAN 'VIEW' KETIMBANG 'TABLE' AGAR TIDAK OUT OF MEMORY (OOM) DI RAM BROWSER
+      const sql = `CREATE OR REPLACE VIEW ${joinedName} AS SELECT * FROM ${sTable} ${joinType} ${tTable} ON ${sTable}.${leftCol} = ${tTable}.${rightCol};`;
       
       await duckEngine.executeRaw(sql);
 
@@ -141,12 +144,22 @@ export function SmartEdge({
                <div className="absolute top-10 w-72 bg-white/95 dark:bg-[#0a0a0c]/98 backdrop-blur-2xl border border-blue-500/30 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] p-4 overflow-hidden animate-in zoom-in-95 duration-200 z-[60]">
                   <div className="flex justify-between items-center mb-3">
                      <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-[11px] uppercase tracking-wider">
-                       <Cpu className="w-3 h-3"/> Neural Joiner (PNE)
+                       <Cpu className="w-3 h-3"/> {getNode(source)?.type === 'metadata' ? 'Visual Dictionary Link' : 'Neural Joiner (PNE)'}
                      </div>
                      <button onClick={onEdgeDelete} className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 p-1 rounded transition"><Trash2 className="w-3 h-3"/></button>
                   </div>
-
-                  {leftCol === rightCol && leftCol !== '' ? (
+                  
+                  {getNode(source)?.type === 'metadata' || getNode(target)?.type === 'metadata' ? (
+                     <div className="flex flex-col gap-2">
+                       <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 p-2 rounded-lg text-[10px] mb-2 text-amber-800 dark:text-amber-300">
+                         <p className="font-bold flex items-center gap-1">📖 TALI KAMUS DATA</p>
+                         <p className="opacity-90 mt-1">Kabel ini berfungsi sebagai pengikat visual antara Kamus (Emas) dan Parquet (Hijau). Tidak ada penggabungan fisik yang dilakukan di DuckDB.</p>
+                       </div>
+                       <button onClick={() => setIsOpen(false)} className="w-full py-2 bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 rounded-lg text-xs font-bold transition">TUTUP</button>
+                     </div>
+                  ) : (
+                    <>
+                      {leftCol === rightCol && leftCol !== '' ? (
                     <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 p-2 rounded-lg text-[10px] mb-3 text-emerald-800 dark:text-emerald-300">
                       <p className="font-bold flex items-center gap-1">✨ MATA ELANG AKTIF</p>
                       <p className="opacity-90 mt-1">Sistem otomatis mendeteksi kolom yang sama: <strong className="font-mono bg-emerald-100 dark:bg-emerald-800 px-1 rounded">{leftCol}</strong></p>
@@ -193,8 +206,10 @@ export function SmartEdge({
                   {isProcessing ? <Loader2 className="w-3 h-3 animate-spin"/> : <Check className="w-3 h-3" />}
                   {isProcessing ? "MERAJUT DATA..." : "APPROVE JOIN RELATION"}
                 </button>
-             </div>
-           )}
+              </>
+            )}
+           </div>
+          )}
         </div>
       </EdgeLabelRenderer>
     </>

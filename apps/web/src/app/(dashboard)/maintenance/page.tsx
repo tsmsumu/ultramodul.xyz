@@ -1,191 +1,193 @@
 "use client";
 
-import { useTranslations } from "next-intl";
-import { ServerCog, DatabaseZap, Clock, Trash2, Cpu, HardDrive, Unplug, AlertOctagon, Loader2, CheckCircle2 } from "lucide-react";
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { getServerTelemetry } from "../../actions/telemetry";
-import { executeVacuumDb, executeReindexDb } from "../../actions/maintenance";
+import { useState, useEffect, useRef } from "react";
+import { ServerCog, Activity, Shield, Terminal, RefreshCw, Power, Lock, Unlock, AlertTriangle } from "lucide-react";
+import { getPm2Status, restartPm2Process, getUfwStatus, toggleFirewallStealth, fetchLatestLogs } from "../../actions/panopticon";
 
-export default function MaintenancePanopticon() {
-  const t = useTranslations("maintenance");
-
-  // Real VPS Telemetry Pulse
-  const [cpuPulse, setCpuPulse] = useState(0);
-  const [ramPulse, setRamPulse] = useState(0);
-  const [connPulse, setConnPulse] = useState(0);
+export default function AegisPanopticonPage() {
+  const [pm2Data, setPm2Data] = useState<any[]>([]);
+  const [ufwData, setUfwData] = useState<any>({ active: false, rules: [] });
+  const [logs, setLogs] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [logPolling, setLogPolling] = useState(true);
+  
+  const logEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Physical Engine Scanner
-    const intv = setInterval(async () => {
-       const stats = await getServerTelemetry();
-       setCpuPulse(stats.cpu);
-       setRamPulse(stats.ram);
-       setConnPulse(stats.connections);
-    }, 2000);
-    return () => clearInterval(intv);
+    fetchInitialData();
   }, []);
 
-  return (
-    <div className="max-w-6xl mx-auto space-y-8">
-      {/* Header Matrix */}
-      <div className="flex items-center gap-4 bg-red-950/20 border border-red-500/20 p-6 rounded-3xl backdrop-blur-sm">
-        <div className="w-16 h-16 bg-red-600/10 rounded-2xl flex items-center justify-center border border-red-500/30">
-          <ServerCog className="w-8 h-8 text-red-500 animate-pulse" />
-        </div>
-        <div>
-          <h1 className="text-3xl font-black text-white tracking-widest uppercase">{t("title")}</h1>
-          <p className="text-red-400 text-sm font-mono mt-1 opacity-80">{t("desc")}</p>
-        </div>
-      </div>
+  useEffect(() => {
+    if (!logPolling) return;
+    const interval = setInterval(async () => {
+      const newLogs = await fetchLatestLogs(50);
+      setLogs(newLogs);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [logPolling]);
 
-      {/* Telemetry HUD */}
-      <div>
-        <h2 className="text-sm font-bold text-gray-500 uppercase tracking-widest pl-2 mb-4">{t("telemetry")}</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <TelemetryCard icon={Cpu} title="CPU Core Threads" value={`${cpuPulse.toFixed(1)}%`} color="emerald" />
-          <TelemetryCard icon={HardDrive} title="Memory Allocation" value={`${ramPulse.toFixed(1)}%`} color="blue" />
-          <TelemetryCard icon={Unplug} title="Active Connectors" value={`${connPulse} Node`} color="amber" />
-        </div>
-      </div>
+  useEffect(() => {
+    // Auto-scroll to bottom of logs
+    logEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [logs]);
 
-      {/* Extreme Executor Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
-        {/* Vacuum Engine */}
-        <ExecutorCard 
-          icon={Trash2} 
-          title={t("vacuumTitle")} 
-          actionBtn={t("vacuumBtn")} 
-          colorMode="red"
-          actionFn={executeVacuumDb}
-        />
-        {/* Index Rebuilder */}
-        <ExecutorCard 
-          icon={DatabaseZap} 
-          title={t("indexTitle")} 
-          actionBtn={t("indexBtn")} 
-          colorMode="amber"
-          actionFn={executeReindexDb}
-        />
-        {/* Time Machine Backup */}
-        <ExecutorCard 
-          icon={Clock} 
-          title={t("backupTitle")} 
-          actionBtn={t("backupBtn")} 
-          colorMode="blue"
-          actionFn={async () => { return new Promise(resolve => setTimeout(resolve, 3000)); }}
-        />
-      </div>
-    </div>
-  );
-}
-
-function TelemetryCard({ icon: Icon, title, value, color }: any) {
-  const colorMap: Record<string, string> = {
-    emerald: "text-emerald-400 border-emerald-500/20 bg-emerald-950/10",
-    blue: "text-blue-400 border-blue-500/20 bg-blue-950/10",
-    amber: "text-amber-400 border-amber-500/20 bg-amber-950/10",
-  };
-  const cTheme = colorMap[color];
-
-  return (
-    <div className={`p-6 rounded-3xl border ${cTheme} backdrop-blur-md relative overflow-hidden`}>
-      <Icon className="w-16 h-16 absolute -right-4 -bottom-4 opacity-10" />
-      <div className="flex flex-col gap-2 relative z-10">
-        <span className="text-xs uppercase font-bold opacity-60 tracking-wider">{title}</span>
-        <span className="text-4xl font-mono font-black">{value}</span>
-      </div>
-    </div>
-  );
-}
-
-function ExecutorCard({ icon: Icon, title, actionBtn, colorMode, actionFn }: any) {
-  const [status, setStatus] = useState<"idle" | "arming" | "running" | "success">("idle");
-
-  const handleTrigger = async () => {
-    if (status === "idle") {
-      setStatus("arming"); // 1st Click (Arming)
-    } else if (status === "arming") {
-      setStatus("running"); // 2nd Click (Execute)
+  async function fetchInitialData() {
+    setLoading(true);
+    try {
+      const pData = await getPm2Status();
+      setPm2Data(pData);
       
-      // Execute Real Backend SQL
-      if (actionFn) await actionFn();
+      const uData = await getUfwStatus();
+      setUfwData(uData);
       
-      setStatus("success");
-      setTimeout(() => setStatus("idle"), 3000);
+      const lData = await fetchLatestLogs(50);
+      setLogs(lData);
+    } catch (e) {
+      console.error(e);
+      alert("Akses Ditolak: Bapak tidak memiliki Izin Dewa (Admin) untuk ruang mesin ini.");
+    } finally {
+      setLoading(false);
     }
-  };
+  }
 
-  const getTheme = () => {
-    if (status === "success") return `border-emerald-500 bg-emerald-950/30 shadow-[0_0_30px_rgba(16,185,129,0.2)]`;
-    if (colorMode === "red") return `border-red-900/50 bg-[#0a0a0a] hover:border-red-600/50`;
-    if (colorMode === "amber") return `border-amber-900/50 bg-[#0a0a0a] hover:border-amber-600/50`;
-    return `border-blue-900/50 bg-[#0a0a0a] hover:border-blue-600/50`;
-  };
+  async function handleRestart(name: string) {
+    if(!confirm(`Yakin ingin merestart proses ${name}? Aplikasi akan mengalami downtime 1-2 detik.`)) return;
+    await restartPm2Process(name);
+    fetchInitialData();
+  }
 
-  const getBtnTheme = () => {
-    if (status === "arming") return "bg-red-600 text-white animate-pulse";
-    if (status === "running") return "bg-gray-800 text-gray-500 cursor-not-allowed";
-    if (status === "success") return "bg-emerald-600 text-white";
-    
-    if (colorMode === "red") return "bg-red-950 text-red-400 border border-red-900 hover:bg-red-900";
-    if (colorMode === "amber") return "bg-amber-950 text-amber-400 border border-amber-900 hover:bg-amber-900";
-    return "bg-blue-950 text-blue-400 border border-blue-900 hover:bg-blue-900";
-  };
+  async function handleToggleStealth() {
+    if(!confirm(`Yakin ingin mengaktifkan Stealth Mode? Ini akan menutup semua port selain Web/SSH.`)) return;
+    await toggleFirewallStealth(true);
+    fetchInitialData();
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <div className="text-emerald-500 font-mono flex items-center gap-4">
+          <RefreshCw className="w-6 h-6 animate-spin" /> MENGINISIALISASI PROTOKOL AEGIS PANOPTICON...
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className={`p-8 rounded-3xl border transition-all duration-500 ${getTheme()} flex flex-col justify-between h-72 relative overflow-hidden group`}>
-      {/* Background Icon */}
-      <Icon className="w-48 h-48 absolute -right-10 -bottom-10 opacity-5 group-hover:scale-110 group-hover:opacity-10 transition-all duration-700" />
+    <div className="max-w-[1600px] mx-auto h-[calc(100vh-6rem)] flex flex-col gap-6 text-zinc-100 font-mono">
       
-      <div className="relative z-10">
-        <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center mb-6">
-          <Icon className="w-6 h-6 text-white opacity-80" />
+      {/* HEADER */}
+      <div className="bg-[#050505] border border-red-500/20 p-4 rounded-2xl flex justify-between items-center shrink-0">
+        <div className="flex items-center gap-4">
+           <div className="w-12 h-12 bg-red-900/30 border border-red-500/50 rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(239,68,68,0.2)]">
+             <ServerCog className="w-6 h-6 text-red-500" />
+           </div>
+           <div>
+             <h2 className="text-xl font-black text-white tracking-widest uppercase">AEGIS PANOPTICON</h2>
+             <div className="text-[10px] text-red-400 mt-0.5">WARNING: LEVEL 5 CLEARANCE REQUIRED • DIRECT PHYSICAL SERVER CONTROL</div>
+           </div>
         </div>
-        <h3 className="text-xl font-bold text-white tracking-wide">{title}</h3>
+        <div className="flex items-center gap-4">
+           <div className="text-right">
+             <div className="text-xs text-zinc-500">SERVER IP</div>
+             <div className="text-sm font-bold text-white">208.122.28.26</div>
+           </div>
+           <button onClick={fetchInitialData} className="p-3 bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white rounded-xl transition">
+             <RefreshCw className="w-5 h-5" />
+           </button>
+        </div>
       </div>
 
-      <div className="relative z-10 w-full mt-auto">
-        <AnimatePresence mode="wait">
-          {status === "idle" && (
-            <motion.button 
-              key="idle"
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={handleTrigger}
-              className={`w-full py-3.5 rounded-xl text-sm font-bold tracking-widest uppercase transition-all ${getBtnTheme()}`}
-            >
-              {actionBtn}
-            </motion.button>
-          )}
-          {status === "arming" && (
-            <motion.button 
-              key="arming"
-              initial={{ scale: 0.95 }} animate={{ scale: 1 }}
-              onClick={handleTrigger}
-              className={`w-full py-3.5 rounded-xl text-sm font-bold tracking-widest uppercase flex items-center justify-center gap-2 ${getBtnTheme()}`}
-            >
-              <AlertOctagon className="w-4 h-4" /> SECURE CLICK TO EXECUTE
-            </motion.button>
-          )}
-          {status === "running" && (
-            <motion.button 
-              key="running" disabled
-              initial={{ scale: 0.95 }} animate={{ scale: 1 }}
-              className={`w-full py-3.5 rounded-xl text-sm font-bold tracking-widest uppercase flex items-center justify-center gap-2 ${getBtnTheme()}`}
-            >
-              <Loader2 className="w-4 h-4 animate-spin" /> SYSTEM EXECUTING...
-            </motion.button>
-          )}
-          {status === "success" && (
-            <motion.button 
-              key="success" disabled
-              initial={{ scale: 0.95 }} animate={{ scale: 1 }}
-              className={`w-full py-3.5 rounded-xl text-sm font-bold tracking-widest uppercase flex items-center justify-center gap-2 ${getBtnTheme()}`}
-            >
-              <CheckCircle2 className="w-4 h-4" /> SUCCESSFUL
-            </motion.button>
-          )}
-        </AnimatePresence>
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-0">
+        
+        {/* LEFT PANEL: PM2 & UFW */}
+        <div className="col-span-4 flex flex-col gap-6 overflow-hidden">
+           
+           {/* PM2 GUARDIAN */}
+           <div className="bg-[#0a0a0a] border border-emerald-500/20 rounded-2xl p-5 flex flex-col flex-1 shrink-0">
+              <h3 className="text-sm font-bold text-emerald-500 mb-4 flex items-center gap-2">
+                <Activity className="w-4 h-4" /> PROCESS GUARDIAN (PM2)
+              </h3>
+              <div className="space-y-3 overflow-y-auto custom-scrollbar pr-2">
+                 {pm2Data.map((p, idx) => (
+                    <div key={idx} className="bg-black border border-white/5 p-4 rounded-xl flex justify-between items-center group">
+                       <div>
+                         <div className="font-bold text-emerald-400 text-lg uppercase">{p.name}</div>
+                         <div className="text-[10px] text-zinc-500 mt-1">PID: {p.pid} • UPTIME: {p.uptime}</div>
+                         <div className="text-[10px] text-zinc-400 mt-0.5">RAM: {p.memory} • CPU: {p.cpu}</div>
+                       </div>
+                       <button onClick={() => handleRestart(p.name)} className="p-2 bg-emerald-900/20 text-emerald-500 border border-emerald-500/30 rounded-lg hover:bg-emerald-600 hover:text-white transition" title="Restart Process">
+                         <Power className="w-4 h-4" />
+                       </button>
+                    </div>
+                 ))}
+              </div>
+           </div>
+
+           {/* UFW FIREWALL */}
+           <div className="bg-[#0a0a0a] border border-blue-500/20 rounded-2xl p-5 flex flex-col shrink-0">
+              <h3 className="text-sm font-bold text-blue-500 mb-4 flex items-center gap-2">
+                <Shield className="w-4 h-4" /> UFW FIREWALL MATRIX
+              </h3>
+              
+              <div className="flex justify-between items-center bg-black p-4 rounded-xl border border-white/5 mb-4">
+                 <div>
+                   <div className="text-xs text-zinc-500">STATUS FIREWALL</div>
+                   <div className={`text-sm font-bold ${ufwData.active ? 'text-blue-400' : 'text-red-500'}`}>
+                     {ufwData.active ? 'ACTIVE & ENFORCED' : 'INACTIVE (VULNERABLE)'}
+                   </div>
+                 </div>
+                 <button onClick={handleToggleStealth} className="px-4 py-2 bg-blue-900/30 border border-blue-500/50 text-blue-400 rounded-lg text-xs font-bold hover:bg-blue-600 hover:text-white transition flex items-center gap-2">
+                   <Lock className="w-3 h-3" /> STEALTH MODE
+                 </button>
+              </div>
+
+              <div className="text-[10px] text-zinc-500 mb-2 uppercase border-b border-white/5 pb-2">Active Port Rules</div>
+              <div className="space-y-1 h-32 overflow-y-auto custom-scrollbar">
+                 {ufwData.rules?.length > 0 ? ufwData.rules.map((r: any, idx: number) => (
+                   <div key={idx} className="flex justify-between text-xs py-1.5 px-2 hover:bg-white/5 rounded">
+                     <span className="text-zinc-300 w-16">{r.to}</span>
+                     <span className="text-emerald-400 w-24">{r.action}</span>
+                     <span className="text-zinc-500">{r.from}</span>
+                   </div>
+                 )) : (
+                   <div className="text-xs text-zinc-500 py-4 text-center">Tidak ada rules terdeteksi.</div>
+                 )}
+              </div>
+           </div>
+
+        </div>
+
+        {/* RIGHT PANEL: LOG STREAM */}
+        <div className="col-span-8 bg-black border border-white/10 rounded-2xl flex flex-col overflow-hidden relative">
+           <div className="bg-zinc-900/80 p-3 border-b border-white/10 flex justify-between items-center shrink-0">
+             <div className="flex items-center gap-3">
+               <Terminal className="w-4 h-4 text-zinc-400" />
+               <span className="text-xs font-bold text-zinc-300 uppercase tracking-widest">Live Terminal Tailing (ultramodul-out.log)</span>
+             </div>
+             <button onClick={() => setLogPolling(!logPolling)} className={`px-3 py-1 text-[10px] font-bold rounded uppercase ${logPolling ? 'bg-emerald-900/50 text-emerald-400 border border-emerald-500/50' : 'bg-red-900/50 text-red-400 border border-red-500/50'}`}>
+               {logPolling ? 'LIVE STREAMING : ON' : 'STREAMING : PAUSED'}
+             </button>
+           </div>
+           
+           <div className="flex-1 p-4 overflow-y-auto custom-scrollbar text-[11px] leading-relaxed break-all">
+             {logs.map((log, idx) => {
+               // Simple syntax highlighting for logs
+               let colorClass = "text-zinc-400";
+               if (log.includes("error") || log.includes("Error") || log.includes("Failed")) colorClass = "text-red-400 font-bold";
+               else if (log.includes("warn") || log.includes("Warning")) colorClass = "text-amber-400";
+               else if (log.includes("GET") || log.includes("POST")) colorClass = "text-emerald-300";
+               else if (log.includes("✓") || log.includes("Ready")) colorClass = "text-blue-400 font-bold";
+
+               return (
+                 <div key={idx} className={`${colorClass} hover:bg-white/5 px-1 rounded`}>
+                   {log}
+                 </div>
+               );
+             })}
+             <div ref={logEndRef} />
+           </div>
+        </div>
+
       </div>
     </div>
   );

@@ -60,11 +60,13 @@ export function HologramTerminal({ nodeData, onClose }: { nodeData: any | null, 
         let rows = [];
         
         // Execute di dalam PUM Nexus Engine selalu hit WASM DuckDB (baik itu SQL Node atau Table Preview)
-        if (nodeData.sqlQuery) {
+        // Jika ini murni SQL bebas (bukan hasil bentukan Virtual Edge)
+        if (nodeData.sqlQuery && !nodeData.isVirtual) {
            rows = await duckEngine.executeRaw(nodeData.sqlQuery);
            // batasi tampilan 50 jika query tidak ada limit bisa hancur browsernya
            if(rows.length > 50) rows = rows.slice(0, 50);
         } else {
+           // Jika ini tabel fisik atau Virtual View (VIEW DuckDB), kita langsung Preview
            rows = await duckEngine.previewData(nodeData.tableName || nodeData.dbName, 50);
         }
 

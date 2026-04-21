@@ -108,15 +108,32 @@ export function DataTable({ initialUsers }: { initialUsers: any[] }) {
   };
 
   const handleDeleteUser = async (id: string, username: string) => {
-    if (confirm(`PERINGATAN KRITIKAL!\n\nAnda akan MENGHAPUS PERMANEN identitas NIK ${username} dari peladen. Seluruh jejak otorisasi Matrix & Mandat mungkin terhapus atau anomali. Lanjutkan?`)) {
+    if (confirm(`PERINGATAN KRITIKAL!\n\nAnda akan mengajukan eksekusi pemusnahan permanen untuk NIK ${username} ke Peladen. Lanjutkan?`)) {
       setLoadingId(id);
       const result = await deleteIdentity(id);
       setLoadingId(null);
       if (result.success) {
-         setUsers(users.filter(u => u.id !== id));
+         alert(`Vonis eksekusi untuk ${username} telah masuk ke dalam Antrean Persidangan (Approval Inbox).`);
       } else {
-         alert(result.error || "Gagal menghapus identitas.");
+         alert(result.error || "Gagal mengajukan operasi penghapusan.");
       }
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (confirm(`PERINGATAN KRITIKAL MAJEMUK!\n\nAnda akan mengajukan pemusnahan massal untuk ${selectedIds.size} identitas sekaligus ke Antrean Persidangan. Lanjutkan?`)) {
+      setLoadingId("bulk-delete");
+      let successCount = 0;
+      
+      const idsToDelete = Array.from(selectedIds);
+      for (const id of idsToDelete) {
+         const result = await deleteIdentity(id);
+         if (result.success) successCount++;
+      }
+      
+      setLoadingId(null);
+      setSelectedIds(new Set());
+      alert(`Berhasil melemparkan ${successCount} permohonan pemusnahan masal ke dalam Approval Inbox.`);
     }
   };
 
@@ -145,14 +162,23 @@ export function DataTable({ initialUsers }: { initialUsers: any[] }) {
             />
          </div>
 
-         <div className="animate-in fade-in zoom-in duration-300">
+         <div className="animate-in fade-in zoom-in duration-300 flex items-center gap-3">
            {selectedIds.size > 0 && (
-             <button 
-               onClick={() => setEtlOpen(true)}
-               className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-lg shadow-indigo-600/20 text-sm font-bold transition"
-             >
-               <HardDriveDownload className="w-4 h-4" /> Export {selectedIds.size} Identitas
-             </button>
+             <>
+               <button 
+                 onClick={handleBulkDelete}
+                 disabled={loadingId !== null}
+                 className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl shadow-lg shadow-red-600/20 text-sm font-bold transition disabled:opacity-50"
+               >
+                 <Trash2 className="w-4 h-4" /> Pemusnahan Massal ({selectedIds.size})
+               </button>
+               <button 
+                 onClick={() => setEtlOpen(true)}
+                 className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-lg shadow-indigo-600/20 text-sm font-bold transition"
+               >
+                 <HardDriveDownload className="w-4 h-4" /> Export {selectedIds.size} Identitas
+               </button>
+             </>
            )}
          </div>
       </div>

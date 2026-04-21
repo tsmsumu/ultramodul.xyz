@@ -28,6 +28,7 @@ export function MatrixDrawer({
   userName: string | null;
 }) {
   const [matrixData, setMatrixData] = useState<Record<string, string[]>>({});
+  const [initialMatrixData, setInitialMatrixData] = useState<Record<string, string[]>>({});
   const [timeRules, setTimeRules] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
 
@@ -59,6 +60,7 @@ export function MatrixDrawer({
     });
 
     setMatrixData(structured);
+    setInitialMatrixData(JSON.parse(JSON.stringify(structured))); // Deep copy for immutability
     setTimeRules(tRules);
     setLoading(false);
   };
@@ -75,9 +77,18 @@ export function MatrixDrawer({
 
   const handleSaveAll = async () => {
     setLoading(true);
-    // Masuk ke tahap Maker-Checker Table
+    // Masuk ke tahap Maker-Checker Table, TAPI HANYA UNTUK MODUL YANG MENGALAMI PERUBAHAN
     for (const mod of Object.keys(matrixData)) {
-       await saveUserMatrix(userId!, mod, matrixData[mod], timeRules[mod] || '24/7');
+       const currentPerms = matrixData[mod];
+       const initialPerms = initialMatrixData[mod] || [];
+       
+       // Cek formasi hash murni
+       const currentHash = [...currentPerms].sort().join(",");
+       const initialHash = [...initialPerms].sort().join(",");
+
+       if (currentHash !== initialHash) {
+         await saveUserMatrix(userId!, mod, currentPerms, timeRules[mod] || '24/7');
+       }
     }
     setLoading(false);
     onClose();

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { UploadCloud, FileSpreadsheet, LayoutDashboard, BrainCircuit, Globe2, BarChart4, ChevronRight, Calculator, MoveRight, X as XIcon, Loader2 } from "lucide-react";
+import { UploadCloud, FileSpreadsheet, LayoutDashboard, BrainCircuit, Globe2, BarChart4, ChevronRight, Calculator, MoveRight, X as XIcon, Loader2, BookOpen } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import ReactECharts from 'echarts-for-react';
 import { duckEngine } from "@/core/duckdb-engine";
@@ -20,6 +20,24 @@ export default function OmniAnalyticsPage() {
   const [chartData, setChartData] = useState<any[]>([]);
   const [isAggregating, setIsAggregating] = useState(false);
   const [draggedCol, setDraggedCol] = useState<string | null>(null);
+
+  // ROSETTA STONE STATE
+  const [activeDictionary, setActiveDictionary] = useState<boolean>(false);
+  const mockKamus: Record<string, string> = {
+    "3201": "Kab. Bogor",
+    "3202": "Kab. Sukabumi",
+    "3203": "Kab. Cianjur",
+    "3204": "Kab. Bandung",
+    "3205": "Kab. Garut",
+    "3206": "Kab. Tasikmalaya",
+    "3271": "Kota Bogor",
+    "3273": "Kota Bandung",
+    "1": "Sangat Baik",
+    "2": "Baik",
+    "3": "Cukup",
+    "4": "Buruk",
+    "5": "Sangat Buruk"
+  };
 
   const buildChart = async (x: string | null, y: string | null) => {
     if (!x || !tableName) return;
@@ -141,6 +159,13 @@ export default function OmniAnalyticsPage() {
         </div>
 
         <div className="flex gap-2 p-1 bg-black/40 rounded-xl border border-white/5">
+           <button 
+             onClick={() => setActiveDictionary(!activeDictionary)} 
+             className={`px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 border ${activeDictionary ? 'bg-blue-600/20 text-blue-400 border-blue-500/50 shadow-[0_0_15px_rgba(59,130,246,0.3)]' : 'bg-zinc-900 text-zinc-500 border-white/5 hover:text-white'}`}
+           >
+             <BookOpen className="w-4 h-4" /> {activeDictionary ? 'ROSETTA STONE: ACTIVE' : 'INJECT DICTIONARY'}
+           </button>
+           <div className="w-px h-6 bg-white/10 mx-1 self-center" />
            <button onClick={() => setChartType('bar')} className={`px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 ${chartType === 'bar' ? 'bg-indigo-600 text-white' : 'text-zinc-500 hover:text-white hover:bg-white/5'}`}>
              <LayoutDashboard className="w-4 h-4" /> QUANTUM PIVOT (BAR)
            </button>
@@ -246,7 +271,7 @@ export default function OmniAnalyticsPage() {
                               grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
                               xAxis: { 
                                 type: 'category', 
-                                data: chartData.map(d => String(d.name)),
+                                data: chartData.map(d => String(activeDictionary ? (mockKamus[d.name] || d.name) : d.name)),
                                 axisLabel: { color: '#71717a', fontSize: 10, rotate: 45, width: 100, overflow: 'truncate' }
                               },
                               yAxis: { 
@@ -275,7 +300,7 @@ export default function OmniAnalyticsPage() {
                                 type: 'treemap',
                                 roam: false,
                                 nodeClick: false,
-                                data: chartData.map(d => ({ name: String(d.name), value: d.value })),
+                                data: chartData.map(d => ({ name: String(activeDictionary ? (mockKamus[d.name] || d.name) : d.name), value: d.value })),
                                 breadcrumb: { show: false },
                                 itemStyle: {
                                   borderColor: '#050505',
@@ -302,7 +327,7 @@ export default function OmniAnalyticsPage() {
                               ],
                               xAxis: { 
                                 type: 'category', 
-                                data: chartData.map(d => String(d.name)),
+                                data: chartData.map(d => String(activeDictionary ? (mockKamus[d.name] || d.name) : d.name)),
                                 axisLabel: { color: '#71717a', fontSize: 10 }
                               },
                               yAxis: { 

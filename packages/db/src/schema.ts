@@ -143,3 +143,16 @@ export const apiKeys = sqliteTable('api_keys', {
   allowedOrigins: text('allowed_origins'), // JSON array of allowed domains for CORS
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull()
 });
+
+// Omni-Codex (Universal Rosetta Stone Dictionary)
+export const omniDictionaries = sqliteTable('omni_dictionaries', {
+  id: text('id').primaryKey(), // UUID
+  name: text('name').unique().notNull(), // e.g. "Kamus Master Wilayah BPS 2024"
+  description: text('description'),
+  targetColumn: text('target_column').notNull(), // Kolom target utama (e.g. "kode_kabupaten", "jenis_lantai")
+  mappingData: text('mapping_data').notNull(), // JSON Array dari Obyek: [{ code: '3201', label: 'Kab. Bogor' }]
+  isGlobal: integer('is_global', { mode: 'boolean' }).notNull().default(true), // Tersedia untuk semua user?
+  authorId: text('author_id').notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull()
+});

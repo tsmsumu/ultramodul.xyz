@@ -41,11 +41,11 @@ export function NexusCanvas() {
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
   const [activeTerminalNode, setActiveTerminalNode] = useState<any | null>(null);
 
-  const onFileIngested = useCallback((id: string, tableName: string) => {
+  const onFileIngested = useCallback((id: string, tableName: string, schema?: any[]) => {
     setNodes((nds) => 
       nds.map(node => {
         if (node.id === id) {
-          return { ...node, data: { ...node.data, tableName } };
+          return { ...node, data: { ...node.data, tableName, schema } };
         }
         return node;
       })

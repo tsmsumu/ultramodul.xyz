@@ -28,7 +28,9 @@
     "Layanan Pengaduan": "Public Complaints",
     "Aegis Panopticon (DB)": "Aegis Panopticon (DB)",
     "Data Evolution Center": "Data Evolution Center",
-    "Omni-Forge (Alat Data)": "Omni-Forge (Data Tools)"
+    "Omni-Forge (Alat Data)": "Omni-Forge (Data Tools)",
+    "Omni-Analytics": "Analytics Omniverse",
+    "Omni-Codex": "Omni-Codex"
   },
   "customizer": {
     "title": "Display Settings",

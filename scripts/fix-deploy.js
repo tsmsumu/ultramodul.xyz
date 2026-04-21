@@ -21,15 +21,13 @@ cd ultramodul
 echo "-> Installing dependencies..."
 pnpm install
 
-# Force Absolute Path for the whole monorepo
-export DATABASE_URL="file:/var/www/ultramodul/production.db"
+# Force Absolute Path for the whole monorepo (LETAKKAN DI LUAR FOLDER GIT AGAR TIDAK TERHAPUS SAAT RE-CLONE)
+export DATABASE_URL="file:/var/www/production.db"
 
 echo "-> Stopping old PM2 processes to release File Locks..."
 pm2 delete ultramodul || true
 
-echo "-> Flushing Old DB & Regenerating Local DB Schema (Drizzle Push)..."
-rm -f /var/www/ultramodul/production.db
-rm -f /var/www/ultramodul/production.db-journal
+echo "-> Migrating Database Schema without deleting data (Drizzle Push)..."
 
 cd packages/db
 pnpm exec drizzle-kit push
@@ -41,7 +39,7 @@ export NODE_ENV=production
 pnpm run build
 
 echo "-> Restarting PM2 process..."
-pm2 start pnpm --name "ultramodul" --cwd /var/www/ultramodul/apps/web --env DATABASE_URL="file:/var/www/ultramodul/production.db" -- run start
+pm2 start pnpm --name "ultramodul" --cwd /var/www/ultramodul/apps/web --env DATABASE_URL="file:/var/www/production.db" -- run start
 pm2 save
 
 echo "-> Restarting Nginx Server..."

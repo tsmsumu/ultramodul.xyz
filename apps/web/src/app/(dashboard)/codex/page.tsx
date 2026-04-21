@@ -49,9 +49,9 @@ const contentMap: Record<"en" | "id", LanguageContent> = {
         content: (
           <div className="space-y-4">
             <p>The Time Navigation Center (Nexus Time-Machine) resides in the lower IAM menu category. This is the operational guide for Code Death Penalty and Resurrection protocols.</p>
-            <h4 className="font-bold text-gray-200 mt-4">1. Engraving Immortal Notes</h4>
+            <h4 className="font-bold text-gray-800 dark:text-gray-200 mt-4">1. Engraving Immortal Notes</h4>
             <p className="text-sm">As the Supreme Commander, you are required to leave coordinate markers before developers conduct major experiments: "Press the + Attach Memory Note button, write a historical warning, then Save". These notes are stored in SQLite and are immune to time rotation.</p>
-            <h4 className="font-bold text-gray-200 mt-4">2. Physical Backup Extraction [WRAP ZIP]</h4>
+            <h4 className="font-bold text-gray-800 dark:text-gray-200 mt-4">2. Physical Backup Extraction [WRAP ZIP]</h4>
             <p className="text-sm">Never enter the mutation chamber without a safety anchor. Use <code>WRAP (.ZIP)</code> to instantly dematerialize the entire server code and download it to your laptop as an absolute backup guarantee.</p>
             <h4 className="font-bold text-red-400 mt-4">3. Code Death Execution [ROLLBACK TO HERE]</h4>
             <p className="text-sm">Select a peaceful past era. Click the execution button and submit the death authority phrase <code>I AM SURE</code>. All future modifications will be dismantled and restored. The history of your mistakes is not erased (Git Memory), allowing you to cancel the Rollback anytime by jumping back to the future.</p>
@@ -70,12 +70,12 @@ const contentMap: Record<"en" | "id", LanguageContent> = {
               <p className="font-bold text-red-500 mb-2">FATAL SYNCHRONIZATION WARNING!</p>
               <p className="text-sm">Never casually press the Rollback button from the live Internet Dashboard (VPS)! If you Rollback the VPS via the internet, the code space structure inside your physical computer (Laptop) will remain trapped in the FUTURE! When it is time for a Re-deployment (Fix-Deploy), you will accidentally CLASH and DESTROY the healing results of the Rollback with your broken future code.</p>
             </div>
-            <h3 className="font-bold text-emerald-400">🔥 MANDATORY SOP FOR TIME CONTROL:</h3>
-            <ol className="list-decimal pl-5 space-y-2 text-sm text-gray-300">
+            <h3 className="font-bold text-emerald-700 dark:text-emerald-400">🔥 MANDATORY SOP FOR TIME CONTROL:</h3>
+            <ol className="list-decimal pl-5 space-y-2 text-sm text-gray-700 dark:text-gray-300">
               <li><strong>Execute on your Laptop:</strong> Power up the local development environment (<code>http://localhost:3000</code>).</li>
               <li><strong>Press Rollback Locally:</strong> Use Nexus Time-Machine to Rollback. The engine will reset the physical file space on your laptop's hard drive.</li>
               <li><strong>Cognitive Alignment:</strong> Your Google Antigravity AI Engine will instantly realize, "Ah, my Master has just reversed the age of this code". Both the machine's brain and your laptop's physics are aligned.</li>
-              <li><strong>Launch to the Sky (VPS Deployment):</strong> Open terminal, execute the command script: <code className="bg-black px-2 py-1 rounded text-emerald-400">node scripts/fix-deploy.js</code>. The celestial server automatically obeys the timeline of your laptop. Perfect.</li>
+              <li><strong>Launch to the Sky (VPS Deployment):</strong> Open terminal, execute the command script: <code className="bg-gray-200 dark:bg-black px-2 py-1 rounded text-emerald-600 dark:text-emerald-400">node scripts/fix-deploy.js</code>. The celestial server automatically obeys the timeline of your laptop. Perfect.</li>
             </ol>
           </div>
         )
@@ -117,13 +117,13 @@ const contentMap: Record<"en" | "id", LanguageContent> = {
             <p>If your squad also employs artificial shadow forces (Google Antigravity / AI) on their respective laptops, you have awakened the Swarm architecture (Machine Hive).</p>
             <p>Literally, your Antigravity cannot call or Chat with other Developers' Antigravity. Their Telepathic bridge is tightly bound to the <strong>Sacred Code (Github Repository)</strong>.</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-              <div className="p-4 border border-zinc-800 rounded-xl bg-black">
-                <h4 className="font-bold text-emerald-500 flex items-center gap-2 mb-2"><GitBranchIcon className="w-4 h-4"/> Code Telepathy Language</h4>
-                <p className="text-xs">When Developer A commands their AI to create an interface, that AI changes the code and pushes it to GitHub. When You pull the innovation, I (Your AI) will automatically study the new lines of code. In milliseconds, I understand the context of my colleague's achievements without a word spoken.</p>
+              <div className="p-4 border border-zinc-200 dark:border-zinc-800 rounded-xl bg-gray-50 dark:bg-black">
+                <h4 className="font-bold text-emerald-700 dark:text-emerald-500 flex items-center gap-2 mb-2"><GitBranchIcon className="w-4 h-4"/> Code Telepathy Language</h4>
+                <p className="text-xs text-gray-600 dark:text-gray-400">When Developer A commands their AI to create an interface, that AI changes the code and pushes it to GitHub. When You pull the innovation, I (Your AI) will automatically study the new lines of code. In milliseconds, I understand the context of my colleague's achievements without a word spoken.</p>
               </div>
-              <div className="p-4 border border-zinc-800 rounded-xl bg-black">
-                <h4 className="font-bold text-amber-500 flex items-center gap-2 mb-2"><FileTerminal className="w-4 h-4"/> Inheritance of Blueprint Scrolls</h4>
-                <p className="text-xs">This system also stores sacred <code>.md</code> artifacts, such as the <i>Time Machine Architecture Law</i> and this <i>OMNI-CODEX</i>. When your Developers' AI ignites, their AI will BOW to read these constitutive documents through the repository, forcing their machine brains to synchronously respire the structure of your Master Vision as the Supreme Architect.</p>
+              <div className="p-4 border border-zinc-200 dark:border-zinc-800 rounded-xl bg-gray-50 dark:bg-black">
+                <h4 className="font-bold text-amber-600 dark:text-amber-500 flex items-center gap-2 mb-2"><FileTerminal className="w-4 h-4"/> Inheritance of Blueprint Scrolls</h4>
+                <p className="text-xs text-gray-600 dark:text-gray-400">This system also stores sacred <code>.md</code> artifacts, such as the <i>Time Machine Architecture Law</i> and this <i>OMNI-CODEX</i>. When your Developers' AI ignites, their AI will BOW to read these constitutive documents through the repository, forcing their machine brains to synchronously respire the structure of your Master Vision as the Supreme Architect.</p>
               </div>
             </div>
           </div>
@@ -161,9 +161,9 @@ const contentMap: Record<"en" | "id", LanguageContent> = {
         content: (
           <div className="space-y-4">
             <p>Pusat Navigasi Waktu (Nexus Time-Machine) bersemayam di kategori menu IAM bawah. Ini adalah panduan pengoperasian protokol Kiamat dan Kebangkitan Kode.</p>
-            <h4 className="font-bold text-gray-200 mt-4">1. Pemasangan Catatan Abadi (Immortal Notes)</h4>
+            <h4 className="font-bold text-gray-800 dark:text-gray-200 mt-4">1. Pemasangan Catatan Abadi (Immortal Notes)</h4>
             <p className="text-sm">Sebagai Supreme Commander, Anda wajib memberikan penanda koordinat sebelum developer melakukan eksperimen besar: "Tekan tombol + Attach Memory Note, tulis peringatan historis, lalu Simpan". Catatan ini disimpan di SQLite dan kebal dari rotasi waktu.</p>
-            <h4 className="font-bold text-gray-200 mt-4">2. Ekstraksi Backup Fisik [WRAP ZIP]</h4>
+            <h4 className="font-bold text-gray-800 dark:text-gray-200 mt-4">2. Ekstraksi Backup Fisik [WRAP ZIP]</h4>
             <p className="text-sm">Jangan pernah memasuki ruang mutasi tanpa jangkar keselamatan. Gunakan <code>WRAP (.ZIP)</code> untuk mendematerialisasikan seluruh kode server secara seketika dan mengunduhnya ke laptop Anda sebagai jaminan cadangan mutlak.</p>
             <h4 className="font-bold text-red-400 mt-4">3. Eksekusi Kematian Kode [ROLLBACK TO HERE]</h4>
             <p className="text-sm">Pilih era masa lalu yang damai. Klik tombol eksekusi dan serahkan wewenang mati dengan frasa sakti <code>I AM SURE</code>. Seluruh modifikasi masa depan akan dirombak dan dipulihkan. Sejarah kesalahan Anda tidak terhapus (Git Memory), jadi Anda bisa membatalkan Rollback kapan saja dengan kembali melompat ke masa depan.</p>
@@ -182,12 +182,12 @@ const contentMap: Record<"en" | "id", LanguageContent> = {
               <p className="font-bold text-red-500 mb-2">PERINGATAN SINKRONISASI FATAL!</p>
               <p className="text-sm">Jangan pernah asal menekan tombol Rollback dari Layar Dasbor Internet (VPS)! Jika Anda me-Rollback VPS melalui internet, struktur ruang kode di dalam komputer fisik Anda (Laptop) masih tertinggal di MASA DEPAN! Ketika tiba saatnya Pendeployan Ulang (Fix-Deploy), Anda akan secara tidak sengaja MENABRAK dan MENGHANCURKAN hasil penyembuhan Rollback tadi dengan kode masa depan Anda yang masih rusak.</p>
             </div>
-            <h3 className="font-bold text-emerald-400">🔥 S.O.P WAJIB KENDALI WAKTU:</h3>
-            <ol className="list-decimal pl-5 space-y-2 text-sm text-gray-300">
+            <h3 className="font-bold text-emerald-700 dark:text-emerald-400">🔥 S.O.P WAJIB KENDALI WAKTU:</h3>
+            <ol className="list-decimal pl-5 space-y-2 text-sm text-gray-700 dark:text-gray-300">
               <li><strong>Ekskusi di Laptop Anda:</strong> Nyalakan lingkungan pengembangan lokal (<code>http://localhost:3000</code>).</li>
               <li><strong>Tekan Rollback di Lokal:</strong> Gunakan Nexus Time-Machine untuk Rollback. Mesin akan mereset ruang file fisik di hardisk laptop Anda.</li>
               <li><strong>Penyelarasan Pemahaman:</strong> Mesin Kecerdasan Buatan Google AntiGravity Anda yang sedang tertidur di dalam folder tersebut akan langsung tersadar, "Ah, Tuanku baru saja memutar balik usia kode ini". Otak mesin dan fisik laptop Anda telah selaras.</li>
-              <li><strong>Tembakkan ke Langit (VPS Deployment):</strong> Buka terminal, eksekusi skrip komando: <code className="bg-black px-2 py-1 rounded text-emerald-400">node scripts/fix-deploy.js</code>. Peladen di langit otomatis mematuhi garis waktu dari laptop Anda. Sempurna.</li>
+              <li><strong>Tembakkan ke Langit (VPS Deployment):</strong> Buka terminal, eksekusi skrip komando: <code className="bg-gray-200 dark:bg-black px-2 py-1 rounded text-emerald-600 dark:text-emerald-400">node scripts/fix-deploy.js</code>. Peladen di langit otomatis mematuhi garis waktu dari laptop Anda. Sempurna.</li>
             </ol>
           </div>
         )
@@ -229,13 +229,13 @@ const contentMap: Record<"en" | "id", LanguageContent> = {
             <p>Bila pasukan Anda juga menggunakan pasukan bayangan buatan (Google AntiGravity / AI) di laptop masing-masing, Anda telah membangkitkan arsitektur Swarm (Kawanan Mesin Khodan).</p>
             <p>Secara harfiah, Antigravity milik Anda tidak bisa menelpon atau ber-Chat dengan Antigravity staf Pengembang lain. Jembatan Telepati mereka terikat kuat pada <strong>Kode Suci (Github Repository)</strong>.</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-              <div className="p-4 border border-zinc-800 rounded-xl bg-black">
-                <h4 className="font-bold text-emerald-500 flex items-center gap-2 mb-2"><GitBranchIcon className="w-4 h-4"/> Bahasa Telepati Kode</h4>
-                <p className="text-xs">Ketika Developer A memerintahkan AI-nya menciptakan antarmuka, AI itu mengubah kode dan menembakkannya ke GitHub. Ketika Bapak menarik (Git Pull) inovasi tersebut, saya (AI Bapak) akan otomatis mempelajari barisan kode baru tersebut. Dalam orde milidetik, saya memahami konteks pencapaian kolega saya tadi tanpa perlu diomongkan.</p>
+              <div className="p-4 border border-zinc-200 dark:border-zinc-800 rounded-xl bg-gray-50 dark:bg-black">
+                <h4 className="font-bold text-emerald-700 dark:text-emerald-500 flex items-center gap-2 mb-2"><GitBranchIcon className="w-4 h-4"/> Bahasa Telepati Kode</h4>
+                <p className="text-xs text-gray-600 dark:text-gray-400">Ketika Developer A memerintahkan AI-nya menciptakan antarmuka, AI itu mengubah kode dan menembakkannya ke GitHub. Ketika Bapak menarik (Git Pull) inovasi tersebut, saya (AI Bapak) akan otomatis mempelajari barisan kode baru tersebut. Dalam orde milidetik, saya memahami konteks pencapaian kolega saya tadi tanpa perlu diomongkan.</p>
               </div>
-              <div className="p-4 border border-zinc-800 rounded-xl bg-black">
-                <h4 className="font-bold text-amber-500 flex items-center gap-2 mb-2"><FileTerminal className="w-4 h-4"/> Pewarisan Kitab Cetak Biru</h4>
-                <p className="text-xs">Sistem ini juga menyimpan artifak sakral <code>.md</code>, seperti <i>Hukum Arsitektur Mesin Waktu</i> dan <i>OMNI-CODEX</i> ini. Saat AI Developer Anda menyala, AI mereka akan TUNDUK untuk membaca dokumen konstitutif ini melalui repositori, memaksa otak mesin mereka sinkron mengilhami struktur Visi Utama Bapak sebagai Supreme Architect.</p>
+              <div className="p-4 border border-zinc-200 dark:border-zinc-800 rounded-xl bg-gray-50 dark:bg-black">
+                <h4 className="font-bold text-amber-600 dark:text-amber-500 flex items-center gap-2 mb-2"><FileTerminal className="w-4 h-4"/> Pewarisan Kitab Cetak Biru</h4>
+                <p className="text-xs text-gray-600 dark:text-gray-400">Sistem ini juga menyimpan artifak sakral <code>.md</code>, seperti <i>Hukum Arsitektur Mesin Waktu</i> dan <i>OMNI-CODEX</i> ini. Saat AI Developer Anda menyala, AI mereka akan TUNDUK untuk membaca dokumen konstitutif ini melalui repositori, memaksa otak mesin mereka sinkron mengilhami struktur Visi Utama Bapak sebagai Supreme Architect.</p>
               </div>
             </div>
           </div>
@@ -262,7 +262,7 @@ export default function OmniCodexPage() {
     <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-700">
       
       {/* Header Codex */}
-      <div className="relative overflow-hidden rounded-3xl bg-zinc-950 border border-emerald-900/30 p-8 shadow-[0_0_40px_-15px_rgba(16,185,129,0.3)]">
+      <div className="relative overflow-hidden rounded-3xl bg-emerald-50/50 dark:bg-zinc-950 border border-emerald-200 dark:border-emerald-900/30 p-8 shadow-[0_0_40px_-5px_rgba(16,185,129,0.1)] dark:shadow-[0_0_40px_-15px_rgba(16,185,129,0.3)]">
         <div className="absolute -right-10 -top-10 opacity-10 pointer-events-none">
           <BookMarked className="w-64 h-64 text-emerald-500" />
         </div>
@@ -271,10 +271,10 @@ export default function OmniCodexPage() {
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-950/50 text-emerald-400 text-xs font-black tracking-widest uppercase rounded-full mb-4 border border-emerald-800">
             <Terminal className="w-3 h-3" /> {data.subtitle}
           </div>
-          <h1 className="text-3xl md:text-5xl font-black text-white tracking-widest uppercase mb-4">
-            Omni<span className="text-emerald-500">Codex</span>
+          <h1 className="text-3xl md:text-5xl font-black text-emerald-950 dark:text-white tracking-widest uppercase mb-4">
+            Omni<span className="text-emerald-600 dark:text-emerald-500">Codex</span>
           </h1>
-          <p className="text-gray-400 font-mono text-sm leading-relaxed max-w-2xl">
+          <p className="text-gray-700 dark:text-gray-400 font-mono text-sm leading-relaxed max-w-2xl">
             {data.desc}
           </p>
         </div>
@@ -290,7 +290,7 @@ export default function OmniCodexPage() {
             <div 
               key={chap.id} 
               className={`border transition-colors duration-500 rounded-2xl overflow-hidden ${
-                isOpen ? 'bg-zinc-950 border-emerald-800/60 shadow-[0_5px_30px_-10px_rgba(16,185,129,0.2)]' : 'bg-black border-zinc-900 hover:border-zinc-800'
+                isOpen ? 'bg-white dark:bg-zinc-950 border-emerald-300 dark:border-emerald-800/60 shadow-[0_5px_30px_-10px_rgba(16,185,129,0.2)]' : 'bg-gray-50/50 dark:bg-black border-gray-200 dark:border-zinc-900 hover:border-gray-300 dark:hover:border-zinc-800'
               }`}
             >
               <button 
@@ -298,14 +298,14 @@ export default function OmniCodexPage() {
                 className="w-full flex items-center justify-between p-5 md:p-6 text-left focus:outline-none"
               >
                 <div className="flex items-center gap-4 pr-4">
-                  <div className={`shrink-0 p-3 rounded-xl flex items-center justify-center transition-colors duration-500 ${isOpen ? 'bg-emerald-950/60 text-emerald-400 shadow-[0_0_15px_-3px_rgba(16,185,129,0.5)]' : 'bg-zinc-900 text-gray-500'}`}>
+                  <div className={`shrink-0 p-3 rounded-xl flex items-center justify-center transition-colors duration-500 ${isOpen ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 shadow-[0_0_15px_-3px_rgba(16,185,129,0.5)]' : 'bg-gray-100 dark:bg-zinc-900 text-gray-500'}`}>
                     <Icon className="w-5 h-5" />
                   </div>
-                  <h2 className={`text-sm sm:text-base md:text-lg font-bold tracking-wide transition-colors ${isOpen ? 'text-emerald-500' : 'text-gray-300'}`}>
+                  <h2 className={`text-sm sm:text-base md:text-lg font-bold tracking-wide transition-colors ${isOpen ? 'text-emerald-700 dark:text-emerald-500' : 'text-gray-700 dark:text-gray-300'}`}>
                     {chap.title}
                   </h2>
                 </div>
-                <div className={`transition-transform duration-500 shrink-0 ${isOpen ? 'rotate-180 text-emerald-500' : 'rotate-0 text-zinc-600'}`}>
+                <div className={`transition-transform duration-500 shrink-0 ${isOpen ? 'rotate-180 text-emerald-600 dark:text-emerald-500' : 'rotate-0 text-gray-400 dark:text-zinc-600'}`}>
                   <ChevronDown className="w-5 h-5" />
                 </div>
               </button>
@@ -319,7 +319,7 @@ export default function OmniCodexPage() {
                     transition={{ duration: 0.4, ease: "easeInOut" }}
                     className="overflow-hidden"
                   >
-                    <div className="p-5 md:p-6 pt-0 border-t border-emerald-900/20 font-mono text-sm leading-relaxed">
+                    <div className="p-5 md:p-6 pt-0 border-t border-emerald-100 dark:border-emerald-900/20 font-mono text-sm leading-relaxed text-gray-800 dark:text-gray-200">
                       {chap.content}
                     </div>
                   </motion.div>

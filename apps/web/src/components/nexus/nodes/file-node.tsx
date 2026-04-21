@@ -9,6 +9,7 @@ import { duckEngine } from "@/core/duckdb-engine";
 export function FileNode({ data, id }: { data: any, id: string }) {
   const [loading, setLoading] = useState(false);
   const [fileAttached, setFileAttached] = useState<string | null>(null);
+  const [tableAlias, setTableAlias] = useState<string | null>(null);
   const [schemaRows, setSchemaRows] = useState<any[]>([]);
 
   const onDrop = async (acceptedFiles: File[]) => {
@@ -27,6 +28,7 @@ export function FileNode({ data, id }: { data: any, id: string }) {
       const success = await duckEngine.ingestFile(tableName, uint8Buffer, file.name);
       
       if (success) {
+        setTableAlias(tableName);
         // 2. Mata Elang: Rontgen Skema
         const schema = await duckEngine.discoverSchema(tableName);
         setSchemaRows(schema);
@@ -69,9 +71,16 @@ export function FileNode({ data, id }: { data: any, id: string }) {
           </div>
         ) : (
           <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/20 p-2 rounded-md border border-emerald-100 dark:border-emerald-800">
-               {loading ? <Loader2 className="w-4 h-4 text-emerald-600 animate-spin" /> : <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />}
-               <span className="text-xs font-bold text-emerald-900 dark:text-emerald-300 truncate" title={fileAttached}>{fileAttached}</span>
+            <div className="flex flex-col gap-1 bg-emerald-50 dark:bg-emerald-900/20 p-2 rounded-md border border-emerald-100 dark:border-emerald-800">
+               <div className="flex items-center gap-2">
+                 {loading ? <Loader2 className="w-4 h-4 text-emerald-600 animate-spin" /> : <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />}
+                 <span className="text-xs font-bold text-emerald-900 dark:text-emerald-300 truncate" title={fileAttached}>{fileAttached}</span>
+               </div>
+               {tableAlias && (
+                 <div className="flex gap-2 items-center bg-white/50 dark:bg-black/20 p-1 rounded font-mono text-[9px] text-emerald-700 dark:text-emerald-400">
+                   <span className="font-bold opacity-70">ALIAS:</span> {tableAlias}
+                 </div>
+               )}
             </div>
             
             {schemaRows.length > 0 && (

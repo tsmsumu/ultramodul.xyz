@@ -54,6 +54,12 @@ export function NexusCanvas() {
   }, []);
 
   const onNodeClick = useCallback((_: React.MouseEvent, node: Node) => {
+    // Cegah terminal terbuka untuk Metadata Node, karena ini bukan tabel fisik WASM DuckDB
+    if (node.type === 'metadata') {
+       setActiveTerminalNode(null);
+       return;
+    }
+
     const data = node.data;
     if (data.tableName || data.dbName || data.sqlQuery) {
       setActiveTerminalNode(data);

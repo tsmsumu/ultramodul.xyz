@@ -6,6 +6,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { cookies } from "next/headers";
 import { ThemeCustomizer } from "../components/layout/theme-customizer";
+import appVersion from "../core/version.json";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -50,6 +51,10 @@ export default async function RootLayout({
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
             {children}
             <ThemeCustomizer currentSkin={skin} currentLayout={layout} />
+            <div className="fixed bottom-2 right-4 z-50 pointer-events-none opacity-20 select-none flex flex-col items-end text-[10px] font-mono tracking-widest text-zinc-500">
+               <span>{appVersion.platform}</span>
+               <span>{appVersion.version}</span>
+            </div>
           </ThemeProvider>
         </NextIntlClientProvider>
       </body>

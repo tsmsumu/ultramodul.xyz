@@ -172,7 +172,7 @@
     "desc": "Personal Security Center",
     "subdesc": "Enkripsi End-to-End",
     "rootWarning": "Akun SYSTEM_ROOT adalah bypass darurat. Profil ini tidak dapat diubah dari antarmuka web demi alasan keamanan mutlak.",
-    "universalId": "Universal ID (NIK)",
+    "universalId": "Universal ID (UID)",
     "locked": "Absolut / Terkunci",
     "fullName": "Nama Tampilan (Username)",
     "role": "Otoritas Matriks (Role)",

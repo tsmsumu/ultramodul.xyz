@@ -89,7 +89,7 @@ export function DataTable({ initialUsers }: { initialUsers: any[] }) {
   };
 
   const handleGeneratePassword = async (id: string, username: string) => {
-    if (confirm(`Apakah Anda yakin ingin men-generate password baru untuk NIK ${username}? Sandi lama akan hangus.`)) {
+    if (confirm(`Apakah Anda yakin ingin men-generate password baru untuk UID ${username}? Sandi lama akan hangus.`)) {
       setLoadingId(id);
       
       const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*";
@@ -102,10 +102,10 @@ export function DataTable({ initialUsers }: { initialUsers: any[] }) {
       if (result.success) {
         try {
           await navigator.clipboard.writeText(pass);
-          alert(`SUKSES! Sandi baru untuk NIK ${username} adalah:\n\n${pass}\n\n✔️ Sandi telah OTOMATIS DISALIN (Copied) ke perangkat Anda! Silakan tekan Paste (Ctrl+V) di tempat yang aman.`);
+          alert(`SUKSES! Sandi baru untuk UID ${username} adalah:\n\n${pass}\n\n✔️ Sandi telah OTOMATIS DISALIN (Copied) ke perangkat Anda! Silakan tekan Paste (Ctrl+V) di tempat yang aman.`);
         } catch (e) {
           // Fallback jika browser memblokir clipboard API
-          prompt(`SUKSES! Sandi baru NIK ${username} berhasil dibuat.\n\nSilakan block dan COPY (Salin) sandi di kotak bawah ini SEKARANG:`, pass);
+          prompt(`SUKSES! Sandi baru UID ${username} berhasil dibuat.\n\nSilakan block dan COPY (Salin) sandi di kotak bawah ini SEKARANG:`, pass);
         }
       } else {
         alert("Gagal membuat password. Hubungi sysadmin.");
@@ -114,7 +114,7 @@ export function DataTable({ initialUsers }: { initialUsers: any[] }) {
   };
 
   const handleDeleteUser = async (id: string, username: string) => {
-    if (confirm(`PERINGATAN KRITIKAL!\n\nAnda akan mengajukan eksekusi pemusnahan permanen untuk NIK ${username} ke Peladen. Lanjutkan?`)) {
+    if (confirm(`PERINGATAN KRITIKAL!\n\nAnda akan mengajukan eksekusi pemusnahan permanen untuk UID ${username} ke Peladen. Lanjutkan?`)) {
       setLoadingId(id);
       const result = await deleteIdentity(id);
       setLoadingId(null);
@@ -161,7 +161,7 @@ export function DataTable({ initialUsers }: { initialUsers: any[] }) {
             <Search className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
             <input 
               type="text" 
-              placeholder="Omni-Search: Cari Nama, NIK, atau Cabang..." 
+              placeholder="Omni-Search: Cari Nama, UID, atau Cabang..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-9 pr-4 py-2 text-sm bg-white dark:bg-zinc-900 border border-gray-200 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm"
@@ -200,7 +200,7 @@ export function DataTable({ initialUsers }: { initialUsers: any[] }) {
                 className="w-4 h-4 rounded appearance-none border border-gray-300 dark:border-gray-600 checked:bg-indigo-600 checked:border-indigo-600 focus:ring-0 cursor-pointer"
               />
             </th>
-            <th className="px-6 py-4 font-semibold tracking-wider">Identitas NIK</th>
+            <th className="px-6 py-4 font-semibold tracking-wider">Identitas Global (UID)</th>
             <th className="px-6 py-4 font-semibold tracking-wider">Nama Lengkap</th>
             <th className="px-6 py-4 font-medium">Domain Otoritas</th>
             <th className="px-6 py-4 font-medium">Batas Izin (Status)</th>

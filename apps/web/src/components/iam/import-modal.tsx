@@ -72,7 +72,7 @@ export function ImportModal({ isOpen, onClose, onRefresh }: { isOpen: boolean, o
            <div className="text-[10px] text-gray-500 bg-blue-50 dark:bg-blue-900/10 p-3 rounded-lg border border-blue-100 dark:border-blue-900/30">
              <strong>Aturan CSV Format Jaringan:</strong><br/>
              1. File wajib memuat 3 kolom tanpa petik tambahan ganda.<br/>
-             2. Kolom 1 = Identitas Global / NIK Angka / KTP<br/>
+             2. Kolom 1 = Identitas Global (UID)<br/>
              3. Kolom 2 = Nama Lengkap Resmi<br/>
              4. Kolom 3 = Role Sistem (admin | member | viewer)<br/>
              Semua baris akan didaftarkan ke Matrix SQLite dalam status "Active". Matrix hak akses spesifik harus disetel melalui halaman Matrix / Mandat setelahnya.

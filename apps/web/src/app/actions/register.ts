@@ -5,22 +5,17 @@ import { createAuditLog } from "@ultra/db/src/logger";
 import { randomUUID, createHash } from "crypto";
 
 /**
- * AI Verval Engine (The NIK AI Verifier)
- * Memastikan NIK masuk akal secara format Dukcapil Indonesia.
+ * AI Verval Engine (Universal ID Verifier)
+ * Memastikan ID masuk akal secara format alfanumerik global (minimal 5 karakter, tanpa spasi).
  */
-function isNikFormatValid(nik: string): boolean {
-  // Hukum 1: Harus mutlak 16 digit angka
-  const is16Digits = /^\d{16}$/.test(nik);
-  if (!is16Digits) return false;
+function isUniversalIdValid(uid: string): boolean {
+  // Hukum 1: Minimal 5 karakter, maksimal 50 karakter
+  if (uid.length < 5 || uid.length > 50) return false;
 
-  // Hukum 2: Ekstraksi tanggal lahir (Digit ke 7-12)
-  const dd = parseInt(nik.substring(6, 8));
-  const mm = parseInt(nik.substring(8, 10));
+  // Hukum 2: Hanya boleh huruf, angka, dash, dan underscore
+  const isAlphaNumericValid = /^[a-zA-Z0-9_-]+$/.test(uid);
   
-  const validDay = (dd >= 1 && dd <= 31) || (dd >= 41 && dd <= 71); // Pria vs Wanita
-  const validMonth = (mm >= 1 && mm <= 12);
-  
-  return validDay && validMonth;
+  return isAlphaNumericValid;
 }
 
 export async function registerPublicMember(formData: FormData) {
@@ -39,8 +34,8 @@ export async function registerPublicMember(formData: FormData) {
       return { success: false, message: "Peringatan: ID Universal ini sudah terdaftar dalam radar sistem!" };
     }
 
-    // EKSEKUSI MESIN VERVAL NIK AI
-    const isValid = isNikFormatValid(ssoId);
+    // EKSEKUSI MESIN VERVAL UNIVERSAL
+    const isValid = isUniversalIdValid(ssoId);
     const assignedStatus = isValid ? "active" : "pending";
 
     // Hash Kriptografi Password

@@ -60,7 +60,7 @@ export default async function ProfilePage() {
 
       {/* FORM */}
       <ProfileForm 
-        initialNik={user.username} 
+        initialUid={user.username} 
         initialName={user.name || ""} 
         role={user.role} 
       />

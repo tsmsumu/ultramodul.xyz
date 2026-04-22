@@ -6,12 +6,12 @@ import { Lock, User, KeyRound, Save, Activity, CheckCircle2, ShieldCheck, AlertT
 import { useTranslations } from "next-intl";
 
 interface ProfileFormProps {
-  initialNik: string;
+  initialUid: string;
   initialName: string;
   role: string;
 }
 
-export default function ProfileForm({ initialNik, initialName, role }: ProfileFormProps) {
+export default function ProfileForm({ initialUid, initialName, role }: ProfileFormProps) {
   const t = useTranslations("profile");
   const [isSaving, setIsSaving] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
@@ -55,7 +55,7 @@ export default function ProfileForm({ initialNik, initialName, role }: ProfileFo
             <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-widest mb-1 flex items-center gap-2">
               <KeyRound className="w-4 h-4" /> {t('universalId')}
             </h3>
-            <p className="text-2xl font-mono text-zinc-500 tracking-wider">{initialNik}</p>
+            <p className="text-2xl font-mono text-zinc-500 tracking-wider">{initialUid}</p>
          </div>
          <div className="flex flex-col items-end">
             <Lock className="w-6 h-6 text-zinc-600 mb-2" />

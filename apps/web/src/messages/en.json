@@ -172,7 +172,7 @@
     "desc": "Personal Security Center",
     "subdesc": "End-to-End Encryption",
     "rootWarning": "The SYSTEM_ROOT account is an emergency bypass. This profile cannot be modified from the web interface for absolute security reasons.",
-    "universalId": "Universal ID (NIK)",
+    "universalId": "Universal ID (UID)",
     "locked": "Absolute / Locked",
     "fullName": "Display Name (Username)",
     "role": "Matrix Authority (Role)",

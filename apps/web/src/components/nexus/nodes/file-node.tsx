@@ -63,7 +63,7 @@ export function FileNode({ data, id }: { data: any, id: string }) {
           <div {...getRootProps()} className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition flex flex-col items-center justify-center gap-2 min-h-[100px]
             ${isDragActive ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20' : 'border-gray-300 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/5'}
           `}>
-             <input {...getInputProps()} />
+             <input aria-label="Input field" placeholder="Enter value..." {...getInputProps()}  />
              <UploadCloud className={`w-6 h-6 ${isDragActive ? 'text-emerald-500' : 'text-gray-400'}`} />
              <span className="text-[10px] text-gray-500 leading-tight">
                {isDragActive ? 'Drop file here...' : 'Drag & Drop Parquet / CSV here'}

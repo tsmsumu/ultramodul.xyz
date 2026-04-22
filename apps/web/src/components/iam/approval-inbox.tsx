@@ -84,10 +84,10 @@ export function ApprovalInbox() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2 shrink-0 ml-4">
-                  <button onClick={() => handleResolve(ap.id, ap.type, false)} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-red-500 hover:bg-red-600 rounded-md transition shadow-sm shadow-red-500/20" title="Tolak">
+                  <button aria-label="Action button" onClick={() => handleResolve(ap.id, ap.type, false)} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-red-500 hover:bg-red-600 rounded-md transition shadow-sm shadow-red-500/20" title="Tolak">
                     <XCircle className="w-4 h-4" /> Tolak
                   </button>
-                  <button onClick={() => handleResolve(ap.id, ap.type, true)} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-emerald-500 hover:bg-emerald-600 rounded-md transition shadow-sm shadow-emerald-500/20" title="Setujui">
+                  <button aria-label="Action button" onClick={() => handleResolve(ap.id, ap.type, true)} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-emerald-500 hover:bg-emerald-600 rounded-md transition shadow-sm shadow-emerald-500/20" title="Setujui">
                     <CheckCircle className="w-4 h-4" /> Setujui
                   </button>
                 </div>

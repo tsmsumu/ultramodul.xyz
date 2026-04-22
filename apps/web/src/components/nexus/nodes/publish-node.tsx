@@ -39,7 +39,7 @@ export function PublishNode({ data, id }: any) {
       <div className="flex flex-col gap-3">
          <div>
            <label className="text-[10px] text-gray-400 uppercase tracking-widest block mb-1">Nama Virtual Dataset</label>
-           <input 
+           <input aria-label="Input field" 
              value={blueprintName} 
              onChange={e => setBlueprintName(e.target.value)} 
              placeholder="Contoh: Gabungan_Sensus_Final"
@@ -57,7 +57,7 @@ export function PublishNode({ data, id }: any) {
                <CheckCircle2 className="w-4 h-4" /> PUBLISHED TO CORE
             </div>
          ) : (
-            <button onClick={handlePublish} className="w-full py-2 bg-linear-to-r from-purple-500 to-fuchsia-600 hover:from-purple-400 hover:to-fuchsia-500 text-white rounded-lg text-xs font-bold transition flex items-center justify-center gap-2 shadow-xl shadow-purple-500/20 hover:scale-[1.02]">
+            <button aria-label="Action button" onClick={handlePublish} className="w-full py-2 bg-linear-to-r from-purple-500 to-fuchsia-600 hover:from-purple-400 hover:to-fuchsia-500 text-white rounded-lg text-xs font-bold transition flex items-center justify-center gap-2 shadow-xl shadow-purple-500/20 hover:scale-[1.02]">
                <LockKeyhole className="w-4 h-4" /> BUNGKUS KE DALAM BRANKAS!
             </button>
          )}

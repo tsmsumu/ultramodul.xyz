@@ -33,14 +33,14 @@ export default function TestBusPage() {
         </div>
 
         <div className="space-y-4">
-          <input 
+          <input aria-label="Input field"
             type="text"
             value={typedMsg}
             onChange={e => setTypedMsg(e.target.value)}
             placeholder={t("inputPlaceholder")}
             className="w-full px-4 py-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
           />
-          <button 
+          <button aria-label="Action button" 
             onClick={triggerGlobalEvent}
             className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold rounded-xl transition-all shadow-xl shadow-indigo-600/30 flex justify-center items-center gap-2"
           >

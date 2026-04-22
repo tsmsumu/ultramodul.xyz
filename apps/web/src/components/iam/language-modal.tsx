@@ -77,7 +77,7 @@ export function LanguageModal({ isOpen, onClose, onRefresh, userId, userName, in
                   <Globe2 className="w-5 h-5 text-indigo-500" />
                   Rosetta Protocol
                 </h2>
-                <button onClick={onClose} className="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded-md transition text-gray-500">
+                <button aria-label="Action button" onClick={onClose} className="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded-md transition text-gray-500">
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -98,7 +98,7 @@ export function LanguageModal({ isOpen, onClose, onRefresh, userId, userName, in
 
                   <div>
                     <label className="block text-sm font-bold mb-1.5 opacity-80">Bahasa Utama (Wajib)</label>
-                    <select 
+                    <select aria-label="Select option" 
                       value={primaryLang}
                       onChange={(e) => setPrimaryLang(e.target.value)}
                       className="w-full px-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition"
@@ -111,7 +111,7 @@ export function LanguageModal({ isOpen, onClose, onRefresh, userId, userName, in
 
                   <div>
                     <label className="block text-sm font-medium mb-1.5 opacity-80 text-gray-500">Bahasa Kedua (Opsional)</label>
-                    <select 
+                    <select aria-label="Select option" 
                       value={secondaryLang}
                       onChange={(e) => setSecondaryLang(e.target.value)}
                       className="w-full px-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition"
@@ -125,7 +125,7 @@ export function LanguageModal({ isOpen, onClose, onRefresh, userId, userName, in
 
                   <div>
                     <label className="block text-sm font-medium mb-1.5 opacity-80 text-gray-500">Bahasa Ketiga (Opsional)</label>
-                    <select 
+                    <select aria-label="Select option" 
                       value={tertiaryLang}
                       onChange={(e) => setTertiaryLang(e.target.value)}
                       className="w-full px-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition"
@@ -138,7 +138,7 @@ export function LanguageModal({ isOpen, onClose, onRefresh, userId, userName, in
                   </div>
 
                   <div className="pt-4 flex justify-end gap-3">
-                    <button type="button" onClick={onClose} className="px-5 py-2.5 rounded-lg font-medium hover:bg-gray-100 dark:hover:bg-white/5 transition">
+                    <button aria-label="Action button" type="button" onClick={onClose} className="px-5 py-2.5 rounded-lg font-medium hover:bg-gray-100 dark:hover:bg-white/5 transition">
                       Batal
                     </button>
                     <button disabled={loading} type="submit" className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition disabled:opacity-50 shadow-lg shadow-indigo-500/20">

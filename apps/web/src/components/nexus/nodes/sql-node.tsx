@@ -11,7 +11,7 @@ export function SqlNode({ data, selected }: { data: any, selected?: boolean }) {
     <div className={`bg-white dark:bg-[#09090b] border-2 rounded-xl shadow-2xl min-w-[320px] overflow-hidden transition-all ${selected ? 'border-amber-400 shadow-amber-500/20' : 'border-amber-500/50'}`}>
       <Handle type="target" position={Position.Left} className="w-3 h-3 bg-amber-500 border-2 border-white dark:border-[#09090b]" />
       
-      <div className="bg-gradient-to-r from-amber-600 to-orange-500 text-white p-3 text-xs font-bold flex justify-between items-center shadow-sm">
+      <div className="bg-linear-to-r from-amber-600 to-orange-500 text-white p-3 text-xs font-bold flex justify-between items-center shadow-sm">
         <div className="flex items-center gap-2">
           <Terminal className="w-4 h-4" />
           <span className="tracking-wider">RAW SQL OVERRIDE</span>

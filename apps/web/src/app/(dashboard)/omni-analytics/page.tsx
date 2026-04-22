@@ -337,13 +337,13 @@ export default function OmniAnalyticsPage() {
       {/* MODE TOGGLE SWITCH (The Core of Phase 7/14) */}
       <div className="flex justify-center shrink-0">
          <div className="bg-black/50 p-1.5 rounded-2xl border border-white/10 flex gap-1 shadow-2xl backdrop-blur-md">
-            <button 
+            <button aria-label="Action button" 
               onClick={() => { setAnalystMode('standard'); setActiveCatalogId(null); setStandardStep(1); }}
               className={`px-8 py-3 rounded-xl text-sm font-bold tracking-widest flex items-center gap-3 transition-all duration-300 ${analystMode === 'standard' ? 'bg-blue-600 text-white shadow-[0_0_20px_rgba(37,99,235,0.4)]' : 'text-zinc-500 hover:text-white hover:bg-white/5'}`}
             >
               <GraduationCap className="w-5 h-5" /> STANDARD
             </button>
-            <button 
+            <button aria-label="Action button" 
               onClick={() => setAnalystMode('advance')}
               className={`px-8 py-3 rounded-xl text-sm font-bold tracking-widest flex items-center gap-3 transition-all duration-300 ${analystMode === 'advance' ? 'bg-indigo-600 text-white shadow-[0_0_20px_rgba(79,70,229,0.4)]' : 'text-zinc-500 hover:text-white hover:bg-white/5'}`}
             >
@@ -375,7 +375,7 @@ export default function OmniAnalyticsPage() {
                     {catalog.map((item, idx) => {
                       const color = COLORS[idx % COLORS.length];
                       return (
-                        <button key={item.id} onClick={() => openCatalogItem(item)} className={`bg-${color}-950/20 hover:bg-${color}-900/40 border border-${color}-500/30 p-8 rounded-3xl transition-all group text-left relative overflow-hidden flex flex-col`}>
+                        <button aria-label="Action button" key={item.id} onClick={() => openCatalogItem(item)} className={`bg-${color}-950/20 hover:bg-${color}-900/40 border border-${color}-500/30 p-8 rounded-3xl transition-all group text-left relative overflow-hidden flex flex-col`}>
                             <div className={`absolute -right-10 -top-10 bg-${color}-500/20 w-32 h-32 rounded-full blur-2xl group-hover:bg-${color}-500/40 transition`} />
                             <div className="flex justify-between items-start mb-4">
                               <LayoutDashboard className={`w-10 h-10 text-${color}-400`} />
@@ -396,7 +396,7 @@ export default function OmniAnalyticsPage() {
                 
                 {/* GUIDED STORYTELLING (MADLIBS UI) - DYNAMIC UNIVERSAL */}
                 <div className="bg-blue-950/20 border border-blue-500/30 p-8 rounded-3xl shadow-[0_0_40px_rgba(59,130,246,0.1)] shrink-0 relative">
-                   <button onClick={() => { setStandardStep(1); setActiveCatalogId(null); }} title="Close" className="absolute top-4 right-4 text-zinc-500 hover:text-white transition">
+                   <button aria-label="Action button" onClick={() => { setStandardStep(1); setActiveCatalogId(null); }} title="Close" className="absolute top-4 right-4 text-zinc-500 hover:text-white transition">
                      <XIcon className="w-5 h-5" />
                    </button>
                    <div className="text-sm font-bold text-blue-400 uppercase tracking-widest mb-4 flex items-center gap-2">
@@ -435,7 +435,7 @@ export default function OmniAnalyticsPage() {
 
                         <span>.&quot;</span>
 
-                        <button 
+                        <button aria-label="Action button" 
                           onClick={runStoryQuery}
                           className="ml-auto bg-blue-600 hover:bg-blue-500 text-white font-bold px-6 py-2 rounded-xl shadow-[0_0_15px_rgba(37,99,235,0.5)] transition flex items-center gap-2 text-lg"
                         >
@@ -488,7 +488,7 @@ export default function OmniAnalyticsPage() {
               <p className="text-zinc-400 max-w-lg mb-8 text-sm">PUM bersifat Universal. Lempar Parquet/CSV mentah, lalu rakit sumbu koordinat Anda, atau Publish sebagai Widget ke Mode Standard.</p>
 
               <div {...getRootProps()} className={`w-full max-w-2xl border-2 border-dashed rounded-3xl p-10 transition-all cursor-pointer flex flex-col items-center justify-center gap-4 mb-10 shrink-0 ${isDragActive ? 'border-indigo-500 bg-indigo-950/20' : 'border-zinc-700 bg-zinc-900/50 hover:bg-zinc-800/50 hover:border-indigo-500/50'}`}>
-                <input {...getInputProps()} />
+                <input aria-label="Input field" placeholder="Enter value..." {...getInputProps()}  />
                 {loading ? (
                    <Loader2 className="w-10 h-10 text-indigo-500 animate-spin" />
                 ) : (
@@ -510,7 +510,7 @@ export default function OmniAnalyticsPage() {
                             <div className="font-bold text-white">{item.title}</div>
                             <div className="text-xs text-zinc-500 font-mono">Tabel: {item.tableName}</div>
                           </div>
-                          <button onClick={(e) => deleteCatalogItem(item.id, e)} title="Delete" className="w-8 h-8 bg-red-900/20 text-red-500 hover:bg-red-600 hover:text-white rounded flex items-center justify-center transition opacity-0 group-hover:opacity-100">
+                          <button aria-label="Action button" onClick={(e) => deleteCatalogItem(item.id, e)} title="Delete" className="w-8 h-8 bg-red-900/20 text-red-500 hover:bg-red-600 hover:text-white rounded flex items-center justify-center transition opacity-0 group-hover:opacity-100">
                              <Trash2 className="w-4 h-4" />
                           </button>
                        </div>
@@ -539,8 +539,8 @@ export default function OmniAnalyticsPage() {
                     </button>
                     <div className="w-px h-6 bg-white/10 mx-1 self-center" />
                     <div className="flex gap-2 p-1 bg-black/40 rounded-xl border border-white/5">
-                      <button onClick={() => setChartType('bar')} className={`px-4 py-2 rounded-lg text-xs font-bold ${chartType === 'bar' ? 'bg-indigo-600 text-white' : 'text-zinc-500 hover:text-white'}`}><LayoutDashboard className="w-4 h-4" /> BAR</button>
-                      <button onClick={() => setChartType('treemap')} className={`px-4 py-2 rounded-lg text-xs font-bold ${chartType === 'treemap' ? 'bg-emerald-600 text-white' : 'text-emerald-500 hover:text-white'}`}><Globe2 className="w-4 h-4" /> TREEMAP</button>
+                      <button aria-label="Action button" onClick={() => setChartType('bar')} className={`px-4 py-2 rounded-lg text-xs font-bold ${chartType === 'bar' ? 'bg-indigo-600 text-white' : 'text-zinc-500 hover:text-white'}`}><LayoutDashboard className="w-4 h-4" /> BAR</button>
+                      <button aria-label="Action button" onClick={() => setChartType('treemap')} className={`px-4 py-2 rounded-lg text-xs font-bold ${chartType === 'treemap' ? 'bg-emerald-600 text-white' : 'text-emerald-500 hover:text-white'}`}><Globe2 className="w-4 h-4" /> TREEMAP</button>
                     </div>
                  </div>
                </div>

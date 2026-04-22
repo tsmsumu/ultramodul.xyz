@@ -12,7 +12,7 @@ export function SanitizerNode({ data, selected }: { data: any, selected?: boolea
     <div className={`bg-white dark:bg-[#09090b] border-2 rounded-xl shadow-2xl min-w-[250px] overflow-hidden transition-all ${selected ? 'border-cyan-400 shadow-cyan-500/20' : 'border-cyan-500/50'}`}>
       <Handle type="target" position={Position.Left} className="w-3 h-3 bg-cyan-500 border-2 border-white dark:border-[#09090b]" />
       
-      <div className="bg-gradient-to-r from-cyan-600 to-cyan-500 text-white p-3 text-xs font-bold flex justify-between items-center shadow-sm">
+      <div className="bg-linear-to-r from-cyan-600 to-cyan-500 text-white p-3 text-xs font-bold flex justify-between items-center shadow-sm">
         <div className="flex items-center gap-2">
           <Droplets className="w-4 h-4" />
           <span className="tracking-wider">AUTO REGEX CLEANER</span>
@@ -22,7 +22,7 @@ export function SanitizerNode({ data, selected }: { data: any, selected?: boolea
       
       <div className="p-4 space-y-3">
         <label className="flex items-center gap-3 p-2 rounded-lg border border-gray-100 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-white/5 cursor-pointer transition">
-          <input 
+          <input aria-label="Input field" placeholder="Enter value..." 
             type="checkbox" 
             checked={washNulls} 
             onChange={e => setWashNulls(e.target.checked)}
@@ -35,7 +35,7 @@ export function SanitizerNode({ data, selected }: { data: any, selected?: boolea
         </label>
 
         <label className="flex items-center gap-3 p-2 rounded-lg border border-gray-100 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-white/5 cursor-pointer transition">
-          <input 
+          <input aria-label="Input field" placeholder="Enter value..." 
             type="checkbox" 
             checked={trimUpper} 
             onChange={e => setTrimUpper(e.target.checked)}

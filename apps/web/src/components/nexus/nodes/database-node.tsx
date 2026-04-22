@@ -21,7 +21,7 @@ export function DatabaseNode({ id, data, selected }: { id: string, data: any, se
           <Database className="w-4 h-4" />
           <span className="tracking-wider">LIVE DB CONNECTOR</span>
         </div>
-        <button 
+        <button aria-label="Action button" 
           onClick={(e) => { e.stopPropagation(); deleteElements({ nodes: [{ id }] }); }}
           className="p-1 cursor-pointer opacity-50 hover:opacity-100 hover:bg-white/20 rounded transition-all text-white hover:text-red-100"
           title="Hapus Node"
@@ -35,7 +35,7 @@ export function DatabaseNode({ id, data, selected }: { id: string, data: any, se
           <label className="text-[10px] uppercase font-black tracking-widest text-emerald-600 dark:text-emerald-500 mb-1 block">Tabel Target SQLite Backend</label>
           <div className="relative">
             <PlugZap className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-gray-400" />
-            <input 
+            <input aria-label="Input field" 
               type="text" 
               value={dbName}
               onChange={(e) => {
@@ -49,7 +49,7 @@ export function DatabaseNode({ id, data, selected }: { id: string, data: any, se
           </div>
         </div>
 
-        <button 
+        <button aria-label="Action button" 
           onClick={async () => {
              if (!dbName) return;
              setIsConnecting(true);

@@ -13,11 +13,11 @@ export default function WaitRoomPage() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-yellow-500/10 blur-[100px] rounded-full pointer-events-none" />
 
       <div className="relative z-10 max-w-lg w-full text-center space-y-6">
-        <div className="w-24 h-24 mx-auto bg-gradient-to-br from-yellow-400 to-amber-600 rounded-full flex items-center justify-center shadow-2xl shadow-yellow-500/20 mb-8 animate-pulse">
+        <div className="w-24 h-24 mx-auto bg-linear-to-br from-yellow-400 to-amber-600 rounded-full flex items-center justify-center shadow-2xl shadow-yellow-500/20 mb-8 animate-pulse">
           <ShieldCheck className="w-12 h-12 text-white" />
         </div>
 
-        <h1 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
+        <h1 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-linear-to-r from-white to-gray-400">
           {t("waitRoomTitle")}
         </h1>
         

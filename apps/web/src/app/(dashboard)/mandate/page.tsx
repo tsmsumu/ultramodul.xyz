@@ -70,7 +70,7 @@ export default function MandateWorkflowPage() {
       </div>
 
       <div className="flex justify-start">
-        <button 
+        <button aria-label="Action button" 
           onClick={() => setIsModalOpen(true)}
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-lg transition"
         >
@@ -117,16 +117,16 @@ export default function MandateWorkflowPage() {
               <div className="flex gap-2">
                 {m.status === "PENDING" && (
                   <>
-                    <button onClick={() => handleAction(m.id, "ACTIVE")} className="flex items-center gap-1.5 px-3 py-1.5 bg-green-50 hover:bg-green-100 text-green-700 dark:bg-green-950/30 dark:hover:bg-green-900/50 dark:text-green-400 rounded-lg text-sm font-medium transition cursor-pointer">
+                    <button aria-label="Action button" onClick={() => handleAction(m.id, "ACTIVE")} className="flex items-center gap-1.5 px-3 py-1.5 bg-green-50 hover:bg-green-100 text-green-700 dark:bg-green-950/30 dark:hover:bg-green-900/50 dark:text-green-400 rounded-lg text-sm font-medium transition cursor-pointer">
                       <CheckCircle2 className="w-4 h-4" /> {t("btnAccept")}
                     </button>
-                    <button onClick={() => handleAction(m.id, "REJECTED")} className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 dark:bg-red-950/30 dark:hover:bg-red-900/50 dark:text-red-400 rounded-lg text-sm font-medium transition cursor-pointer">
+                    <button aria-label="Action button" onClick={() => handleAction(m.id, "REJECTED")} className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 dark:bg-red-950/30 dark:hover:bg-red-900/50 dark:text-red-400 rounded-lg text-sm font-medium transition cursor-pointer">
                       <XCircle className="w-4 h-4" /> {t("btnReject")}
                     </button>
                   </>
                 )}
                 {m.status === "ACTIVE" && (
-                  <button onClick={() => handleAction(m.id, "REVOKED")} className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-50 hover:bg-orange-100 text-orange-700 dark:bg-orange-950/30 dark:hover:bg-orange-900/50 dark:text-orange-400 rounded-lg text-sm font-medium transition cursor-pointer">
+                  <button aria-label="Action button" onClick={() => handleAction(m.id, "REVOKED")} className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-50 hover:bg-orange-100 text-orange-700 dark:bg-orange-950/30 dark:hover:bg-orange-900/50 dark:text-orange-400 rounded-lg text-sm font-medium transition cursor-pointer">
                     <ShieldOff className="w-4 h-4" /> {t("btnRevoke")}
                   </button>
                 )}
@@ -142,7 +142,7 @@ export default function MandateWorkflowPage() {
           <div className="bg-white dark:bg-[#0a0a0c] w-full max-w-md rounded-2xl shadow-2xl border border-gray-200 dark:border-white/10 overflow-hidden animate-in zoom-in-95 duration-200">
             <div className="px-6 py-4 border-b border-gray-200 dark:border-white/10 flex justify-between items-center">
                <h3 className="font-semibold">{t("modalTitle")}</h3>
-               <button onClick={() => setIsModalOpen(false)} title={t("btnCancel")} className="text-gray-400 hover:text-gray-600 dark:hover:text-white"><XCircle className="w-5 h-5"/></button>
+               <button aria-label="Action button" onClick={() => setIsModalOpen(false)} title={t("btnCancel")} className="text-gray-400 hover:text-gray-600 dark:hover:text-white"><XCircle className="w-5 h-5"/></button>
             </div>
                         <form onSubmit={handleCreateSubmit} className="p-6 space-y-4">
                <div>
@@ -166,7 +166,7 @@ export default function MandateWorkflowPage() {
                </div>
                
                <div className="pt-2 flex justify-end gap-3">
-                  <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm font-medium hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition">{t("btnCancel")}</button>
+                  <button aria-label="Action button" type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm font-medium hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition">{t("btnCancel")}</button>
                   <button type="submit" disabled={isSubmitting} className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-lg transition flex items-center gap-2">
                      {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin"/> : t("btnPublish")}
                   </button>

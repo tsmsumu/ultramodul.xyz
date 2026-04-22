@@ -43,7 +43,7 @@ export function ImportModal({ isOpen, onClose, onRefresh }: { isOpen: boolean, o
            <h3 className="font-semibold text-indigo-900 dark:text-indigo-400 flex items-center gap-2">
              <FileSpreadsheet className="w-5 h-5"/> Import Batch Identity
            </h3>
-           <button onClick={onClose} className="text-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-300 transition">
+           <button aria-label="Action button" onClick={onClose} className="text-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-300 transition">
              <X className="w-5 h-5"/>
            </button>
         </div>

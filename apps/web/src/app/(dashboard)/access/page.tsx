@@ -83,7 +83,7 @@ export default function AccessMatrixPage() {
              </div>
              <div className="max-h-[500px] overflow-y-auto p-2 space-y-1">
                {users.map(u => (
-                 <button 
+                 <button aria-label="Action button" 
                    key={u.id}
                    onClick={() => handleSelectUser(u.id)}
                    className={`w-full text-left px-4 py-3 rounded-xl flex items-center gap-3 transition-all ${
@@ -144,7 +144,7 @@ export default function AccessMatrixPage() {
                        ))}
                      </div>
 
-                     <button 
+                     <button aria-label="Action button" 
                        onClick={() => handleSaveModule(mod.id)}
                        disabled={saving === mod.id}
                        className="shrink-0 px-4 py-2 border border-emerald-500/50 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500 hover:text-white rounded-lg text-xs font-bold uppercase tracking-widest transition flex items-center gap-2"

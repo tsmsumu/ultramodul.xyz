@@ -187,7 +187,7 @@ export default function UltraCodexPage() {
               const isActive = activeTab === tab.id;
               const Icon = tab.icon;
               return (
-                <button
+                <button aria-label="Action button"
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as TabId)}
                   className={`flex items-center gap-4 px-5 py-4 rounded-2xl text-left transition-all duration-300 relative overflow-hidden group
@@ -241,7 +241,7 @@ export default function UltraCodexPage() {
                  {/* ENVIRONMENT STEPS */}
                  {activeTab === 'ENV' && (
                     <div className="space-y-6">
-                      <div className="space-y-4 relative before:absolute before:inset-0 before:ml-[19px] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-white/10 before:to-transparent">
+                      <div className="space-y-4 relative before:absolute before:inset-0 before:ml-[19px] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-linear-to-b before:from-transparent before:via-white/10 before:to-transparent">
                          {(c as any).steps.map((s: any, i: number) => (
                             <div key={i} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
                                <div className="flex items-center justify-center w-10 h-10 rounded-full border border-white/10 bg-zinc-900 text-indigo-400 font-bold shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-lg z-10">

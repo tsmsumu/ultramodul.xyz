@@ -83,7 +83,7 @@ export function EditUserModal({
                   <UserCog className="w-5 h-5 text-indigo-500" />
                   {t("modalEditTitle")}
                 </h2>
-                <button onClick={onClose} className="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded-md transition text-gray-500">
+                <button aria-label="Action button" onClick={onClose} className="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded-md transition text-gray-500">
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -104,7 +104,7 @@ export function EditUserModal({
 
                   <div>
                     <label className="block text-sm font-medium mb-1.5 opacity-80">{t("labelUid")}</label>
-                    <input disabled value={user.username} className="w-full px-4 py-2.5 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-gray-500 font-mono cursor-not-allowed" />
+                    <input aria-label="Input field" placeholder="Enter value..." disabled value={user.username} className="w-full px-4 py-2.5 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-gray-500 font-mono cursor-not-allowed"  />
                   </div>
                   
                   <div>
@@ -115,7 +115,7 @@ export function EditUserModal({
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium mb-1.5 opacity-80">{t("labelPhone")}</label>
-                      <input defaultValue={user.phoneNumber || ""} name="phoneNumber" type="tel" className="w-full px-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition" />
+                      <input aria-label="Input field" placeholder="Enter value..." defaultValue={user.phoneNumber || ""} name="phoneNumber" type="tel" className="w-full px-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition"  />
                     </div>
                     <div>
                       <label className="block text-sm font-medium mb-1.5 opacity-80">{t("labelEmail")}</label>
@@ -135,7 +135,7 @@ export function EditUserModal({
                   </div>
 
                   <div className="pt-4 flex justify-end gap-3">
-                    <button type="button" onClick={onClose} className="px-5 py-2.5 rounded-lg font-medium hover:bg-gray-100 dark:hover:bg-white/5 transition">
+                    <button aria-label="Action button" type="button" onClick={onClose} className="px-5 py-2.5 rounded-lg font-medium hover:bg-gray-100 dark:hover:bg-white/5 transition">
                       {t("btnCancel")}
                     </button>
                     <button disabled={loading} type="submit" className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition disabled:opacity-50 flex items-center gap-2">

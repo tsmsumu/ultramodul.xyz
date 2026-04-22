@@ -7,7 +7,9 @@ import { DataTable } from "@/components/iam/data-table";
 import { UserModal } from "@/components/iam/user-modal";
 import { ImportModal } from "@/components/iam/import-modal";
 import { ApprovalInbox } from "@/components/iam/approval-inbox";
+import { ExchangeRateModal } from "@/components/iam/exchange-rate-modal";
 import { useTranslations } from "next-intl";
+import { TrendingUp } from "lucide-react";
 
 export default function IAMConsolePage() {
   const t = useTranslations("iam");
@@ -15,6 +17,7 @@ export default function IAMConsolePage() {
   const [currentUserRole, setCurrentUserRole] = useState("viewer");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
+  const [isExchangeRateOpen, setIsExchangeRateOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const fetchUsers = async () => {
@@ -45,13 +48,20 @@ export default function IAMConsolePage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <button 
+          <button aria-label="Action button" 
+            onClick={() => setIsExchangeRateOpen(true)}
+            className="inline-flex items-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50 px-4 py-2.5 rounded-lg text-sm font-medium transition shadow-sm"
+          >
+            <TrendingUp className="w-4 h-4" />
+            Rate Config
+          </button>
+          <button aria-label="Action button" 
             onClick={() => setIsImportOpen(true)}
             className="inline-flex items-center gap-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800/50 px-4 py-2.5 rounded-lg text-sm font-medium transition shadow-sm"
           >
             Import CSV
           </button>
-          <button 
+          <button aria-label="Action button" 
             onClick={() => setIsModalOpen(true)}
             className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition shadow-sm shadow-blue-500/20"
           >
@@ -98,6 +108,10 @@ export default function IAMConsolePage() {
         isOpen={isImportOpen} 
         onClose={() => setIsImportOpen(false)} 
         onRefresh={fetchUsers}
+      />
+      <ExchangeRateModal
+        isOpen={isExchangeRateOpen}
+        onClose={() => setIsExchangeRateOpen(false)}
       />
     </div>
   );

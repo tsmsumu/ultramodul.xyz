@@ -229,7 +229,7 @@ export default function NexusVoicePage() {
                                 <span className="text-[9px] bg-amber-950/50 text-amber-300 px-2 py-1 rounded flex items-center gap-1 border border-amber-900/50"><LocateFixed className="w-3 h-3"/> {c.location}</span>
                              </div>
 
-                             <button onClick={() => resolveComplaint(c.id)} className="w-full py-2 bg-red-600/20 hover:bg-red-600/40 border border-red-500/30 text-red-400 text-[10px] font-bold uppercase tracking-widest rounded-lg transition-colors flex items-center justify-center gap-1">
+                             <button aria-label="Action button" onClick={() => resolveComplaint(c.id)} className="w-full py-2 bg-red-600/20 hover:bg-red-600/40 border border-red-500/30 text-red-400 text-[10px] font-bold uppercase tracking-widest rounded-lg transition-colors flex items-center justify-center gap-1">
                                Teruskan & Selesaikan <ChevronRight className="w-3 h-3"/>
                              </button>
                           </motion.div>
@@ -260,7 +260,7 @@ export default function NexusVoicePage() {
                                 <span className="text-[9px] bg-amber-950/50 text-amber-300 px-2 py-1 rounded flex items-center gap-1 border border-amber-900/50"><LocateFixed className="w-3 h-3"/> {c.location}</span>
                              </div>
 
-                             <button onClick={() => resolveComplaint(c.id)} className="w-full py-2 bg-amber-600/20 hover:bg-amber-600/40 border border-amber-500/30 text-amber-400 text-[10px] font-bold uppercase tracking-widest rounded-lg transition-colors flex items-center justify-center gap-1">
+                             <button aria-label="Action button" onClick={() => resolveComplaint(c.id)} className="w-full py-2 bg-amber-600/20 hover:bg-amber-600/40 border border-amber-500/30 text-amber-400 text-[10px] font-bold uppercase tracking-widest rounded-lg transition-colors flex items-center justify-center gap-1">
                                Proses Laporan <ChevronRight className="w-3 h-3"/>
                              </button>
                           </motion.div>

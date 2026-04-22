@@ -88,11 +88,11 @@ export default function OmniCodexPage() {
           <div className="space-y-4 mb-6">
             <div>
               <label className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-1 block">{t("dictName")}</label>
-              <input value={dictName} onChange={e => setDictName(e.target.value)} type="text" placeholder={t("dictNamePlaceholder")} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors" />
+              <input aria-label="Input field" value={dictName} onChange={e => setDictName(e.target.value)} type="text" placeholder={t("dictNamePlaceholder")} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors" />
             </div>
             <div>
               <label className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-1 block">{t("dictTarget")}</label>
-              <input value={dictTarget} onChange={e => setDictTarget(e.target.value)} type="text" placeholder={t("dictTargetPlaceholder")} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors" />
+              <input aria-label="Input field" value={dictTarget} onChange={e => setDictTarget(e.target.value)} type="text" placeholder={t("dictTargetPlaceholder")} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors" />
             </div>
           </div>
 
@@ -153,7 +153,7 @@ export default function OmniCodexPage() {
                     <span className="px-3 py-1 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold tracking-widest uppercase rounded-lg border border-emerald-500/20">
                       {dict.status}
                     </span>
-                    <button onClick={() => handleDelete(dict.id)} className="p-2 bg-red-500/10 text-red-500 hover:bg-red-500/20 rounded-lg transition-colors border border-red-500/20 opacity-0 group-hover:opacity-100 uppercase tracking-widest text-[10px] font-bold">
+                    <button aria-label="Action button" onClick={() => handleDelete(dict.id)} className="p-2 bg-red-500/10 text-red-500 hover:bg-red-500/20 rounded-lg transition-colors border border-red-500/20 opacity-0 group-hover:opacity-100 uppercase tracking-widest text-[10px] font-bold">
                       {t("btnDelete")}
                     </button>
                   </div>

@@ -46,7 +46,7 @@ export function OmniDBNode({ id, data, selected }: { id: string, data: any, sele
           <Server className="w-4 h-4" />
           <span className="tracking-wider uppercase">OMNI DB CONNECTOR</span>
         </div>
-        <button 
+        <button aria-label="Action button" 
           onClick={(e) => { e.stopPropagation(); deleteElements({ nodes: [{ id }] }); }}
           className="p-1 cursor-pointer opacity-50 hover:opacity-100 hover:bg-white/20 rounded transition-all text-white hover:text-red-100"
           title="Hapus Node"
@@ -59,7 +59,7 @@ export function OmniDBNode({ id, data, selected }: { id: string, data: any, sele
         {/* Engine Selector */}
         <div>
           <label className="text-[10px] uppercase font-black tracking-widest text-gray-500 mb-1 block">Dialect Engine</label>
-          <select 
+          <select aria-label="Select option" 
              value={engine} 
              onChange={(e) => handleEngineChange(e.target.value)}
              className="w-full px-2 py-1.5 text-xs bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg outline-none focus:ring-1 focus:ring-blue-500 font-bold"
@@ -73,28 +73,28 @@ export function OmniDBNode({ id, data, selected }: { id: string, data: any, sele
         <div className="flex gap-2">
            <div className="flex-1">
              <label className="text-[10px] uppercase font-bold tracking-widest text-gray-500 mb-1 block">Host / IP</label>
-             <input type="text" value={host} onChange={e => { setHost(e.target.value); setStatus("idle"); }} placeholder="127.0.0.1" className="w-full px-2 py-1.5 text-xs bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg outline-none font-mono" />
+             <input aria-label="Input field" type="text" value={host} onChange={e => { setHost(e.target.value); setStatus("idle"); }} placeholder="127.0.0.1" className="w-full px-2 py-1.5 text-xs bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg outline-none font-mono" />
            </div>
            <div className="w-16">
              <label className="text-[10px] uppercase font-bold tracking-widest text-gray-500 mb-1 block">Port</label>
-             <input type="text" value={port} onChange={e => { setPort(e.target.value); setStatus("idle"); }} className="w-full px-2 py-1.5 text-xs bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg outline-none font-mono text-center" />
+             <input aria-label="Input field" type="text" value={port} onChange={e => { setPort(e.target.value); setStatus("idle"); }} className="w-full px-2 py-1.5 text-xs bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg outline-none font-mono text-center" />
            </div>
         </div>
 
         <div className="flex gap-2">
            <div className="flex-1">
              <label className="text-[10px] uppercase font-bold tracking-widest text-gray-500 mb-1 flex items-center gap-1"><ShieldCheck className="w-3 h-3"/> Username</label>
-             <input type="text" value={username} onChange={e => { setUsername(e.target.value); setStatus("idle"); }} placeholder="sa / root" className="w-full px-2 py-1.5 text-xs bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg outline-none font-mono" />
+             <input aria-label="Input field" type="text" value={username} onChange={e => { setUsername(e.target.value); setStatus("idle"); }} placeholder="sa / root" className="w-full px-2 py-1.5 text-xs bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg outline-none font-mono" />
            </div>
            <div className="flex-1">
              <label className="text-[10px] uppercase font-bold tracking-widest text-gray-500 mb-1 flex items-center gap-1"><KeyRound className="w-3 h-3"/> Password</label>
-             <input type="password" value={password} onChange={e => { setPassword(e.target.value); setStatus("idle"); }} placeholder="••••••••" className="w-full px-2 py-1.5 text-xs bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg outline-none font-mono" />
+             <input aria-label="Input field" type="password" value={password} onChange={e => { setPassword(e.target.value); setStatus("idle"); }} placeholder="••••••••" className="w-full px-2 py-1.5 text-xs bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg outline-none font-mono" />
            </div>
         </div>
 
         <div>
            <label className="text-[10px] uppercase font-bold tracking-widest text-gray-500 mb-1 flex items-center gap-1"><DbIcon className="w-3 h-3"/> Catalog / DB</label>
-           <input type="text" value={dbName} onChange={e => { setDbName(e.target.value); setStatus("idle"); }} placeholder="master" className="w-full px-2 py-1.5 text-xs bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg outline-none font-mono" />
+           <input aria-label="Input field" type="text" value={dbName} onChange={e => { setDbName(e.target.value); setStatus("idle"); }} placeholder="master" className="w-full px-2 py-1.5 text-xs bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg outline-none font-mono" />
         </div>
 
         <div>
@@ -107,7 +107,7 @@ export function OmniDBNode({ id, data, selected }: { id: string, data: any, sele
            />
         </div>
 
-        <button 
+        <button aria-label="Action button" 
           onClick={async () => {
              if (!host || !dbName || !username || !sqlQuery) return;
              setIsConnecting(true);

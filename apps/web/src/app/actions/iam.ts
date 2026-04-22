@@ -211,6 +211,24 @@ export async function updateIdentityLanguages(id: string, languages: string[]) {
   }
 }
 
+export async function updateIdentityCurrencies(id: string, currencies: string[]) {
+  try {
+    await db.update(users).set({ currencies: JSON.stringify(currencies) }).where(eq(users.id, id));
+
+    await createAuditLog({
+      action: "UPDATE_CURRENCIES",
+      actorId: "SYSTEM",
+      target: id,
+      metadata: { currencies }
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error("Update currencies failed:", error);
+    return { success: false, error: "Failed to update currency preferences." };
+  }
+}
+
 export async function updateIdentityByAdmin(id: string, data: { name: string; role: string; phoneNumber?: string; email?: string }) {
   try {
     const targetUser = await db.select().from(users).where(eq(users.id, id)).limit(1);

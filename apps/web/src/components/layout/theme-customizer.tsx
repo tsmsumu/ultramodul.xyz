@@ -56,7 +56,7 @@ export function ThemeCustomizer({ currentSkin, currentLayout }: { currentSkin: s
         <div className="fixed bottom-20 right-6 w-80 bg-white/95 dark:bg-[#0a0a0c]/95 backdrop-blur-2xl border border-gray-200 dark:border-white/10 rounded-2xl shadow-2xl p-5 z-50 animate-in slide-in-from-bottom-5">
           <div className="flex justify-between items-center mb-6 border-b border-gray-100 dark:border-white/10 pb-3">
              <h3 className="font-semibold flex items-center gap-2"><Settings className="w-4 h-4"/> {t("title")}</h3>
-             <button onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-gray-900 dark:hover:text-white">x</button>
+             <button aria-label="Action button" onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-gray-900 dark:hover:text-white">x</button>
           </div>
 
           <div className="space-y-6">
@@ -65,7 +65,7 @@ export function ThemeCustomizer({ currentSkin, currentLayout }: { currentSkin: s
                 <p className="text-sm font-medium mb-3 flex items-center gap-1"><Droplet className="w-4 h-4"/> {t("skin")}</p>
                 <div className="grid grid-cols-3 gap-2">
                   {['default', 'ocean', 'crimson'].map((s) => (
-                    <button 
+                    <button aria-label="Action button" 
                       key={s} onClick={() => applyChanges('skin', s)}
                       className={`flex flex-col items-center gap-1 p-2 rounded-xl border transition ${skin === s ? 'border-blue-500 bg-blue-50 dark:bg-blue-500/10' : 'border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/5'}`}
                     >
@@ -83,7 +83,7 @@ export function ThemeCustomizer({ currentSkin, currentLayout }: { currentSkin: s
                 <p className="text-sm font-medium mb-3 flex items-center gap-1"><LayoutPanelLeft className="w-4 h-4"/> {t("layout")}</p>
                 <div className="grid grid-cols-2 gap-2">
                   {['sidebar', 'topbar'].map((l) => (
-                    <button 
+                    <button aria-label="Action button" 
                       key={l} onClick={() => applyChanges('layout', l)}
                       className={`flex flex-col items-center gap-2 p-3 text-xs font-medium rounded-xl border transition ${layout === l ? 'border-blue-500 bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400' : 'border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-white/5'}`}
                     >
@@ -98,13 +98,13 @@ export function ThemeCustomizer({ currentSkin, currentLayout }: { currentSkin: s
              <div className="pt-2 border-t border-gray-100 dark:border-white/10">
                 <p className="text-sm font-medium mb-3 flex items-center gap-1"><Globe className="w-4 h-4"/> {t("langTitle")}</p>
                 <div className="grid grid-cols-2 gap-2">
-                  <button 
+                  <button aria-label="Action button" 
                     onClick={() => applyLanguage('en')}
                     className="flex flex-col items-center gap-1 p-2 text-xs font-medium rounded-xl border transition border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-white/5"
                   >
                     {t("langEn")}
                   </button>
-                  <button 
+                  <button aria-label="Action button" 
                     onClick={() => applyLanguage('id')}
                     className="flex flex-col items-center gap-1 p-2 text-xs font-medium rounded-xl border transition border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-white/5"
                   >

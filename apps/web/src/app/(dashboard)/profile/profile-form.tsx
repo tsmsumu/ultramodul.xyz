@@ -69,14 +69,14 @@ export default function ProfileForm({ initialUid, initialName, role }: ProfileFo
           <label htmlFor="fullName" className="text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2 mb-2">
             <User className="w-4 h-4 text-indigo-500" /> {t('fullName')}
           </label>
-          <input 
+          <input aria-label="Input field" placeholder="Enter value..." 
             id="fullName"
             type="text" 
             name="fullName"
             defaultValue={initialName}
             required
             className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500/50 transition-colors"
-          />
+           />
         </div>
 
         {/* ROLE */}
@@ -84,13 +84,13 @@ export default function ProfileForm({ initialUid, initialName, role }: ProfileFo
           <label htmlFor="role" className="text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2 mb-2">
             <ShieldCheck className="w-4 h-4 text-emerald-500" /> {t('role')}
           </label>
-          <input 
+          <input aria-label="Input field" placeholder="Enter value..." 
             id="role"
             type="text" 
             value={role.toUpperCase()}
             disabled
             className="w-full bg-zinc-900/50 border border-white/5 rounded-xl px-4 py-3 text-emerald-500/50 font-bold tracking-widest cursor-not-allowed"
-          />
+           />
         </div>
 
         <hr className="border-white/5 my-8" />

@@ -196,7 +196,7 @@ export default function EvolutionCenterPage() {
            
            {!tableName ? (
              <div {...getRootProps()} className={`flex-1 border-2 border-dashed rounded-3xl p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all ${isDragActive ? 'border-blue-500 bg-blue-900/20' : 'border-zinc-800 bg-zinc-900/30 hover:border-blue-500/50'}`}>
-               <input {...getInputProps()} />
+               <input aria-label="Input field" placeholder="Enter value..." {...getInputProps()}  />
                {loading ? (
                  <Loader2 className="w-16 h-16 text-blue-500 animate-spin mb-4" />
                ) : (

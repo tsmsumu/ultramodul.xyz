@@ -76,7 +76,7 @@ export function UserModal({ isOpen, onClose, onRefresh, currentUserRole }: { isO
                   <UserPlus className="w-5 h-5 text-blue-500" />
                   {t("modalCreateTitle")}
                 </h2>
-                <button onClick={onClose} className="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded-md transition text-gray-500">
+                <button aria-label="Action button" onClick={onClose} className="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded-md transition text-gray-500">
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -121,7 +121,7 @@ export function UserModal({ isOpen, onClose, onRefresh, currentUserRole }: { isO
                   <div>
                     <div className="flex justify-between items-end mb-1.5 opacity-80">
                       <label className="block text-sm font-medium">{t("labelPass")}</label>
-                      <button type="button" onClick={generatePass} className="text-[10px] flex items-center gap-1 text-blue-600 dark:text-blue-400 font-bold hover:underline">
+                      <button aria-label="Action button" type="button" onClick={generatePass} className="text-[10px] flex items-center gap-1 text-blue-600 dark:text-blue-400 font-bold hover:underline">
                         <Shuffle className="w-3 h-3" /> {t("btnShuffle")}
                       </button>
                     </div>
@@ -136,7 +136,7 @@ export function UserModal({ isOpen, onClose, onRefresh, currentUserRole }: { isO
                   </div>
 
                   <div className="pt-4 flex justify-end gap-3">
-                    <button type="button" onClick={onClose} className="px-5 py-2.5 rounded-lg font-medium hover:bg-gray-100 dark:hover:bg-white/5 transition">
+                    <button aria-label="Action button" type="button" onClick={onClose} className="px-5 py-2.5 rounded-lg font-medium hover:bg-gray-100 dark:hover:bg-white/5 transition">
                       {t("btnCancel")}
                     </button>
                     <button disabled={loading} type="submit" className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition disabled:opacity-50 flex items-center gap-2">

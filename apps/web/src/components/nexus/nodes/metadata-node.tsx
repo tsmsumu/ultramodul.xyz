@@ -106,13 +106,13 @@ export function MetadataNode({ data, id }: { data: any, id: string }) {
       
       <div className="p-3 flex flex-col gap-2">
         <div className="flex justify-between items-center bg-gray-100 dark:bg-white/5 rounded-md p-1 mb-1">
-          <button 
+          <button aria-label="Action button" 
             onClick={() => setAutoMode(false)}
             className={`flex-1 text-[10px] py-1 font-bold rounded transition ${!autoMode ? "bg-white dark:bg-zinc-800 shadow" : "text-gray-500"}`}
           >
             MANUAL
           </button>
-          <button 
+          <button aria-label="Action button" 
             onClick={() => setAutoMode(true)}
             className={`flex-1 text-[10px] py-1 font-bold rounded transition ${autoMode ? "bg-amber-500 text-white shadow" : "text-gray-500"}`}
           >
@@ -124,7 +124,7 @@ export function MetadataNode({ data, id }: { data: any, id: string }) {
           <div {...getRootProps()} className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition flex flex-col items-center justify-center gap-2 min-h-[100px]
             ${isDragActive ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'border-gray-300 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/5'}
           `}>
-             <input {...getInputProps()} />
+             <input aria-label="Input field" placeholder="Enter value..." {...getInputProps()}  />
              <UploadCloud className={`w-6 h-6 ${isDragActive ? 'text-amber-500' : 'text-gray-400'}`} />
              <span className="text-[10px] text-gray-500 leading-tight">
                {isDragActive ? 'Drop excel here...' : 'Drift Kamus Data (.xlsx) here'}

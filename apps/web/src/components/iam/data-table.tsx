@@ -6,8 +6,9 @@ import { useState, useMemo } from "react";
 import { MatrixDrawer } from "./matrix-drawer";
 import { OmniEtlModal } from "./omni-etl-modal";
 import { LanguageModal } from "./language-modal";
+import { CurrencyModal } from "./currency-modal";
 import { EditUserModal } from "./edit-user-modal";
-import { Globe2 } from "lucide-react";
+import { Globe2, Banknote } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 export function DataTable({ initialUsers, currentUserRole }: { initialUsers: any[], currentUserRole: string }) {
@@ -28,6 +29,10 @@ export function DataTable({ initialUsers, currentUserRole }: { initialUsers: any
   // Language Modal State
   const [langModalOpen, setLangModalOpen] = useState(false);
   const [selectedUserLang, setSelectedUserLang] = useState<{id: string, name: string, languages: string[]} | null>(null);
+
+  // Currency Modal State
+  const [currModalOpen, setCurrModalOpen] = useState(false);
+  const [selectedUserCurr, setSelectedUserCurr] = useState<{id: string, name: string, currencies: string[]} | null>(null);
 
   // Edit User State
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -184,7 +189,7 @@ export function DataTable({ initialUsers, currentUserRole }: { initialUsers: any
                >
                  <Trash2 className="w-4 h-4" /> {t("btnBulkDelete")} ({selectedIds.size})
                </button>
-               <button 
+               <button aria-label="Action button" 
                  onClick={() => setEtlOpen(true)}
                  className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-lg shadow-indigo-600/20 text-sm font-bold transition"
                >
@@ -270,7 +275,7 @@ export function DataTable({ initialUsers, currentUserRole }: { initialUsers: any
                 </span>
               </td>
               <td className="px-6 py-4 text-right flex items-center justify-end gap-2">
-                <button 
+                <button aria-label="Action button" 
                   onClick={() => handleJIT(user.id)}
                   className="p-2 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition"
                   title={t("tooltipJit")}
@@ -285,21 +290,21 @@ export function DataTable({ initialUsers, currentUserRole }: { initialUsers: any
                 >
                   <Key className="w-4 h-4" />
                 </button>
-                <button 
+                <button aria-label="Action button" 
                   onClick={() => { setSelectedEditUser(user); setEditModalOpen(true); }}
                   className="p-2 text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition"
                   title={t("tooltipEdit")}
                 >
                   <Pen className="w-4 h-4" />
                 </button>
-                <button 
+                <button aria-label="Action button" 
                   onClick={() => { setSelectedUser({id: user.id, name: user.name}); setMatrixOpen(true); }}
                   className="p-2 text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition"
                   title={t("tooltipMatrix")}
                 >
                   <Settings className="w-4 h-4" />
                 </button>
-                <button 
+                <button aria-label="Action button" 
                   onClick={() => { 
                     const langs = user.languages ? JSON.parse(user.languages) : ["id"];
                     setSelectedUserLang({id: user.id, name: user.name, languages: langs}); 
@@ -309,6 +314,17 @@ export function DataTable({ initialUsers, currentUserRole }: { initialUsers: any
                   title={t("tooltipLang")}
                 >
                   <Globe2 className="w-4 h-4" />
+                </button>
+                <button aria-label="Action button" 
+                  onClick={() => { 
+                    const currs = user.currencies ? JSON.parse(user.currencies) : ["USD"];
+                    setSelectedUserCurr({id: user.id, name: user.name, currencies: currs}); 
+                    setCurrModalOpen(true); 
+                  }}
+                  className="p-2 text-gray-500 hover:text-emerald-600 dark:text-gray-400 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 rounded-lg transition"
+                  title="Ubah Preferensi Mata Uang"
+                >
+                  <Banknote className="w-4 h-4" />
                 </button>
                 <button 
                   disabled={loadingId === user.id}
@@ -356,6 +372,17 @@ export function DataTable({ initialUsers, currentUserRole }: { initialUsers: any
         initialLanguages={selectedUserLang?.languages || ["id"]}
         onRefresh={() => {
           // Fire global event to refresh IAM users
+          window.dispatchEvent(new Event("iam-refresh"));
+        }}
+      />
+
+      <CurrencyModal 
+        isOpen={currModalOpen}
+        onClose={() => setCurrModalOpen(false)}
+        userId={selectedUserCurr?.id || null}
+        userName={selectedUserCurr?.name || null}
+        initialCurrencies={selectedUserCurr?.currencies || ["USD"]}
+        onRefresh={() => {
           window.dispatchEvent(new Event("iam-refresh"));
         }}
       />

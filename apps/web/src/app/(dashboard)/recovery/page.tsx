@@ -115,7 +115,7 @@ export default function NexusRecoveryPage() {
             </p>
           </div>
 
-          <button 
+          <button aria-label="Action button" 
             onClick={() => setUploadOpen(true)}
             className="shrink-0 flex items-center justify-center gap-2 px-6 py-3 bg-amber-500 hover:bg-amber-400 text-black font-bold uppercase tracking-widest text-sm rounded-xl transition shadow-[0_0_20px_-5px_rgba(245,158,11,0.5)]"
           >
@@ -155,13 +155,13 @@ export default function NexusRecoveryPage() {
                          <div className="mt-4 p-4 bg-yellow-950/20 border border-yellow-900/50 rounded-lg">
                            <div className="flex items-center justify-between mb-2">
                              <span className="text-[10px] font-black tracking-widest text-yellow-600 uppercase">Immortal Note</span>
-                             <button onClick={() => { setEditingNoteId(point.hash); setNoteDraft(point.note); }} className="text-[10px] text-yellow-600 hover:text-yellow-400 tracking-widest uppercase underline">Edit</button>
+                             <button aria-label="Action button" onClick={() => { setEditingNoteId(point.hash); setNoteDraft(point.note); }} className="text-[10px] text-yellow-600 hover:text-yellow-400 tracking-widest uppercase underline">Edit</button>
                            </div>
                            <p className="text-sm text-yellow-200/80 font-mono leading-relaxed">{point.note}</p>
                          </div>
                        ) : (
                          editingNoteId !== point.hash && (
-                           <button onClick={() => setEditingNoteId(point.hash)} className="mt-2 text-xs font-mono tracking-widest uppercase text-emerald-600 hover:text-emerald-400">+ Attach Memory Note</button>
+                           <button aria-label="Action button" onClick={() => setEditingNoteId(point.hash)} className="mt-2 text-xs font-mono tracking-widest uppercase text-emerald-600 hover:text-emerald-400">+ Attach Memory Note</button>
                          )
                        )}
 
@@ -176,7 +176,7 @@ export default function NexusRecoveryPage() {
                            ></textarea>
                            <div className="flex flex-col gap-2">
                              <button disabled={isProcessing} onClick={() => handleSaveNote(point.hash)} title="Save Note" className="p-3 bg-emerald-600 hover:bg-emerald-500 text-black rounded-lg transition disabled:opacity-50"><Save className="w-4 h-4"/></button>
-                             <button onClick={() => { setEditingNoteId(null); setNoteDraft(""); }} title="Cancel" className="p-3 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg transition"><X className="w-4 h-4"/></button>
+                             <button aria-label="Action button" onClick={() => { setEditingNoteId(null); setNoteDraft(""); }} title="Cancel" className="p-3 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg transition"><X className="w-4 h-4"/></button>
                            </div>
                          </div>
                        )}
@@ -184,11 +184,11 @@ export default function NexusRecoveryPage() {
 
                     {/* Tombol Resolusi Ekstrem */}
                     <div className="flex sm:flex-col gap-2 shrink-0 border-t border-gray-800 pt-4 md:border-t-0 md:pt-0 md:border-l md:pl-4">
-                       <button onClick={() => triggerDownload(point.hash)} className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-200 text-xs font-black uppercase tracking-widest rounded-lg transition border border-gray-700">
+                       <button aria-label="Action button" onClick={() => triggerDownload(point.hash)} className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-200 text-xs font-black uppercase tracking-widest rounded-lg transition border border-gray-700">
                          <Download className="w-4 h-4" /> WRAP (.ZIP)
                        </button>
                        {!isLatest && (
-                         <button onClick={() => setRollbackTarget(point.hash)} className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-red-950/30 hover:bg-red-900 border border-red-900/50 text-red-500 hover:text-red-300 text-xs font-black uppercase tracking-widest rounded-lg transition">
+                         <button aria-label="Action button" onClick={() => setRollbackTarget(point.hash)} className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-red-950/30 hover:bg-red-900 border border-red-900/50 text-red-500 hover:text-red-300 text-xs font-black uppercase tracking-widest rounded-lg transition">
                            <ShieldAlert className="w-4 h-4" /> ROLLBACK TO HERE
                          </button>
                        )}
@@ -237,7 +237,7 @@ export default function NexusRecoveryPage() {
              <motion.div initial={{y: 20}} animate={{y: 0}} exit={{y: 20}} className="bg-zinc-950 border border-amber-900/50 rounded-2xl max-w-lg w-full p-6 shadow-[0_0_50px_-10px_rgba(245,158,11,0.2)]">
                <div className="flex justify-between items-center mb-6">
                  <h2 className="text-xl font-black uppercase tracking-widest text-amber-500 flex items-center gap-2"><UploadCloud className="w-6 h-6"/> Manual Synchronization</h2>
-                 <button onClick={() => setUploadOpen(false)} title="Close" className="text-gray-500 hover:text-white"><AlertTriangle className="w-5 h-5 text-transparent"/></button>
+                 <button aria-label="Action button" onClick={() => setUploadOpen(false)} title="Close" className="text-gray-500 hover:text-white"><AlertTriangle className="w-5 h-5 text-transparent"/></button>
                </div>
                
                <p className="text-gray-400 text-sm mb-6 leading-relaxed">

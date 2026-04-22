@@ -68,13 +68,13 @@ export default function OmniForgePage() {
 
       {/* TABS */}
       <div className="flex gap-4 p-1 bg-[#0a0a0c] border border-white/5 rounded-2xl w-fit mx-auto">
-         <button 
+         <button aria-label="Action button" 
            onClick={() => {setActiveTab('convert'); setFinished(false);}}
            className={`px-6 py-2.5 rounded-xl font-bold text-sm tracking-wide transition flex items-center gap-2 ${activeTab === 'convert' ? 'bg-amber-600/20 text-amber-500 border border-amber-500/30' : 'text-zinc-500 hover:text-zinc-300'}`}
          >
            <RefreshCcw className="w-4 h-4" /> {t("tabConvert")}
          </button>
-         <button 
+         <button aria-label="Action button" 
            onClick={() => {setActiveTab('repair'); setFinished(false);}}
            className={`px-6 py-2.5 rounded-xl font-bold text-sm tracking-wide transition flex items-center gap-2 ${activeTab === 'repair' ? 'bg-emerald-600/20 text-emerald-500 border border-emerald-500/30' : 'text-zinc-500 hover:text-zinc-300'}`}
          >
@@ -95,7 +95,7 @@ export default function OmniForgePage() {
               {/* SOURCE (LEFT) */}
               <div className="flex-1 bg-[#0a0a0c] border border-zinc-800 p-6 rounded-2xl">
                  <label className="block text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">1. {t("sourceLbl")}</label>
-                 <select 
+                 <select aria-label="Select option" 
                    value={sourceFormat}
                    onChange={e => setSourceFormat(e.target.value)}
                    className="w-full bg-zinc-900 border border-zinc-700 text-white px-4 py-3 rounded-xl outline-none focus:border-amber-500 mb-6 font-mono"
@@ -119,7 +119,7 @@ export default function OmniForgePage() {
                  <div className="h-full w-px bg-white/5 absolute left-1/2 -translate-x-1/2 hidden md:block" />
                  
                  <div className="relative z-10 flex flex-col items-center group">
-                    <button 
+                    <button aria-label="Action button" 
                       onClick={() => setShowFilter(!showFilter)}
                       className={`w-14 h-14 rounded-full flex items-center justify-center border-2 transition-all ${showFilter || filterQuery ? 'bg-indigo-600 border-indigo-400 shadow-[0_0_20px_rgba(79,70,229,0.4)] text-white scale-110' : 'bg-zinc-900 border-zinc-700 text-zinc-500 hover:border-indigo-500 hover:text-indigo-400'}`}
                       title={t("filterLbl")}
@@ -134,7 +134,7 @@ export default function OmniForgePage() {
               {/* TARGET (RIGHT) */}
               <div className="flex-1 bg-[#0a0a0c] border border-zinc-800 p-6 rounded-2xl">
                  <label className="block text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">2. {t("targetLbl")}</label>
-                 <select 
+                 <select aria-label="Select option" 
                    value={targetFormat}
                    onChange={e => setTargetFormat(e.target.value)}
                    className="w-full bg-zinc-900 border border-zinc-700 text-white px-4 py-3 rounded-xl outline-none focus:border-amber-500 mb-6 font-mono"
@@ -176,7 +176,7 @@ export default function OmniForgePage() {
                        rows={3}
                      />
                      <div className="mt-3 flex justify-end">
-                       <button onClick={() => setShowFilter(false)} className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-lg transition uppercase tracking-widest">Apply Filter</button>
+                       <button aria-label="Action button" onClick={() => setShowFilter(false)} className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-lg transition uppercase tracking-widest">Apply Filter</button>
                      </div>
                    </div>
                 </motion.div>
@@ -233,14 +233,14 @@ export default function OmniForgePage() {
              </p>
              <div className="flex justify-center gap-4">
                {activeTab === 'convert' && convertedData && (
-                 <button 
+                 <button aria-label="Action button" 
                    onClick={handleDownload}
                    className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-3 rounded-full font-bold uppercase tracking-widest text-sm transition-all"
                  >
                    <Download className="w-4 h-4" /> {t("btnDownload")}
                  </button>
                )}
-               <button 
+               <button aria-label="Action button" 
                  onClick={() => setFinished(false)}
                  className="bg-[#0a0a0c] border border-emerald-500/50 hover:bg-emerald-900/30 text-emerald-400 px-8 py-3 rounded-full font-bold uppercase tracking-widest text-sm transition-all"
                >

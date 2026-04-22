@@ -115,7 +115,7 @@ export default function AegisPanopticonPage() {
                          <div className="text-[10px] text-zinc-500 mt-1">PID: {p.pid} • UPTIME: {p.uptime}</div>
                          <div className="text-[10px] text-zinc-400 mt-0.5">RAM: {p.memory} • CPU: {p.cpu}</div>
                        </div>
-                       <button onClick={() => handleRestart(p.name)} className="p-2 bg-emerald-900/20 text-emerald-500 border border-emerald-500/30 rounded-lg hover:bg-emerald-600 hover:text-white transition" title="Restart Process">
+                       <button aria-label="Action button" onClick={() => handleRestart(p.name)} className="p-2 bg-emerald-900/20 text-emerald-500 border border-emerald-500/30 rounded-lg hover:bg-emerald-600 hover:text-white transition" title="Restart Process">
                          <Power className="w-4 h-4" />
                        </button>
                     </div>
@@ -136,7 +136,7 @@ export default function AegisPanopticonPage() {
                      {ufwData.active ? 'ACTIVE & ENFORCED' : 'INACTIVE (VULNERABLE)'}
                    </div>
                  </div>
-                 <button onClick={handleToggleStealth} className="px-4 py-2 bg-blue-900/30 border border-blue-500/50 text-blue-400 rounded-lg text-xs font-bold hover:bg-blue-600 hover:text-white transition flex items-center gap-2">
+                 <button aria-label="Action button" onClick={handleToggleStealth} className="px-4 py-2 bg-blue-900/30 border border-blue-500/50 text-blue-400 rounded-lg text-xs font-bold hover:bg-blue-600 hover:text-white transition flex items-center gap-2">
                    <Lock className="w-3 h-3" /> STEALTH MODE
                  </button>
               </div>
@@ -164,7 +164,7 @@ export default function AegisPanopticonPage() {
                <Terminal className="w-4 h-4 text-zinc-400" />
                <span className="text-xs font-bold text-zinc-300 uppercase tracking-widest">Live Terminal Tailing (ultramodul-out.log)</span>
              </div>
-             <button onClick={() => setLogPolling(!logPolling)} className={`px-3 py-1 text-[10px] font-bold rounded uppercase ${logPolling ? 'bg-emerald-900/50 text-emerald-400 border border-emerald-500/50' : 'bg-red-900/50 text-red-400 border border-red-500/50'}`}>
+             <button aria-label="Action button" onClick={() => setLogPolling(!logPolling)} className={`px-3 py-1 text-[10px] font-bold rounded uppercase ${logPolling ? 'bg-emerald-900/50 text-emerald-400 border border-emerald-500/50' : 'bg-red-900/50 text-red-400 border border-red-500/50'}`}>
                {logPolling ? 'LIVE STREAMING : ON' : 'STREAMING : PAUSED'}
              </button>
            </div>

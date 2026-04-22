@@ -240,7 +240,7 @@ export default function WarRoomVaultPage() {
 
            <div className="flex flex-col items-end gap-4 relative z-10">
               {/* MOCK IAM TOGGLE */}
-              <button 
+              <button aria-label="Action button" 
                 onClick={() => setIsAdminRole(!isAdminRole)}
                 className={`px-3 py-1 rounded border text-[9px] uppercase font-bold tracking-widest transition-colors ${isAdminRole ? 'border-indigo-500/50 text-indigo-400 bg-indigo-950/30' : 'border-zinc-700 text-zinc-500 bg-zinc-900'}`}
               >
@@ -248,7 +248,7 @@ export default function WarRoomVaultPage() {
               </button>
 
               {isAdminRole && (
-                <button onClick={createNewFolder} className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 rounded-xl text-sm font-bold uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-indigo-600/20 transition-all transform hover:scale-105">
+                <button aria-label="Action button" onClick={createNewFolder} className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 rounded-xl text-sm font-bold uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-indigo-600/20 transition-all transform hover:scale-105">
                    <Plus className="w-5 h-5" /> {t('newMapBtn')}
                 </button>
               )}
@@ -292,10 +292,10 @@ export default function WarRoomVaultPage() {
                                </div>
                                {isAdminRole && (
                                  <div className="flex gap-2 relative z-50">
-                                   <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); setActiveFolderId(folder.folderId); setIsBuilderMode(true); }} className="w-8 h-8 bg-black/50 hover:bg-indigo-900/80 rounded-lg flex items-center justify-center text-zinc-500 hover:text-indigo-400 transition-colors" title={t('editMapTitle')}>
+                                   <button aria-label="Action button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setActiveFolderId(folder.folderId); setIsBuilderMode(true); }} className="w-8 h-8 bg-black/50 hover:bg-indigo-900/80 rounded-lg flex items-center justify-center text-zinc-500 hover:text-indigo-400 transition-colors" title={t('editMapTitle')}>
                                      <Edit2 className="w-4 h-4 pointer-events-none" />
                                    </button>
-                                   <button onClick={(e) => deleteFolder(folder.folderId, e)} title={t('deleteMapTitle')} className="w-8 h-8 bg-black/50 hover:bg-red-900/80 rounded-lg flex items-center justify-center text-zinc-500 hover:text-red-400 transition-colors">
+                                   <button aria-label="Action button" onClick={(e) => deleteFolder(folder.folderId, e)} title={t('deleteMapTitle')} className="w-8 h-8 bg-black/50 hover:bg-red-900/80 rounded-lg flex items-center justify-center text-zinc-500 hover:text-red-400 transition-colors">
                                      <Trash2 className="w-4 h-4 pointer-events-none" />
                                    </button>
                                  </div>
@@ -340,7 +340,7 @@ export default function WarRoomVaultPage() {
          <div className={`absolute -right-20 -top-20 w-64 h-64 rounded-full blur-[60px] bg-${activeConfig.folderColor}-500/10`} />
          
          <div className="flex items-center gap-6 relative z-10">
-            <button 
+            <button aria-label="Action button" 
               onClick={() => {
                 setActiveFolderId(null); 
                 setIsBuilderMode(false);
@@ -398,7 +398,7 @@ export default function WarRoomVaultPage() {
          
          <div className="flex items-center gap-4 relative z-10">
             {isAdminRole && (
-              <button 
+              <button aria-label="Action button" 
                 onClick={() => setIsBuilderMode(!isBuilderMode)}
                 className={`px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition-all ${isBuilderMode ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg' : 'bg-zinc-900 hover:bg-zinc-800 text-zinc-400 border border-white/10'}`}
               >
@@ -509,7 +509,7 @@ export default function WarRoomVaultPage() {
                    <p className="text-xs text-zinc-500 font-mono">{t('sandboxDesc')}</p>
                  </div>
                  {isBuilderMode && (
-                   <button onClick={addSlider} className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+                   <button aria-label="Action button" onClick={addSlider} className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest flex items-center gap-2">
                      <Plus className="w-4 h-4" /> {t('addSliderBtn')}
                    </button>
                  )}
@@ -521,7 +521,7 @@ export default function WarRoomVaultPage() {
                    {activeConfig.sliders.map((slider) => (
                       <motion.div layout key={slider.id} initial={{opacity:0, scale:0.9}} animate={{opacity:1, scale:1}} exit={{opacity:0, scale:0.9}} className={`bg-black/50 border p-5 rounded-2xl flex flex-col justify-center relative ${isBuilderMode ? 'border-indigo-500/50' : 'border-white/10'}`}>
                         {isBuilderMode && (
-                          <button onClick={() => removeSlider(slider.id)} title="Remove Slider" className="absolute -top-2 -right-2 w-6 h-6 bg-red-600 text-white rounded-full flex items-center justify-center hover:scale-110 transition z-10">
+                          <button aria-label="Action button" onClick={() => removeSlider(slider.id)} title="Remove Slider" className="absolute -top-2 -right-2 w-6 h-6 bg-red-600 text-white rounded-full flex items-center justify-center hover:scale-110 transition z-10">
                             <X className="w-3 h-3" />
                           </button>
                         )}

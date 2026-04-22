@@ -23,7 +23,7 @@ export default function SlicerNode({ data }: any) {
       <div className="p-5">
         {/* Header Node */}
         <div className="flex items-center gap-3 mb-5">
-          <div className="w-12 h-12 bg-gradient-to-br from-fuchsia-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-fuchsia-500/20">
+          <div className="w-12 h-12 bg-linear-to-br from-fuchsia-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-fuchsia-500/20">
             <Scissors className="w-6 h-6 text-white" />
           </div>
           <div>
@@ -41,14 +41,14 @@ export default function SlicerNode({ data }: any) {
           
           <div className="relative pt-1">
             {/* Jalur Rel Slider Berkilau */}
-            <input 
+            <input aria-label="Input field" placeholder="Enter value..." 
               type="range" 
               min="1" 
               max="99" 
               value={sliceVal}
               onChange={onChange}
               className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-fuchsia-500 focus:outline-none focus:ring-4 focus:ring-fuchsia-500/30"
-            />
+             />
           </div>
           
           {/* Indikator Fisika Sisa Data (Untuk Handle Kedua) */}

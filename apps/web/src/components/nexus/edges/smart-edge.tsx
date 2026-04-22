@@ -132,7 +132,7 @@ export function SmartEdge({
           className="nodrag nopan z-50 flex flex-col items-center justify-center"
         >
            {/* Tombol Kaca Kabel */}
-           <button
+           <button aria-label="Action button"
              onClick={onEdgeClick}
              className={`w-8 h-8 rounded-full shadow-lg border-2 flex items-center justify-center transition-all bg-white dark:bg-[#111113] active:scale-95 ${isOpen ? "border-indigo-600 dark:border-indigo-500 scale-110" : "border-gray-200 dark:border-white/20 hover:border-indigo-400"}`}
            >
@@ -146,7 +146,7 @@ export function SmartEdge({
                      <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-[11px] uppercase tracking-wider">
                        <Cpu className="w-3 h-3"/> {getNode(source)?.type === 'metadata' ? 'Visual Dictionary Link' : 'Neural Joiner (PNE)'}
                      </div>
-                     <button onClick={onEdgeDelete} className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 p-1 rounded transition"><Trash2 className="w-3 h-3"/></button>
+                     <button aria-label="Action button" onClick={onEdgeDelete} className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 p-1 rounded transition"><Trash2 className="w-3 h-3"/></button>
                   </div>
                   
                   {getNode(source)?.type === 'metadata' || getNode(target)?.type === 'metadata' ? (
@@ -155,7 +155,7 @@ export function SmartEdge({
                          <p className="font-bold flex items-center gap-1">📖 TALI KAMUS DATA</p>
                          <p className="opacity-90 mt-1">Kabel ini berfungsi sebagai pengikat visual antara Kamus (Emas) dan Parquet (Hijau). Tidak ada penggabungan fisik yang dilakukan di DuckDB.</p>
                        </div>
-                       <button onClick={() => setIsOpen(false)} className="w-full py-2 bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 rounded-lg text-xs font-bold transition">TUTUP</button>
+                       <button aria-label="Action button" onClick={() => setIsOpen(false)} className="w-full py-2 bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 rounded-lg text-xs font-bold transition">TUTUP</button>
                      </div>
                   ) : (
                     <>
@@ -170,7 +170,7 @@ export function SmartEdge({
                   <div className="flex flex-col gap-3 mb-4">
                      <div className="flex flex-col gap-1">
                        <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Metode Relasi (Join Type)</label>
-                       <select value={joinType} onChange={e => setJoinType(e.target.value)} className="text-xs p-1.5 bg-gray-50 dark:bg-black border border-gray-200 dark:border-white/10 rounded-md focus:outline-none focus:border-indigo-500 font-mono">
+                       <select aria-label="Select option" value={joinType} onChange={e => setJoinType(e.target.value)} className="text-xs p-1.5 bg-gray-50 dark:bg-black border border-gray-200 dark:border-white/10 rounded-md focus:outline-none focus:border-indigo-500 font-mono">
                          <option value="LEFT JOIN">LEFT JOIN</option>
                          <option value="INNER JOIN">INNER JOIN</option>
                          <option value="RIGHT JOIN">RIGHT JOIN</option>
@@ -183,14 +183,14 @@ export function SmartEdge({
                         
                         <div className="flex flex-col gap-1">
                           <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest truncate">A (Target Kiri)</label>
-                          <select value={leftCol} onChange={e => setLeftCol(e.target.value)} className="text-[10px] p-1.5 bg-gray-50 dark:bg-black border border-gray-200 dark:border-white/10 rounded-md focus:outline-none focus:border-indigo-500 font-mono truncate">
+                          <select aria-label="Select option" value={leftCol} onChange={e => setLeftCol(e.target.value)} className="text-[10px] p-1.5 bg-gray-50 dark:bg-black border border-gray-200 dark:border-white/10 rounded-md focus:outline-none focus:border-indigo-500 font-mono truncate">
                             <option value="">-- Pilih --</option>
                             {sourceCols.map((c:any) => <option key={c.column_name} value={c.column_name}>{c.column_name}</option>)}
                           </select>
                         </div>
                         <div className="flex flex-col gap-1">
                           <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest truncate">B (Target Kanan)</label>
-                          <select value={rightCol} onChange={e => setRightCol(e.target.value)} className="text-[10px] p-1.5 bg-gray-50 dark:bg-black border border-gray-200 dark:border-white/10 rounded-md focus:outline-none focus:border-indigo-500 font-mono truncate">
+                          <select aria-label="Select option" value={rightCol} onChange={e => setRightCol(e.target.value)} className="text-[10px] p-1.5 bg-gray-50 dark:bg-black border border-gray-200 dark:border-white/10 rounded-md focus:outline-none focus:border-indigo-500 font-mono truncate">
                             <option value="">-- Pilih --</option>
                             {targetCols.map((c:any) => <option key={c.column_name} value={c.column_name}>{c.column_name}</option>)}
                           </select>

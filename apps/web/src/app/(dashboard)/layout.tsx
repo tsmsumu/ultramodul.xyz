@@ -19,12 +19,14 @@ export default async function DashboardLayoutServer({ children }: { children: Re
   const finalMatrix = permissionsMatrix;  
 
   let userLangs = ["id"];
+  let userCurrencies = ["USD"];
   try {
     const recs = await db.select().from(users).where(eq(users.id, activeUserId)).limit(1);
-    if (recs.length > 0 && recs[0].languages) {
-      userLangs = JSON.parse(recs[0].languages);
+    if (recs.length > 0) {
+      if (recs[0].languages) userLangs = JSON.parse(recs[0].languages);
+      if (recs[0].currencies) userCurrencies = JSON.parse(recs[0].currencies);
     }
   } catch(e) {}
 
-  return <ClientDashboardLayout layoutType={layoutType} permissions={finalMatrix} activeUserId={activeUserId} userLangs={userLangs}>{children}</ClientDashboardLayout>;
+  return <ClientDashboardLayout layoutType={layoutType} permissions={finalMatrix} activeUserId={activeUserId} userLangs={userLangs} userCurrencies={userCurrencies}>{children}</ClientDashboardLayout>;
 }

@@ -122,7 +122,7 @@ export function MatrixDrawer({
                    <p className="text-xs text-gray-500">{userName}</p>
                  </div>
               </div>
-              <button onClick={onClose} className="p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-md transition text-gray-500">
+              <button aria-label="Action button" onClick={onClose} className="p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-md transition text-gray-500">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -154,7 +154,7 @@ export function MatrixDrawer({
                   <div key={mod} className="border border-gray-200 dark:border-white/10 rounded-xl p-4 bg-gray-50/50 dark:bg-white/1">
                      <div className="flex justify-between items-center mb-4">
                         <h3 className="flex items-center gap-2 font-medium text-sm"><BoxSelect className="w-4 h-4 opacity-50"/> Modul {mod}</h3>
-                        <select 
+                        <select aria-label="Select option" 
                            value={timeRules[mod]}
                            onChange={(e) => setTimeRules(prev => ({...prev, [mod]: e.target.value}))}
                            className="text-xs bg-gray-100 dark:bg-white/10 rounded-md px-2 py-1 border-none focus:ring-0 cursor-pointer"
@@ -167,7 +167,7 @@ export function MatrixDrawer({
                         {PERMISSIONS.map(p => {
                           const isActive = matrixData[mod]?.includes(p.id);
                           return (
-                            <button
+                            <button aria-label="Action button"
                               key={p.id}
                               onClick={() => togglePermission(mod, p.id)}
                               className={`flex items-center gap-2 p-2 rounded-lg border text-xs text-left transition-all

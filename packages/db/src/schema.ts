@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer, real } from 'drizzle-orm/sqlite-core';
 
 export const users = sqliteTable('users', {
   id: text('id').primaryKey(),
@@ -26,6 +26,9 @@ export const users = sqliteTable('users', {
 
   // Language Preferences (Rosetta Protocol) - Array of language codes like ["id", "en"]
   languages: text('languages').notNull().default('["id"]'),
+
+  // Currency Preferences (Multi Currency Protocol) - Array of currency codes like ["USD", "IDR"]
+  currencies: text('currencies').notNull().default('["USD"]'),
 
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull()
 });
@@ -158,4 +161,13 @@ export const omniDictionaries = sqliteTable('omni_dictionaries', {
   authorId: text('author_id').notNull(),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull()
+});
+
+// Global Exchange Rate Engine
+export const exchangeRates = sqliteTable('exchange_rates', {
+  id: text('id').primaryKey(),
+  pair: text('pair').unique().notNull(), // e.g., "USD_IDR"
+  rate: real('rate').notNull(), // SQLite REAL for float
+  isAuto: integer('is_auto', { mode: 'boolean' }).notNull().default(true),
+  lastUpdated: integer('last_updated', { mode: 'timestamp' }).notNull()
 });

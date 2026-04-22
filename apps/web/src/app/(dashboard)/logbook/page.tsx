@@ -84,19 +84,19 @@ export default function LogBookPage() {
 
            <div className="flex bg-green-500/10 border border-green-500/30 rounded px-2 py-1.5 items-center gap-2">
              <Calendar className="w-3 h-3 text-green-600" />
-             <input type="datetime-local" step="1" value={startDate} onChange={e => setStartDate(e.target.value)} className="bg-transparent text-green-500 text-[10px] outline-none" title="Waktu Mulai" />
+             <input aria-label="Input field" placeholder="Enter value..." type="datetime-local" step="1" value={startDate} onChange={e => setStartDate(e.target.value)} className="bg-transparent text-green-500 text-[10px] outline-none" title="Waktu Mulai" />
              <span className="text-green-800">-</span>
-             <input type="datetime-local" step="1" value={endDate} onChange={e => setEndDate(e.target.value)} className="bg-transparent text-green-500 text-[10px] outline-none" title="Waktu Berakhir" />
+             <input aria-label="Input field" placeholder="Enter value..." type="datetime-local" step="1" value={endDate} onChange={e => setEndDate(e.target.value)} className="bg-transparent text-green-500 text-[10px] outline-none" title="Waktu Berakhir" />
            </div>
 
-           <button 
+           <button aria-label="Action button" 
              onClick={handleExport}
              className="px-3 py-1.5 rounded border border-green-500/50 bg-green-500/10 hover:bg-green-500 text-green-500 hover:text-black text-xs font-bold transition flex items-center gap-2"
            >
              <Download className="w-4 h-4" /> EXPORT PARQUET/CSV
            </button>
 
-           <button 
+           <button aria-label="Action button" 
              onClick={() => setIsLive(!isLive)}
              className={`px-3 py-1.5 rounded border text-xs font-bold transition flex items-center gap-2
              ${isLive ? 'bg-red-500/10 border-red-500/50 text-red-500 hover:bg-red-500 hover:text-white' : 'bg-green-500/10 border-green-500/50 text-green-500 hover:bg-green-500 hover:text-black'}`}

@@ -5,15 +5,23 @@ import { useTheme } from "next-themes";
 import { logoutAction } from "@/app/actions/auth";
 import { EventBus, EVENTS } from "@/core/event-bus";
 import Link from "next/link";
-import { Globe2 } from "lucide-react";
+import { Globe2, Banknote } from "lucide-react";
 
-export function Header({ toggleSidebar, activeUserId, userLangs }: { toggleSidebar: () => void, activeUserId: string | null, userLangs: string[] }) {
+export function Header({ toggleSidebar, activeUserId, userLangs, userCurrencies }: { toggleSidebar: () => void, activeUserId: string | null, userLangs: string[], userCurrencies?: string[] }) {
   const tHome = useTranslations("home");
   const tHeader = useTranslations("header");
   const { theme, setTheme } = useTheme();
   const [showSandbox, setShowSandbox] = useState(false);
   const [bellTing, setBellTing] = useState(false);
   const [alertMsg, setAlertMsg] = useState("");
+  const [activeCurrency, setActiveCurrency] = useState("");
+
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+       const currentCookie = document.cookie.split('; ').find(row => row.startsWith('NEXT_CURRENCY='));
+       setActiveCurrency(currentCookie ? currentCookie.split('=')[1] : (userCurrencies?.[0] || "USD"));
+    }
+  }, [userCurrencies]);
 
   useEffect(() => {    // MENDENGAR SINYAL EVENT DARI UDARA (Pub/Sub)
     const unsubscribe = EventBus.subscribe(EVENTS.NOTIFICATION_ALERT, (payload) => {
@@ -32,10 +40,11 @@ export function Header({ toggleSidebar, activeUserId, userLangs }: { toggleSideb
 
   const handleLanguageSwitch = () => {
     if (!userLangs || userLangs.length <= 1) return;
+    if (typeof document === 'undefined') return;
     
     // Temukan bahasa yang sedang aktif dari cookie atau default id
     const currentCookie = document.cookie.split('; ').find(row => row.startsWith('NEXT_LOCALE='));
-    let currentLang = currentCookie ? currentCookie.split('=')[1] : "id";
+    const currentLang = currentCookie ? currentCookie.split('=')[1] : "id";
     
     // Cari index bahasa saat ini di dalam array userLangs
     let currentIndex = userLangs.indexOf(currentLang);
@@ -46,6 +55,23 @@ export function Header({ toggleSidebar, activeUserId, userLangs }: { toggleSideb
     const nextLang = userLangs[nextIndex];
 
     document.cookie = `NEXT_LOCALE=${nextLang}; path=/; max-age=31536000`;
+    window.location.reload();
+  };
+
+  const handleCurrencySwitch = () => {
+    if (!userCurrencies || userCurrencies.length <= 1) return;
+    if (typeof document === 'undefined') return;
+    
+    const currentCookie = document.cookie.split('; ').find(row => row.startsWith('NEXT_CURRENCY='));
+    const currentCurr = currentCookie ? currentCookie.split('=')[1] : "USD";
+    
+    let currentIndex = userCurrencies.indexOf(currentCurr);
+    if (currentIndex === -1) currentIndex = 0;
+
+    const nextIndex = (currentIndex + 1) % userCurrencies.length;
+    const nextCurr = userCurrencies[nextIndex];
+
+    document.cookie = `NEXT_CURRENCY=${nextCurr}; path=/; max-age=31536000`;
     window.location.reload();
   };
 
@@ -73,7 +99,7 @@ export function Header({ toggleSidebar, activeUserId, userLangs }: { toggleSideb
           />
         </div>
         <div className="relative">
-          <button 
+          <button aria-label="Action button" 
             className={`w-8 h-8 rounded-full flex items-center justify-center transition-all border-2 
               ${bellTing ? "bg-red-500 border-red-300 text-white animate-bounce" : "bg-gray-100 dark:bg-white/5 border-transparent text-gray-500"}
             `}
@@ -88,7 +114,7 @@ export function Header({ toggleSidebar, activeUserId, userLangs }: { toggleSideb
         </div>
 
         <div className="relative">
-          <button 
+          <button aria-label="Action button" 
              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
              title="Toggle Tema"
              className="w-8 h-8 rounded-full flex items-center justify-center bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/20 transition-all border-transparent"
@@ -109,8 +135,26 @@ export function Header({ toggleSidebar, activeUserId, userLangs }: { toggleSideb
           </div>
         )}
 
+        {userCurrencies && userCurrencies.length > 0 && (
+          <div className="relative">
+            <button 
+               onClick={handleCurrencySwitch}
+               title={userCurrencies.length > 1 ? "Ganti Mata Uang" : "Mata Uang Utama (Tambahkan di IAM Console untuk Multi-Currency)"}
+               className={`h-8 px-2.5 rounded-full flex items-center justify-center gap-1.5 transition-all border 
+                 ${userCurrencies.length > 1 
+                   ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 border-emerald-200 dark:border-emerald-800/50 cursor-pointer' 
+                   : 'bg-gray-50 dark:bg-white/5 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-white/10 opacity-80'}`}
+            >
+              <Banknote className="w-4 h-4" />
+              <span className="text-[10px] font-bold tracking-wider">
+                {activeCurrency || (userCurrencies && userCurrencies[0]) || "USD"}
+              </span>
+            </button>
+          </div>
+        )}
+
         <div className="relative">
-          <button 
+          <button aria-label="Action button" 
             onClick={() => setShowSandbox(!showSandbox)}
             title="Profile"
             className="w-8 h-8 rounded-full flex items-center justify-center text-white cursor-pointer transition-all border-2 bg-emerald-600 border-transparent hover:ring-2 hover:ring-emerald-400"
@@ -125,7 +169,7 @@ export function Header({ toggleSidebar, activeUserId, userLangs }: { toggleSideb
                  <UserCircle className="w-4 h-4 text-indigo-500" /> Identity Vault (Profil)
                </Link>
                <hr className="border-gray-100 dark:border-white/5 my-1" />
-               <button onClick={handleLogout} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md">
+               <button aria-label="Action button" onClick={handleLogout} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md">
                  <LogOut className="w-4 h-4" /> Secure Logout
                </button>
             </div>

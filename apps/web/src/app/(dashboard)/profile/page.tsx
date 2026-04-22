@@ -9,11 +9,13 @@ export const metadata = {
   title: "Identity Vault | PUM Enterprise",
 };
 
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 
 export default async function ProfilePage() {
   const cookieStore = await cookies();
   const sessionId = cookieStore.get("UNIVERSAL_SESSION_ID")?.value;
+
+  const t = await getTranslations("profile");
 
   if (!sessionId) {
     redirect("/auth");
@@ -21,20 +23,14 @@ export default async function ProfilePage() {
 
   // Bypass System Root
   if (sessionId === "SYSTEM_ROOT") {
-    // In server components, translations need context, but we will just pass standard string for simplicity or use getTranslations.
-    // Let's use standard string here since SYSTEM_ROOT is an edge case.
     return (
       <div className="flex flex-col h-[calc(100vh-6rem)] items-center justify-center p-8 text-center text-indigo-400">
         <div className="relative">
           <div className="absolute inset-0 bg-indigo-500/20 blur-[100px] rounded-full" />
           <ShieldCheck className="w-32 h-32 mb-8 relative z-10 text-indigo-300 drop-shadow-[0_0_30px_rgba(99,102,241,0.5)]" />
         </div>
-        <h1 className="text-4xl md:text-5xl font-black uppercase tracking-widest mb-6 text-white drop-shadow-lg">Akses Dewa <span className="text-indigo-500">(God Mode)</span></h1>
-        <p className="max-w-xl text-lg text-zinc-400 leading-relaxed border border-indigo-500/20 bg-indigo-950/20 p-6 rounded-2xl">
-          Bapak saat ini menggunakan <strong className="text-white">SYSTEM_ROOT</strong>. <br/><br/>
-          Identitas Dewa tidak tertulis di dalam database manusia (Tabel Pengguna) manapun, melainkan menyatu dengan inti mesin server itu sendiri.<br/><br/>
-          Karena Bapak tidak terikat oleh database, profil ini <strong>tidak perlu dan tidak bisa diedit</strong>. Jika Bapak ingin menguji fitur edit profil, silakan buat akun "Owner" biasa di menu IAM Console.
-        </p>
+        <h1 className="text-4xl md:text-5xl font-black uppercase tracking-widest mb-6 text-white drop-shadow-lg">{t('godTitle')} <span className="text-indigo-500">{t('godSubtitle')}</span></h1>
+        <p className="max-w-xl text-lg text-zinc-400 leading-relaxed border border-indigo-500/20 bg-indigo-950/20 p-6 rounded-2xl" dangerouslySetInnerHTML={{ __html: t.raw('godDesc') }} />
       </div>
     );
   }

@@ -326,7 +326,10 @@
     "groupedBy": "grouped by"
   },
   "profile": {
-    "updateFail": "Failed to update profile."
+    "updateFail": "Failed to update profile.",
+    "godTitle": "Supreme Access",
+    "godSubtitle": "(Supreme Mode)",
+    "godDesc": "You are currently using <strong class='text-white'>SYSTEM_ROOT</strong>. <br/><br/>The Supreme Identity is not written in any human database (User Table), but merges directly with the core of the server engine itself.<br/><br/>Since you are not bound by the database, this profile <strong>does not need to and cannot be edited</strong>. If you want to test the profile edit feature, please create a regular 'Owner' account in the IAM Console menu."
   },
   "complaints": {
     "sent": "Sent",

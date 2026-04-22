@@ -326,7 +326,10 @@
     "groupedBy": "yang dikelompokkan berdasarkan"
   },
   "profile": {
-    "updateFail": "Gagal memperbarui profil."
+    "updateFail": "Gagal memperbarui profil.",
+    "godTitle": "Akses Tertinggi",
+    "godSubtitle": "(Mode Tertinggi)",
+    "godDesc": "Bapak saat ini menggunakan <strong class='text-white'>SYSTEM_ROOT</strong>. <br/><br/>Identitas Tertinggi tidak tertulis di dalam database manusia (Tabel Pengguna) manapun, melainkan menyatu dengan inti mesin server itu sendiri.<br/><br/>Karena Bapak tidak terikat oleh database, profil ini <strong>tidak perlu dan tidak bisa diedit</strong>. Jika Bapak ingin menguji fitur edit profil, silakan buat akun 'Owner' biasa di menu IAM Console."
   },
   "complaints": {
     "sent": "Terkirim",

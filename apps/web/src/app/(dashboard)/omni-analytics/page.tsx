@@ -552,8 +552,8 @@ export default function OmniAnalyticsPage() {
                     <div className="bg-black/40 p-3 border-b border-white/5 text-[10px] uppercase font-bold text-zinc-400">Schema ({schemaRows.length})</div>
                     <div className="flex-1 overflow-y-auto p-2 custom-scrollbar">
                        {schemaRows.map((col, idx) => (
-                         <div key={idx} draggable onDragStart={() => setDraggedCol(col.column_name)} onDragEnd={() => setDraggedCol(null)} className="flex justify-between items-center p-2 hover:bg-white/5 rounded-lg cursor-grab transition">
-                            <span className="text-xs text-zinc-300 font-mono truncate w-full">{col.column_name}</span>
+                         <div key={idx} draggable onDragStart={() => setDraggedCol(col.column_name as string)} onDragEnd={() => setDraggedCol(null)} className="flex justify-between items-center p-2 hover:bg-white/5 rounded-lg cursor-grab transition">
+                            <span className="text-xs text-zinc-300 font-mono truncate w-full">{String(col.column_name)}</span>
                          </div>
                        ))}
                     </div>

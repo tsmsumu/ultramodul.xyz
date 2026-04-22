@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { AlertTriangle, TrendingUp, ShieldCheck, Zap, SlidersHorizontal, Mic, Search, Activity, Crosshair, Wrench, Plus, Trash2, Edit2, Save, X, FolderOpen, ArrowLeft, MoreVertical, LayoutGrid, HeartPulse, Briefcase, GraduationCap, Plane, FileText, ChevronRight } from "lucide-react";
 import ReactECharts from 'echarts-for-react';
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslations } from 'next-intl';
 
 // --- TYPES FOR LEGO ARCHITECT ---
 interface LegoSlider {
@@ -50,6 +51,7 @@ const ICONS: Record<string, any> = {
 const COLORS = ["amber", "emerald", "blue", "red", "purple", "indigo", "rose", "cyan"];
 
 export default function WarRoomVaultPage() {
+  const t = useTranslations("warroom");
   const [isClient, setIsClient] = useState(false);
   const [vault, setVault] = useState<WarRoomConfig[]>([]);
   const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
@@ -110,7 +112,7 @@ export default function WarRoomVaultPage() {
 
   const deleteFolder = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if(confirm("Hancurkan Map ini beserta seluruh data di dalamnya?")) {
+    if(confirm(t('deleteMapPrompt'))) {
       saveVault(vault.filter(f => f.folderId !== id));
       if (activeFolderId === id) setActiveFolderId(null);
     }
@@ -193,7 +195,7 @@ export default function WarRoomVaultPage() {
     setIsTyping(true);
     setOracleResponse(null);
     setTimeout(() => {
-      setOracleResponse(`Berdasarkan pengaturan matriks di dalam Map ${activeConfig.folderName}, tren menunjukkan korelasi kuat sesuai rumusan yang dirakit.`);
+      setOracleResponse(t('oracleResponse', { folderName: activeConfig.folderName }));
       setIsTyping(false);
     }, 2500);
   };
@@ -215,12 +217,12 @@ export default function WarRoomVaultPage() {
                 <FolderOpen className="w-10 h-10 text-zinc-300" />
               </div>
               <div>
-                <h1 className="text-4xl font-black text-white tracking-widest uppercase mb-1">Nexus Vault</h1>
+                <h1 className="text-4xl font-black text-white tracking-widest uppercase mb-1">{t('title')}</h1>
                 <div className="flex items-center gap-3">
                    <span className="text-[10px] font-bold uppercase tracking-widest border border-zinc-700/50 text-zinc-400 bg-zinc-900/50 px-2 py-0.5 rounded">
-                     Filing Cabinet & Archive Room
+                     {t('desc')}
                    </span>
-                   <span className="text-xs text-zinc-500 font-mono">PUM Universal Storage</span>
+                   <span className="text-xs text-zinc-500 font-mono">{t('subdesc')}</span>
                 </div>
               </div>
            </div>
@@ -231,12 +233,12 @@ export default function WarRoomVaultPage() {
                 onClick={() => setIsAdminRole(!isAdminRole)}
                 className={`px-3 py-1 rounded border text-[9px] uppercase font-bold tracking-widest transition-colors ${isAdminRole ? 'border-indigo-500/50 text-indigo-400 bg-indigo-950/30' : 'border-zinc-700 text-zinc-500 bg-zinc-900'}`}
               >
-                Mock IAM: {isAdminRole ? '[CREATE/EDIT]' : '[VIEW ONLY]'}
+                {t('mockIAM')}: {isAdminRole ? '[CREATE/EDIT]' : '[VIEW ONLY]'}
               </button>
 
               {isAdminRole && (
                 <button onClick={createNewFolder} className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 rounded-xl text-sm font-bold uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-indigo-600/20 transition-all transform hover:scale-105">
-                   <Plus className="w-5 h-5" /> Buat Map Baru
+                   <Plus className="w-5 h-5" /> {t('newMapBtn')}
                 </button>
               )}
            </div>
@@ -246,8 +248,8 @@ export default function WarRoomVaultPage() {
          {vault.length === 0 ? (
             <div className="flex-1 flex flex-col items-center justify-center bg-zinc-950/50 border border-dashed border-zinc-800 rounded-3xl p-10 text-center">
                <FileText className="w-24 h-24 text-zinc-800 mb-6" />
-               <h3 className="text-xl font-bold text-zinc-500 uppercase tracking-widest mb-2">Laci Kabinet Kosong</h3>
-               <p className="text-sm text-zinc-600 max-w-md">Belum ada Map Kebijakan yang dibuat. PUM bersifat Blank Canvas. Silakan buat Map baru untuk mensimulasikan skenario tertentu.</p>
+               <h3 className="text-xl font-bold text-zinc-500 uppercase tracking-widest mb-2">{t('emptyVaultTitle')}</h3>
+               <p className="text-sm text-zinc-600 max-w-md">{t('emptyVaultDesc')}</p>
             </div>
          ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
@@ -265,7 +267,7 @@ export default function WarRoomVaultPage() {
                       >
                          {/* MANILA FOLDER DESIGN (TAB) */}
                          <div className={`w-1/2 h-8 bg-${folder.folderColor}-900/80 rounded-t-2xl border-t border-l border-r border-${folder.folderColor}-500/30 relative z-0 ml-4 group-hover:-translate-y-2 transition-transform duration-300 flex items-center px-4`}>
-                           <span className={`text-[9px] font-bold uppercase tracking-widest text-${folder.folderColor}-300`}>NEXUS MAP</span>
+                           <span className={`text-[9px] font-bold uppercase tracking-widest text-${folder.folderColor}-300`}>{t('nexusMap')}</span>
                          </div>
                          
                          {/* MANILA FOLDER DESIGN (BODY) */}
@@ -278,9 +280,14 @@ export default function WarRoomVaultPage() {
                                  <FIcon className={`w-6 h-6 text-${folder.folderColor}-400`} />
                                </div>
                                {isAdminRole && (
-                                 <button onClick={(e) => deleteFolder(folder.folderId, e)} className="w-8 h-8 bg-black/50 hover:bg-red-900/80 rounded-lg flex items-center justify-center text-zinc-500 hover:text-red-400 transition-colors">
-                                   <Trash2 className="w-4 h-4" />
-                                 </button>
+                                 <div className="flex gap-2">
+                                   <button onClick={(e) => { e.stopPropagation(); setActiveFolderId(folder.folderId); setIsBuilderMode(true); }} className="w-8 h-8 bg-black/50 hover:bg-indigo-900/80 rounded-lg flex items-center justify-center text-zinc-500 hover:text-indigo-400 transition-colors" title={t('editMapTitle')}>
+                                     <Edit2 className="w-4 h-4" />
+                                   </button>
+                                   <button onClick={(e) => deleteFolder(folder.folderId, e)} className="w-8 h-8 bg-black/50 hover:bg-red-900/80 rounded-lg flex items-center justify-center text-zinc-500 hover:text-red-400 transition-colors">
+                                     <Trash2 className="w-4 h-4" />
+                                   </button>
+                                 </div>
                                )}
                             </div>
                             
@@ -289,11 +296,11 @@ export default function WarRoomVaultPage() {
                             <div className="flex gap-4 mt-6 border-t border-white/5 pt-4">
                                <div className="flex items-center gap-2">
                                  <SlidersHorizontal className="w-3 h-3 text-zinc-500" />
-                                 <span className="text-[10px] text-zinc-400 font-mono">{folder.sliders.length} Tuas</span>
+                                 <span className="text-[10px] text-zinc-400 font-mono">{folder.sliders.length} {t('tuas')}</span>
                                </div>
                                <div className="flex items-center gap-2">
                                  <LayoutGrid className="w-3 h-3 text-zinc-500" />
-                                 <span className="text-[10px] text-zinc-400 font-mono">Arsip Tersimpan</span>
+                                 <span className="text-[10px] text-zinc-400 font-mono">{t('arsip')}</span>
                                </div>
                             </div>
                          </div>
@@ -330,7 +337,7 @@ export default function WarRoomVaultPage() {
                 setOracleQuery("");
               }}
               className="w-12 h-12 bg-zinc-900 border border-white/10 rounded-xl flex items-center justify-center hover:bg-white/10 transition-colors text-zinc-400 hover:text-white"
-              title="Kembali ke Brankas"
+              title={t('backBtn')}
             >
                <ArrowLeft className="w-5 h-5" />
             </button>
@@ -340,12 +347,12 @@ export default function WarRoomVaultPage() {
             </div>
             <div>
               <div className="flex items-center gap-3 mb-1">
-                 <h1 className="text-3xl font-black text-white tracking-widest uppercase">Nexus War Room</h1>
-                 {isBuilderMode && <span className="bg-indigo-600 text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-widest animate-pulse">Lego Architect Active</span>}
+                 <h1 className="text-3xl font-black text-white tracking-widest uppercase">{t('warRoomTitle')}</h1>
+                 {isBuilderMode && <span className="bg-indigo-600 text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-widest animate-pulse">{t('architectActive')}</span>}
               </div>
               <div className="flex items-center gap-3">
                  <span className={`text-[10px] font-bold uppercase tracking-widest border px-2 py-0.5 rounded border-${activeConfig.folderColor}-500/30 text-${activeConfig.folderColor}-400 bg-${activeConfig.folderColor}-950/30`}>
-                   Map Terbuka: {activeConfig.folderName}
+                   {t('openMap')}: {activeConfig.folderName}
                  </span>
                  
                  {isBuilderMode && (
@@ -381,7 +388,7 @@ export default function WarRoomVaultPage() {
                 onClick={() => setIsBuilderMode(!isBuilderMode)}
                 className={`px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition-all ${isBuilderMode ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg' : 'bg-zinc-900 hover:bg-zinc-800 text-zinc-400 border border-white/10'}`}
               >
-                {isBuilderMode ? <><Save className="w-4 h-4"/> Selesai Merakit</> : <><Wrench className="w-4 h-4"/> Mode Architect</>}
+                {isBuilderMode ? <><Save className="w-4 h-4"/> {t('finishBtn')}</> : <><Wrench className="w-4 h-4"/> {t('architectBtn')}</>}
               </button>
             )}
          </div>
@@ -395,7 +402,7 @@ export default function WarRoomVaultPage() {
            {/* EXECUTIVE BRIEFING */}
            <div className={`bg-zinc-950/60 border rounded-3xl p-8 shadow-2xl relative flex flex-col shrink-0 ${isBuilderMode ? 'border-indigo-500/50 border-dashed' : 'border-white/5'}`}>
               <h2 className="text-sm font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2 mb-6">
-                 <Zap className={`w-5 h-5 text-${activeConfig.folderColor}-500`} /> Laporan Intelijen Terkini
+                 <Zap className={`w-5 h-5 text-${activeConfig.folderColor}-500`} /> {t('intelTitle')}
               </h2>
               
               <div className="space-y-4">
@@ -416,7 +423,7 @@ export default function WarRoomVaultPage() {
                                className="w-full bg-zinc-900 border border-indigo-500/30 text-zinc-300 text-xs px-2 py-1 rounded outline-none resize-none h-16"
                              />
                              <div className="flex gap-2 items-center pt-1">
-                               <span className="text-[9px] text-zinc-500 uppercase">Warna Ikon:</span>
+                               <span className="text-[9px] text-zinc-500 uppercase">{t('colorLabel')}</span>
                                <select value={report.color} onChange={(e) => updateReport(report.id, 'color', e.target.value)} className="bg-zinc-900 text-xs text-white border border-white/20 rounded outline-none">
                                  <option value="red">Merah</option><option value="emerald">Hijau</option><option value="blue">Biru</option><option value="amber">Kuning</option>
                                </select>
@@ -437,18 +444,18 @@ export default function WarRoomVaultPage() {
            {/* OMNI-ORACLE CHAT */}
            <div className={`bg-black border rounded-3xl p-8 shadow-2xl flex-1 flex flex-col min-h-[300px] ${isBuilderMode ? 'opacity-50 pointer-events-none border-dashed border-white/10' : 'border-white/10'}`}>
               <h2 className="text-sm font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2 mb-6 shrink-0">
-                 <Mic className={`w-5 h-5 text-${activeConfig.folderColor}-500`} /> Omni-Oracle AI
+                 <Mic className={`w-5 h-5 text-${activeConfig.folderColor}-500`} /> {t('oracleTitle')}
               </h2>
               
               <div className="flex-1 overflow-y-auto mb-6 custom-scrollbar pr-2 flex flex-col justify-end">
                  {!oracleResponse && !isTyping ? (
                     <div className="text-center text-zinc-600 font-light text-lg mb-8">
-                      "Sistem Oracle aktif. Saya menganalisis map <strong className="text-white">{activeConfig.folderName}</strong>. Berikan instruksi Anda."
+                      {t('oracleReady', { folderName: activeConfig.folderName })}
                     </div>
                  ) : isTyping ? (
                     <div className={`flex items-center gap-3 text-${activeConfig.folderColor}-500`}>
                        <Activity className="w-5 h-5 animate-spin" /> 
-                       <span className="font-mono text-xs uppercase tracking-widest">Menganalisis matriks...</span>
+                       <span className="font-mono text-xs uppercase tracking-widest">{t('oracleTyping')}</span>
                     </div>
                  ) : (
                     <div className={`bg-${activeConfig.folderColor}-950/20 border border-${activeConfig.folderColor}-900/50 p-6 rounded-2xl`}>
@@ -462,7 +469,7 @@ export default function WarRoomVaultPage() {
                    type="text" 
                    value={oracleQuery}
                    onChange={(e) => setOracleQuery(e.target.value)}
-                   placeholder="Ketik instruksi di sini..."
+                   placeholder={t('oraclePlaceholder')}
                    className={`w-full bg-zinc-900 border border-white/10 rounded-2xl py-4 pl-6 pr-14 text-white focus:outline-none focus:border-${activeConfig.folderColor}-500/50 transition-colors placeholder:text-zinc-600 font-light`}
                  />
                  <button type="submit" disabled={isTyping || !oracleQuery.trim()} className={`absolute right-3 top-3 bottom-3 w-10 bg-${activeConfig.folderColor}-600 hover:bg-${activeConfig.folderColor}-500 disabled:opacity-50 text-white rounded-xl flex items-center justify-center transition-colors`}>
@@ -480,13 +487,13 @@ export default function WarRoomVaultPage() {
               <div className="flex justify-between items-center mb-8 shrink-0">
                  <div>
                    <h2 className="text-xl font-black text-white uppercase tracking-widest flex items-center gap-3 mb-1">
-                      <SlidersHorizontal className="w-6 h-6 text-white" /> Policy Sandbox
+                      <SlidersHorizontal className="w-6 h-6 text-white" /> {t('sandboxTitle')}
                    </h2>
-                   <p className="text-xs text-zinc-500 font-mono">Real-Time What-If Scenario Projection Engine</p>
+                   <p className="text-xs text-zinc-500 font-mono">{t('sandboxDesc')}</p>
                  </div>
                  {isBuilderMode && (
                    <button onClick={addSlider} className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest flex items-center gap-2">
-                     <Plus className="w-4 h-4" /> Tambah Tuas
+                     <Plus className="w-4 h-4" /> {t('addSliderBtn')}
                    </button>
                  )}
               </div>
@@ -546,13 +553,13 @@ export default function WarRoomVaultPage() {
                       </motion.div>
                    ))}
                  </AnimatePresence>
-                 {activeConfig.sliders.length === 0 && <div className="text-zinc-600 text-xs flex items-center justify-center border border-dashed border-zinc-800 rounded-2xl p-5">Kosong. Tambah tuas.</div>}
+                 {activeConfig.sliders.length === 0 && <div className="text-zinc-600 text-xs flex items-center justify-center border border-dashed border-zinc-800 rounded-2xl p-5">{t('emptySlider')}</div>}
               </div>
 
               {/* REAL-TIME PROJECTION CHART */}
               <div className={`flex-1 bg-black/40 border rounded-3xl p-6 flex flex-col ${isBuilderMode ? 'border-indigo-500/50' : 'border-white/5'}`}>
                  <div className="flex justify-between items-center mb-4 shrink-0">
-                    <h3 className="text-sm font-bold text-white">Proyeksi Kinerja 5 Tahun Kedepan</h3>
+                    <h3 className="text-sm font-bold text-white">{t('chartTitle')}</h3>
                     <div className="flex gap-4">
                        <div className="flex items-center gap-2">
                          <div className="w-3 h-3 rounded-sm bg-red-500" /> 

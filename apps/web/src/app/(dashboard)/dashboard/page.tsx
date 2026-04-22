@@ -5,6 +5,7 @@ import { Activity, ShieldCheck, Database, Zap, Users, AlertTriangle, Fingerprint
 import { motion } from "framer-motion";
 import { useEffect, useState, useRef } from "react";
 import { getGodsEyeTelemetry } from "../../actions/dashboard";
+import { getActiveUserId } from "../../actions/auth";
 import Link from "next/link";
 
 type TelemetryData = {
@@ -23,15 +24,20 @@ export default function DashboardPage() {
   // DRAG AND DROP STATE
   const [isEditing, setIsEditing] = useState(false);
   const [layout, setLayout] = useState<string[]>(['ping', 'matrix', 'complaints', 'db', 'quicklaunch', 'logbook']);
+  const [userId, setUserId] = useState<string>("anonymous");
   const dragItem = useRef<number | null>(null);
   const dragOverItem = useRef<number | null>(null);
 
   useEffect(() => {
     // 1. TELEPORTASI MEMORI: Muat posisi dari LocalStorage (0 Detik)
-    const savedLayout = localStorage.getItem("NexusDashboardGrid");
-    if (savedLayout) {
-      setLayout(JSON.parse(savedLayout));
-    }
+    getActiveUserId().then(id => {
+      setUserId(id);
+      const storageKey = `NexusDashboardGrid_${id}`;
+      const savedLayout = localStorage.getItem(storageKey);
+      if (savedLayout) {
+        setLayout(JSON.parse(savedLayout));
+      }
+    });
 
     // 2. FETCH DATA
     let mounted = true;
@@ -71,7 +77,8 @@ export default function DashboardPage() {
       dragItem.current = null;
       dragOverItem.current = null;
       setLayout(newLayout);
-      localStorage.setItem("NexusDashboardGrid", JSON.stringify(newLayout));
+      const storageKey = `NexusDashboardGrid_${userId}`;
+      localStorage.setItem(storageKey, JSON.stringify(newLayout));
     }
   };
 

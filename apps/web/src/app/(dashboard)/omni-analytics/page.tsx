@@ -5,6 +5,7 @@ import { UploadCloud, FileSpreadsheet, LayoutDashboard, BrainCircuit, Globe2, Ba
 import { useDropzone } from "react-dropzone";
 import ReactECharts from 'echarts-for-react';
 import { duckEngine } from "@/core/duckdb-engine";
+import { getActiveUserId } from "../../actions/auth";
 
 // --- UNIVERSAL CATALOG TYPES ---
 interface OmniCatalogItem {
@@ -30,6 +31,7 @@ export default function OmniAnalyticsPage() {
 
   // --- CATALOG STATE (PERSISTENT) ---
   const [catalog, setCatalog] = useState<OmniCatalogItem[]>([]);
+  const [userId, setUserId] = useState<string>("anonymous");
 
   // --- GLOBAL STATE ---
   const [loading, setLoading] = useState(false);
@@ -56,32 +58,37 @@ export default function OmniAnalyticsPage() {
   // LOAD CATALOG FROM LOCAL STORAGE
   useEffect(() => {
     setIsClient(true);
-    const saved = localStorage.getItem('omniCatalog_v2');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        setCatalog(parsed);
-        // Re-hydrate DuckDB with saved data to simulate persistence
-        parsed.forEach((item: OmniCatalogItem) => {
-           if (item.rawJsonData && item.rawJsonData.length > 0) {
-              duckEngine.ingestJSONData(item.tableName, item.rawJsonData).catch(console.error);
-           }
-        });
-      } catch (e) {
-        setCatalog([]);
-      }
-    }
+    getActiveUserId().then(id => {
+       setUserId(id);
+       const storageKey = `omniCatalog_v2_${id}`;
+       const saved = localStorage.getItem(storageKey);
+       if (saved) {
+         try {
+           const parsed = JSON.parse(saved);
+           setCatalog(parsed);
+           // Re-hydrate DuckDB with saved data to simulate persistence
+           parsed.forEach((item: OmniCatalogItem) => {
+              if (item.rawJsonData && item.rawJsonData.length > 0) {
+                 duckEngine.ingestJSONData(item.tableName, item.rawJsonData).catch(console.error);
+              }
+           });
+         } catch (e) {
+           setCatalog([]);
+         }
+       }
+    });
   }, []);
 
   const saveCatalog = (newCat: OmniCatalogItem[]) => {
     setCatalog(newCat);
+    const storageKey = `omniCatalog_v2_${userId}`;
     // Don't save rawJsonData if it's too huge, but for Universal PUM demo we will save up to 1000 rows.
     try {
-      localStorage.setItem('omniCatalog_v2', JSON.stringify(newCat));
+      localStorage.setItem(storageKey, JSON.stringify(newCat));
     } catch(e) {
       console.warn("Storage quota exceeded, stripping raw data");
       const stripped = newCat.map(c => ({...c, rawJsonData: []}));
-      localStorage.setItem('omniCatalog_v2', JSON.stringify(stripped));
+      localStorage.setItem(storageKey, JSON.stringify(stripped));
     }
   };
 

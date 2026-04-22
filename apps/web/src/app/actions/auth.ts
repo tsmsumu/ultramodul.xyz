@@ -114,3 +114,8 @@ export async function updateIdentity(formData: FormData) {
     return { success: false, message: "Kesalahan internal server." };
   }
 }
+
+export async function getActiveUserId() {
+  const cookieStore = await cookies();
+  return cookieStore.get("UNIVERSAL_SESSION_ID")?.value || "anonymous";
+}

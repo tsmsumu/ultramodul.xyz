@@ -5,6 +5,7 @@ import { AlertTriangle, TrendingUp, ShieldCheck, Zap, SlidersHorizontal, Mic, Se
 import ReactECharts from 'echarts-for-react';
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from 'next-intl';
+import { getActiveUserId } from "../../actions/auth";
 
 // --- TYPES FOR LEGO ARCHITECT ---
 interface LegoSlider {
@@ -59,6 +60,7 @@ export default function WarRoomVaultPage() {
   
   // Simulated IAM Role Toggle (For Demo Purposes)
   const [isAdminRole, setIsAdminRole] = useState(true); 
+  const [userId, setUserId] = useState<string>("anonymous");
 
   // Oracle States
   const [isTyping, setIsTyping] = useState(false);
@@ -68,23 +70,28 @@ export default function WarRoomVaultPage() {
   // LOAD FROM LOCAL STORAGE
   useEffect(() => {
     setIsClient(true);
-    const saved = localStorage.getItem('warRoomVault_v2');
-    if (saved) {
-      try {
-        setVault(JSON.parse(saved));
-      } catch (e) {
+    getActiveUserId().then(id => {
+      setUserId(id);
+      const storageKey = `warRoomVault_v2_${id}`;
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        try {
+          setVault(JSON.parse(saved));
+        } catch (e) {
+          setVault([]);
+        }
+      } else {
+        // Empty Vault by default (Universal Blank Canvas)
         setVault([]);
       }
-    } else {
-      // Empty Vault by default (Universal Blank Canvas)
-      setVault([]);
-    }
+    });
   }, []);
 
   // SAVE TO LOCAL STORAGE
   const saveVault = (newVault: WarRoomConfig[]) => {
     setVault(newVault);
-    localStorage.setItem('warRoomVault_v2', JSON.stringify(newVault));
+    const storageKey = `warRoomVault_v2_${userId}`;
+    localStorage.setItem(storageKey, JSON.stringify(newVault));
   };
 
   // --- VAULT / LOBBY ACTIONS ---

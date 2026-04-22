@@ -60,7 +60,7 @@ export function ImportModal({ isOpen, onClose, onRefresh }: { isOpen: boolean, o
                   <p className="text-xs text-gray-500 font-mono">Format: username, name, role</p>
                 </>
              )}
-             <input disabled={loading} type="file" accept=".csv" onChange={handleFileUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+             <input aria-label="File upload" id="fileUpload" disabled={loading} type="file" accept=".csv" onChange={handleFileUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
            </div>
 
            {errorItem && (

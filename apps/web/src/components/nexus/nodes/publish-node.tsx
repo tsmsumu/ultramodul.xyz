@@ -27,7 +27,7 @@ export function PublishNode({ data, id }: any) {
       <Handle type="target" position={Position.Left} className="w-3 h-3 bg-purple-500 border-2 border-black" />
       
       <div className="flex items-center gap-3 mb-3 border-b border-white/10 pb-3">
-        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-400 to-fuchsia-600 flex items-center justify-center text-white shadow-lg shadow-purple-500/20">
+        <div className="w-10 h-10 rounded-lg bg-linear-to-br from-purple-400 to-fuchsia-600 flex items-center justify-center text-white shadow-lg shadow-purple-500/20">
           <UploadCloud className="w-5 h-5" />
         </div>
         <div>
@@ -57,7 +57,7 @@ export function PublishNode({ data, id }: any) {
                <CheckCircle2 className="w-4 h-4" /> PUBLISHED TO CORE
             </div>
          ) : (
-            <button onClick={handlePublish} className="w-full py-2 bg-gradient-to-r from-purple-500 to-fuchsia-600 hover:from-purple-400 hover:to-fuchsia-500 text-white rounded-lg text-xs font-bold transition flex items-center justify-center gap-2 shadow-xl shadow-purple-500/20 hover:scale-[1.02]">
+            <button onClick={handlePublish} className="w-full py-2 bg-linear-to-r from-purple-500 to-fuchsia-600 hover:from-purple-400 hover:to-fuchsia-500 text-white rounded-lg text-xs font-bold transition flex items-center justify-center gap-2 shadow-xl shadow-purple-500/20 hover:scale-[1.02]">
                <LockKeyhole className="w-4 h-4" /> BUNGKUS KE DALAM BRANKAS!
             </button>
          )}

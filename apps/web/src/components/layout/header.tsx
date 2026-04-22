@@ -52,7 +52,7 @@ export function Header({ toggleSidebar, activeUserId, userLangs }: { toggleSideb
   return (
     <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-white/70 dark:bg-[#09090b]/80 border-b border-gray-200 dark:border-white/10 flex items-center justify-between px-4 h-16">
       <div className="flex items-center gap-4">
-        <button 
+        <button aria-label="Toggle Sidebar" title="Toggle Sidebar" 
           onClick={toggleSidebar}
           className="p-2 hover:bg-black/5 dark:hover:bg-white/10 rounded-md transition"
         >

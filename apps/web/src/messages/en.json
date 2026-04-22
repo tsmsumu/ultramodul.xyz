@@ -31,7 +31,8 @@
     "Omni-Forge (Alat Data)": "Omni-Forge (Data Tools)",
     "Omni-Analytics": "Analytics Omniverse",
     "Omni-Codex": "Omni-Codex",
-    "Time-Machine Nexus": "Nexus Time-Machine"
+    "Time-Machine Nexus": "Nexus Time-Machine",
+    "Panduan Developer": "DevTeam Blueprint"
   },
   "customizer": {
     "title": "Display Settings",
@@ -267,5 +268,103 @@
     "btnDelete": "Delete",
     "alertFill": "Fill Dictionary Name and Target Column!",
     "alertDelete": "Delete this dictionary?"
+  },
+  "access": {
+    "title": "Active Identity Matrix",
+    "subtitle": "Cross-Module Authority Grid (LIVE)",
+    "searchPlaceholder": "Search Universal ID...",
+    "matrixConfig": "Matrix Configuration",
+    "matrixDesc": "Assign module clearance levels directly to SQLite.",
+    "save": "Save",
+    "saving": "Saving..."
+  },
+  "evolution": {
+    "logExtractSuccess": "[System] File successfully extracted to DuckDB WASM RAM.",
+    "logIngestFail": "Failed to ingest Parquet/CSV file!",
+    "logProfileFail": "[Error] Failed to execute profile: {error}",
+    "logMutateFail": "[Error] Mutation Failed: {error}",
+    "logImputeFail": "[Error] Imputation Failed: {error}",
+    "logExportSuccess": "[Cryo-Export] Successfully downloaded pure Parquet.",
+    "logExportFail": "[Error] Export Failed: {error}"
+  },
+  "mandate": {
+    "title": "Delegation & Mandate",
+    "subtitle": "Instant workload transfer engine (*Workflow*).",
+    "btnDelegate": "Delegate Mandate",
+    "emptyTitle": "Empty Workload",
+    "emptyDesc": "No task delegations have been published yet.",
+    "deadline": "Deadline:",
+    "delegator": "Delegator:",
+    "delegatee": "Delegatee:",
+    "btnAccept": "Accept",
+    "btnReject": "Reject",
+    "btnRevoke": "Revoke Mandate",
+    "modalTitle": "Publish New Mandate",
+    "selectDelegatee": "Select Colleague (Delegatee)",
+    "selectTarget": "-- Select target --",
+    "taskDesc": "Workload Description",
+    "taskPlaceholder": "Mandate operational instructions...",
+    "validHours": "Validity Period (Hours)",
+    "btnCancel": "Cancel",
+    "btnPublish": "Publish Mandate"
+  },
+  "analytics": {
+    "ingestFail": "Failed to ingest file into WASM",
+    "promptTitle": "Enter Dataset Title (Widget) for Standard Mode:",
+    "promptDesc": "Enter short description:",
+    "publishSuccess": "Dataset successfully published to Standard Catalog!",
+    "publishFail": "Failed to publish",
+    "confirmDelete": "Delete this dataset widget from catalog?",
+    "loadFail": "Failed to load dataset from Catalog.",
+    "emptyState": "Select a dataset widget published by Admin. PUM operates as a Blank Canvas, the data below is a direct reflection of the files processed in the Advanced room.",
+    "emptyCatalog": "Empty Catalog",
+    "emptyCatalogDesc": "No datasets have been published yet. Please switch to ADVANCED mode, upload a file, and click 'Publish to Catalog'.",
+    "wantToSee": "I want to see",
+    "calcDim": "Calculating Table Dimensions...",
+    "errQuery": "Error running analytic query.",
+    "totalCount": "Total Count",
+    "groupedBy": "grouped by"
+  },
+  "profile": {
+    "updateFail": "Failed to update profile."
+  },
+  "complaints": {
+    "sent": "Sent",
+    "sentToDept": "Sent to Department {dept}",
+    "citizenApp": "Citizen App/Web",
+    "sessionStart": "-- Session started --",
+    "welcomeMsg": "Hello! I am the PUM Nexus *Zero-Form* system. Tell me your problems, complaints, or suggestions in everyday language. I will process the rest.",
+    "sending": "Sending to Center...",
+    "placeholder": "Type operational/incident log here (e.g., 'Anomaly occurred in sub-system B')..."
+  },
+  "recovery": {
+    "desc": "God-tier feature. Select a bundle archive (.ZIP) previously downloaded from this system. The VPS will be entirely overwritten and resurrected with the contents of this ZIP."
+  },
+  "devmanual": {
+    "subtitle": "World-Class Remote Team Orchestration Blueprint. Standard operating procedure for Zero-Trust architecture used by enterprise teams.",
+    "p1Title": "GitHub Centric Network",
+    "p1Desc": "There is NO manual file transfer. The project resides safely in the Git Cloud Repository.",
+    "p1S1": "Create a free GitHub account.",
+    "p1S2": "Admin invites developer usernames via Settings > Collaborators.",
+    "p1S4": "The codebase is instantly cloned locally without DB credentials.",
+    "p2Title": "Blindfold Security (No Data Access)",
+    "p2Warning": "Developers have ZERO access to real production data. They operate completely blindfolded on dummy local databases.",
+    "p2L1": "Local DB files are sealed via .gitignore.",
+    "p2L2": "Code clone contains structural schema only, zero sensitive records.",
+    "p2L3": "Developers use `drizzle-kit push` locally for dummy environments.",
+    "p3Title": "Multiverse Branching Strategy",
+    "p3Desc": "Never push directly to the main timeline. All developers must operate in isolated branches.",
+    "p3Main": "Admin / Production Only",
+    "p3Andi": "Quarantine Branch A",
+    "p3Susi": "Quarantine Branch B",
+    "p3Merge": "Merging Mechanism (Pull Request)",
+    "p3Merge1": "Developer completes module, pushes to local branch, and opens a Pull Request (PR).",
+    "p3Merge2": "Admin reviews the code changes thoroughly.",
+    "p3Merge3": "If approved, Admin merges to main. Code is smoothly integrated without collision.",
+    "p4Title": "VPS Engine Monopolization",
+    "p4Desc": "Developers DO NOT NEED AND WILL NOT GET SSH access to the production server.",
+    "p4L1": "Deployment scripts containing server keys are strictly secured.",
+    "p4L2": "Developers strictly test against localhost:3000.",
+    "p4L3": "Only the Admin holds the 'Veto' right to execute remote deployment hooks."
   }
 }

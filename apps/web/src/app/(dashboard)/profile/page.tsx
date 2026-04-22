@@ -24,10 +24,17 @@ export default async function ProfilePage() {
     // In server components, translations need context, but we will just pass standard string for simplicity or use getTranslations.
     // Let's use standard string here since SYSTEM_ROOT is an edge case.
     return (
-      <div className="flex flex-col h-[calc(100vh-6rem)] items-center justify-center p-8 text-center text-red-500">
-        <ShieldCheck className="w-24 h-24 mb-6" />
-        <h1 className="text-3xl font-black uppercase tracking-widest mb-4">Akses Ditolak (Root Override)</h1>
-        <p className="max-w-md">The SYSTEM_ROOT account is an emergency bypass. This profile cannot be modified from the web interface for absolute security reasons.</p>
+      <div className="flex flex-col h-[calc(100vh-6rem)] items-center justify-center p-8 text-center text-indigo-400">
+        <div className="relative">
+          <div className="absolute inset-0 bg-indigo-500/20 blur-[100px] rounded-full" />
+          <ShieldCheck className="w-32 h-32 mb-8 relative z-10 text-indigo-300 drop-shadow-[0_0_30px_rgba(99,102,241,0.5)]" />
+        </div>
+        <h1 className="text-4xl md:text-5xl font-black uppercase tracking-widest mb-6 text-white drop-shadow-lg">Akses Dewa <span className="text-indigo-500">(God Mode)</span></h1>
+        <p className="max-w-xl text-lg text-zinc-400 leading-relaxed border border-indigo-500/20 bg-indigo-950/20 p-6 rounded-2xl">
+          Bapak saat ini menggunakan <strong className="text-white">SYSTEM_ROOT</strong>. <br/><br/>
+          Identitas Dewa tidak tertulis di dalam database manusia (Tabel Pengguna) manapun, melainkan menyatu dengan inti mesin server itu sendiri.<br/><br/>
+          Karena Bapak tidak terikat oleh database, profil ini <strong>tidak perlu dan tidak bisa diedit</strong>. Jika Bapak ingin menguji fitur edit profil, silakan buat akun "Owner" biasa di menu IAM Console.
+        </p>
       </div>
     );
   }

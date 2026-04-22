@@ -131,7 +131,7 @@ export function NexusCanvas() {
           className="dark:bg-[#0a0a0c]"
         >
           <Background color="#0ea5e9" gap={20} size={1} />
-          <Controls className="!bg-white/80 dark:!bg-[#111113]/80 backdrop-blur-md !border-gray-200 dark:!border-white/10 !fill-gray-600 dark:!fill-gray-300" />
+          <Controls className="bg-white/80! dark:bg-[#111113]/80! backdrop-blur-md border-gray-200! dark:border-white/10! fill-gray-600! dark:fill-gray-300!" />
         </ReactFlow>
 
         {/* ZENITH HUD: Exit Button */}

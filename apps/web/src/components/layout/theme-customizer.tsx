@@ -45,7 +45,7 @@ export function ThemeCustomizer({ currentSkin, currentLayout }: { currentSkin: s
 
   return (
     <>
-      <button 
+      <button aria-label="Toggle Theme" title="Toggle Theme" 
         onClick={() => setIsOpen(!isOpen)}
         className="fixed bottom-6 right-6 p-3 bg-white/80 dark:bg-zinc-800/80 backdrop-blur-md rounded-full shadow-lg border border-gray-200 dark:border-white/10 hover:shadow-xl transition-all z-50 group"
       >

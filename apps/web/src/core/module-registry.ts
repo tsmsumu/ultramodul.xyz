@@ -39,7 +39,8 @@ export const ModuleRegistry: OmniModule[] = [
   { id: "Aegis Panopticon (DB)", name: "Maintenance Panopticon", path: "/maintenance", icon: ServerCog, isCore: true, category: "infra" },
   { id: "Saraf Interaktif", name: "Event Bus Test", path: "/test-bus", icon: ActivitySquare, isCore: false, category: "infra" },
   { id: "Omni-Codex", name: "Omni-Codex", path: "/codex", icon: BookMarked, isCore: true, category: "infra" },
-  { id: "Aegis System Core", name: "System Core (About)", path: "/about", icon: Cpu, isCore: true, category: "infra" }
+  { id: "Aegis System Core", name: "System Core (About)", path: "/about", icon: Cpu, isCore: true, category: "infra" },
+  { id: "Panduan Developer", name: "DevTeam Blueprint", path: "/dev-manual", icon: BookOpen, isCore: true, category: "infra" }
 ];
 
 // Helper Function: Mengeluarkan Seluruh ID Modul (Untuk Dirender di Kaca Drawer IAM)

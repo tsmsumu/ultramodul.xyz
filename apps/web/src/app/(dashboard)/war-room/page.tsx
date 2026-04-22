@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { AlertTriangle, TrendingUp, ShieldCheck, Zap, SlidersHorizontal, Mic, Search, Activity, Crosshair, Wrench, Plus, Trash2, Edit2, Save, X, FolderOpen, ArrowLeft, MoreVertical, LayoutGrid, HeartPulse, Briefcase, GraduationCap, Plane, FileText, ChevronRight } from "lucide-react";
+import { AlertTriangle, ShieldCheck, Zap, SlidersHorizontal, Mic, Search, Activity, Wrench, Plus, Trash2, Edit2, Save, X, FolderOpen, ArrowLeft, LayoutGrid, HeartPulse, Briefcase, GraduationCap, Plane, FileText } from "lucide-react";
 import ReactECharts from 'echarts-for-react';
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from 'next-intl';
@@ -45,7 +45,7 @@ interface WarRoomConfig {
 }
 
 // Default Icons Mapping
-const ICONS: Record<string, any> = {
+const ICONS: Record<string, React.ElementType> = {
   Briefcase, HeartPulse, GraduationCap, Plane, Activity, ShieldCheck, Zap, AlertTriangle
 };
 
@@ -67,9 +67,12 @@ export default function WarRoomVaultPage() {
   const [oracleQuery, setOracleQuery] = useState("");
   const [oracleResponse, setOracleResponse] = useState<string | null>(null);
 
-  // LOAD FROM LOCAL STORAGE
   useEffect(() => {
     setIsClient(true);
+  }, []);
+
+  // LOAD FROM LOCAL STORAGE
+  useEffect(() => {
     getActiveUserId().then(id => {
       setUserId(id);
       const storageKey = `warRoomVault_v2_${id}`;
@@ -77,7 +80,7 @@ export default function WarRoomVaultPage() {
       if (saved) {
         try {
           setVault(JSON.parse(saved));
-        } catch (e) {
+        } catch (_e) {
           setVault([]);
         }
       } else {
@@ -97,7 +100,7 @@ export default function WarRoomVaultPage() {
   // --- VAULT / LOBBY ACTIONS ---
   const createNewFolder = () => {
     const newFolder: WarRoomConfig = {
-      folderId: `f_${Date.now()}`,
+      folderId: `f_${Math.random().toString(36).substr(2, 9)}`,
       folderName: "Map Kebijakan Baru",
       folderColor: COLORS[Math.floor(Math.random() * COLORS.length)],
       folderIcon: "Briefcase",
@@ -165,7 +168,7 @@ export default function WarRoomVaultPage() {
   const addSlider = () => {
     if(!activeConfig) return;
     const newSlider: LegoSlider = {
-      id: `s_${Date.now()}`, label: "Tuas Baru", unit: "%", state: 0, step: 5, max: 50, color: "blue", weightY1: 0, weightY2: 0
+      id: `s_${Math.random().toString(36).substr(2, 9)}`, label: "Tuas Baru", unit: "%", state: 0, step: 5, max: 50, color: "blue", weightY1: 0, weightY2: 0
     };
     saveActiveConfig({ ...activeConfig, sliders: [...activeConfig.sliders, newSlider] });
   };
@@ -175,13 +178,13 @@ export default function WarRoomVaultPage() {
     saveActiveConfig({ ...activeConfig, sliders: activeConfig.sliders.filter(s => s.id !== id) });
   };
 
-  const updateSliderProp = (id: string, prop: keyof LegoSlider, val: any) => {
+  const updateSliderProp = (id: string, prop: keyof LegoSlider, val: string | number) => {
     if(!activeConfig) return;
     const newSliders = activeConfig.sliders.map(s => s.id === id ? { ...s, [prop]: val } : s);
     saveActiveConfig({ ...activeConfig, sliders: newSliders });
   };
 
-  const updateReport = (id: string, prop: keyof LegoReport, val: any) => {
+  const updateReport = (id: string, prop: keyof LegoReport, val: string) => {
     if(!activeConfig) return;
     const newReports = activeConfig.reports.map(r => r.id === id ? { ...r, [prop]: val } : r);
     saveActiveConfig({ ...activeConfig, reports: newReports });
@@ -281,7 +284,7 @@ export default function WarRoomVaultPage() {
                          {/* MANILA FOLDER DESIGN (BODY) */}
                          <div className={`bg-zinc-900 border border-${folder.folderColor}-500/30 rounded-3xl rounded-tl-none p-6 relative z-10 shadow-2xl group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all duration-300 overflow-hidden`}>
                             {/* Glass Reflection */}
-                            <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                            <div className="absolute inset-0 bg-linear-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                             
                             <div className="flex justify-between items-start mb-6">
                                <div className={`w-12 h-12 bg-${folder.folderColor}-950 border border-${folder.folderColor}-500/50 rounded-xl flex items-center justify-center shadow-inner`}>
@@ -292,7 +295,7 @@ export default function WarRoomVaultPage() {
                                    <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); setActiveFolderId(folder.folderId); setIsBuilderMode(true); }} className="w-8 h-8 bg-black/50 hover:bg-indigo-900/80 rounded-lg flex items-center justify-center text-zinc-500 hover:text-indigo-400 transition-colors" title={t('editMapTitle')}>
                                      <Edit2 className="w-4 h-4 pointer-events-none" />
                                    </button>
-                                   <button onClick={(e) => deleteFolder(folder.folderId, e)} className="w-8 h-8 bg-black/50 hover:bg-red-900/80 rounded-lg flex items-center justify-center text-zinc-500 hover:text-red-400 transition-colors">
+                                   <button onClick={(e) => deleteFolder(folder.folderId, e)} title={t('deleteMapTitle')} className="w-8 h-8 bg-black/50 hover:bg-red-900/80 rounded-lg flex items-center justify-center text-zinc-500 hover:text-red-400 transition-colors">
                                      <Trash2 className="w-4 h-4 pointer-events-none" />
                                    </button>
                                  </div>
@@ -366,11 +369,13 @@ export default function WarRoomVaultPage() {
                  {isBuilderMode && (
                     <div className="flex items-center gap-2">
                        <input 
+                         aria-label="Folder Name"
                          value={activeConfig.folderName} 
                          onChange={(e) => updateFolderMeta('folderName', e.target.value)}
                          className="bg-zinc-900 text-indigo-300 text-xs font-bold border border-indigo-500/50 rounded px-2 py-1 outline-none w-48"
                        />
                        <select 
+                         aria-label="Folder Color"
                          value={activeConfig.folderColor} 
                          onChange={(e) => updateFolderMeta('folderColor', e.target.value)}
                          className="bg-zinc-900 text-indigo-300 text-xs border border-indigo-500/50 rounded px-2 py-1 outline-none"
@@ -378,6 +383,7 @@ export default function WarRoomVaultPage() {
                          {COLORS.map(c => <option key={c} value={c}>Warna {c}</option>)}
                        </select>
                        <select 
+                         aria-label="Folder Icon"
                          value={activeConfig.folderIcon} 
                          onChange={(e) => updateFolderMeta('folderIcon', e.target.value)}
                          className="bg-zinc-900 text-indigo-300 text-xs border border-indigo-500/50 rounded px-2 py-1 outline-none"
@@ -421,18 +427,20 @@ export default function WarRoomVaultPage() {
                          {isBuilderMode ? (
                            <div className="space-y-2">
                              <input 
+                               aria-label="Report Title"
                                value={report.title} 
                                onChange={(e) => updateReport(report.id, 'title', e.target.value)}
                                className="w-full bg-zinc-900 border border-indigo-500/30 text-indigo-300 text-sm font-bold px-2 py-1 rounded outline-none"
                              />
                              <textarea 
+                               aria-label="Report Description"
                                value={report.desc} 
                                onChange={(e) => updateReport(report.id, 'desc', e.target.value)}
                                className="w-full bg-zinc-900 border border-indigo-500/30 text-zinc-300 text-xs px-2 py-1 rounded outline-none resize-none h-16"
                              />
                              <div className="flex gap-2 items-center pt-1">
                                <span className="text-[9px] text-zinc-500 uppercase">{t('colorLabel')}</span>
-                               <select value={report.color} onChange={(e) => updateReport(report.id, 'color', e.target.value)} className="bg-zinc-900 text-xs text-white border border-white/20 rounded outline-none">
+                               <select aria-label="Report Color" value={report.color} onChange={(e) => updateReport(report.id, 'color', e.target.value)} className="bg-zinc-900 text-xs text-white border border-white/20 rounded outline-none">
                                  <option value="red">Merah</option><option value="emerald">Hijau</option><option value="blue">Biru</option><option value="amber">Kuning</option>
                                </select>
                              </div>
@@ -474,13 +482,14 @@ export default function WarRoomVaultPage() {
 
               <form onSubmit={handleOracleSubmit} className="relative shrink-0">
                  <input 
+                   aria-label="Oracle Query"
                    type="text" 
                    value={oracleQuery}
                    onChange={(e) => setOracleQuery(e.target.value)}
                    placeholder={t('oraclePlaceholder')}
                    className={`w-full bg-zinc-900 border border-white/10 rounded-2xl py-4 pl-6 pr-14 text-white focus:outline-none focus:border-${activeConfig.folderColor}-500/50 transition-colors placeholder:text-zinc-600 font-light`}
                  />
-                 <button type="submit" disabled={isTyping || !oracleQuery.trim()} className={`absolute right-3 top-3 bottom-3 w-10 bg-${activeConfig.folderColor}-600 hover:bg-${activeConfig.folderColor}-500 disabled:opacity-50 text-white rounded-xl flex items-center justify-center transition-colors`}>
+                 <button type="submit" title="Search Oracle" disabled={isTyping || !oracleQuery.trim()} className={`absolute right-3 top-3 bottom-3 w-10 bg-${activeConfig.folderColor}-600 hover:bg-${activeConfig.folderColor}-500 disabled:opacity-50 text-white rounded-xl flex items-center justify-center transition-colors`}>
                     <Search className="w-4 h-4" />
                  </button>
               </form>
@@ -489,7 +498,7 @@ export default function WarRoomVaultPage() {
 
         {/* KANAN: POLICY SANDBOX (MESIN WAKTU) */}
         <div className={`col-span-1 lg:col-span-7 bg-zinc-950/80 border rounded-3xl p-8 shadow-2xl flex flex-col relative overflow-hidden ${isBuilderMode ? 'border-indigo-500/50 border-dashed' : 'border-white/5'}`}>
-           <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]" />
+           <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[24px_24px]" />
            
            <div className="relative z-10 flex flex-col h-full">
               <div className="flex justify-between items-center mb-8 shrink-0">
@@ -512,7 +521,7 @@ export default function WarRoomVaultPage() {
                    {activeConfig.sliders.map((slider) => (
                       <motion.div layout key={slider.id} initial={{opacity:0, scale:0.9}} animate={{opacity:1, scale:1}} exit={{opacity:0, scale:0.9}} className={`bg-black/50 border p-5 rounded-2xl flex flex-col justify-center relative ${isBuilderMode ? 'border-indigo-500/50' : 'border-white/10'}`}>
                         {isBuilderMode && (
-                          <button onClick={() => removeSlider(slider.id)} className="absolute -top-2 -right-2 w-6 h-6 bg-red-600 text-white rounded-full flex items-center justify-center hover:scale-110 transition z-10">
+                          <button onClick={() => removeSlider(slider.id)} title="Remove Slider" className="absolute -top-2 -right-2 w-6 h-6 bg-red-600 text-white rounded-full flex items-center justify-center hover:scale-110 transition z-10">
                             <X className="w-3 h-3" />
                           </button>
                         )}
@@ -520,6 +529,7 @@ export default function WarRoomVaultPage() {
                         <div className="flex justify-between items-center mb-4">
                           {isBuilderMode ? (
                             <input 
+                              aria-label="Slider Label"
                               value={slider.label} 
                               onChange={(e) => updateSliderProp(slider.id, 'label', e.target.value)}
                               className="bg-zinc-900 border border-indigo-500/50 text-indigo-300 text-xs font-bold uppercase tracking-widest w-24 px-1 outline-none rounded"
@@ -533,7 +543,7 @@ export default function WarRoomVaultPage() {
                         </div>
 
                         <input 
-                          type="range" min={-slider.max} max={slider.max} step={slider.step} 
+                          type="range" aria-label="Slider Value" min={-slider.max} max={slider.max} step={slider.step} 
                           value={slider.state} onChange={(e) => handleSliderChange(slider.id, Number(e.target.value))}
                           disabled={isBuilderMode}
                           className={`w-full ${!isBuilderMode ? 'cursor-pointer' : 'opacity-50 cursor-not-allowed'} accent-${slider.color}-500`}
@@ -544,15 +554,15 @@ export default function WarRoomVaultPage() {
                              <div className="text-[9px] text-zinc-500 uppercase font-bold text-center mb-2">Rumus Dampak Grafik</div>
                              <div className="flex items-center justify-between text-[10px]">
                                <span className="text-zinc-400">Efek ke Y1:</span>
-                               <input type="number" step="0.1" value={slider.weightY1} onChange={e => updateSliderProp(slider.id, 'weightY1', Number(e.target.value))} className="w-12 bg-zinc-900 border border-zinc-700 rounded px-1 text-white text-center" />
+                               <input aria-label="Weight Y1" type="number" step="0.1" value={slider.weightY1} onChange={e => updateSliderProp(slider.id, 'weightY1', Number(e.target.value))} className="w-12 bg-zinc-900 border border-zinc-700 rounded px-1 text-white text-center" />
                              </div>
                              <div className="flex items-center justify-between text-[10px]">
                                <span className="text-zinc-400">Efek ke Y2:</span>
-                               <input type="number" step="0.1" value={slider.weightY2} onChange={e => updateSliderProp(slider.id, 'weightY2', Number(e.target.value))} className="w-12 bg-zinc-900 border border-zinc-700 rounded px-1 text-white text-center" />
+                               <input aria-label="Weight Y2" type="number" step="0.1" value={slider.weightY2} onChange={e => updateSliderProp(slider.id, 'weightY2', Number(e.target.value))} className="w-12 bg-zinc-900 border border-zinc-700 rounded px-1 text-white text-center" />
                              </div>
                              <div className="flex items-center justify-between text-[10px] pt-1">
                                <span className="text-zinc-400">Warna Tuas:</span>
-                               <select value={slider.color} onChange={(e) => updateSliderProp(slider.id, 'color', e.target.value)} className="bg-zinc-900 text-white border border-zinc-700 rounded px-1">
+                               <select aria-label="Slider Color" value={slider.color} onChange={(e) => updateSliderProp(slider.id, 'color', e.target.value)} className="bg-zinc-900 text-white border border-zinc-700 rounded px-1">
                                   {COLORS.map(c => <option key={c} value={c}>{c}</option>)}
                                </select>
                              </div>
@@ -572,7 +582,7 @@ export default function WarRoomVaultPage() {
                        <div className="flex items-center gap-2">
                          <div className="w-3 h-3 rounded-sm bg-red-500" /> 
                          {isBuilderMode ? (
-                           <input value={activeConfig.chart.y1Label} onChange={e => updateChartLabel('y1Label', e.target.value)} className="bg-zinc-900 text-red-400 text-[10px] font-bold uppercase border border-red-500/50 rounded outline-none px-1 w-24" />
+                           <input aria-label="Y1 Label" value={activeConfig.chart.y1Label} onChange={e => updateChartLabel('y1Label', e.target.value)} className="bg-zinc-900 text-red-400 text-[10px] font-bold uppercase border border-red-500/50 rounded outline-none px-1 w-24" />
                          ) : (
                            <span className="text-[10px] text-zinc-400 uppercase tracking-widest font-bold">{activeConfig.chart.y1Label}</span>
                          )}
@@ -580,7 +590,7 @@ export default function WarRoomVaultPage() {
                        <div className="flex items-center gap-2">
                          <div className="w-3 h-3 rounded-sm bg-emerald-500" /> 
                          {isBuilderMode ? (
-                           <input value={activeConfig.chart.y2Label} onChange={e => updateChartLabel('y2Label', e.target.value)} className="bg-zinc-900 text-emerald-400 text-[10px] font-bold uppercase border border-emerald-500/50 rounded outline-none px-1 w-24" />
+                           <input aria-label="Y2 Label" value={activeConfig.chart.y2Label} onChange={e => updateChartLabel('y2Label', e.target.value)} className="bg-zinc-900 text-emerald-400 text-[10px] font-bold uppercase border border-emerald-500/50 rounded outline-none px-1 w-24" />
                          ) : (
                            <span className="text-[10px] text-zinc-400 uppercase tracking-widest font-bold">{activeConfig.chart.y2Label}</span>
                          )}

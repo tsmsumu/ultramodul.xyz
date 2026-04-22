@@ -151,7 +151,7 @@ export function MatrixDrawer({
                    <div className="text-center py-10 text-gray-400 text-sm">Modul tidak ditemukan.</div>
                 ) : (
                 MODULES.filter(mod => mod.toLowerCase().includes(searchQuery.toLowerCase())).map(mod => (
-                  <div key={mod} className="border border-gray-200 dark:border-white/10 rounded-xl p-4 bg-gray-50/50 dark:bg-white/[0.01]">
+                  <div key={mod} className="border border-gray-200 dark:border-white/10 rounded-xl p-4 bg-gray-50/50 dark:bg-white/1">
                      <div className="flex justify-between items-center mb-4">
                         <h3 className="flex items-center gap-2 font-medium text-sm"><BoxSelect className="w-4 h-4 opacity-50"/> Modul {mod}</h3>
                         <select 
@@ -190,7 +190,7 @@ export function MatrixDrawer({
               )}
             </div>
 
-            <div className="p-5 border-t border-gray-100 dark:border-white/10 bg-gray-50 dark:bg-white/[0.02]">
+            <div className="p-5 border-t border-gray-100 dark:border-white/10 bg-gray-50 dark:bg-white/2">
                <button 
                  disabled={loading}
                  onClick={handleSaveAll}

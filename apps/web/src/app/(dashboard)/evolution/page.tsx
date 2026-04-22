@@ -4,8 +4,10 @@ import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { duckEngine } from "@/core/duckdb-engine";
 import { Dna, UploadCloud, CheckCircle2, AlertTriangle, Loader2, Syringe, Trash2, DownloadCloud, Stethoscope } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function EvolutionCenterPage() {
+  const t = useTranslations("evolution");
   const [loading, setLoading] = useState(false);
   const [tableName, setTableName] = useState<string>('');
   
@@ -33,14 +35,14 @@ export default function EvolutionCenterPage() {
       
       if (success) {
         setTableName(safeTableName);
-        setHealingLog(prev => [...prev, `[Sistem] File berhasil diekstrak ke RAM DuckDB WASM.`]);
+        setHealingLog(prev => [...prev, t("logExtractSuccess")]);
         await runDNAProfiler(safeTableName);
       } else {
-        alert("Gagal menelan file Parquet/CSV!");
+        alert(t("logIngestFail"));
       }
     } catch (error) {
       console.error(error);
-      alert("Error ingestion!");
+      alert(t("logIngestFail"));
     } finally {
       setLoading(false);
     }
@@ -88,7 +90,7 @@ export default function EvolutionCenterPage() {
       setHealingLog(prev => [...prev, `[Scanner] Profiling selesai. Terdeteksi ${total} baris dan ${dups} duplikat.`]);
     } catch (error) {
       console.error(error);
-      setHealingLog(prev => [...prev, `[Error] Gagal menjalankan profil: ${String(error)}`]);
+      setHealingLog(prev => [...prev, t("logProfileFail", { error: String(error) })]);
     } finally {
       setLoading(false);
     }
@@ -104,7 +106,7 @@ export default function EvolutionCenterPage() {
       setHealingLog(prev => [...prev, `[Mutasi] Sukses! Seluruh baris ganda telah dimusnahkan.`]);
       await runDNAProfiler(tableName); // Rescan
     } catch (e) {
-      setHealingLog(prev => [...prev, `[Error] Mutasi Gagal: ${String(e)}`]);
+      setHealingLog(prev => [...prev, t("logMutateFail", { error: String(e) })]);
     } finally {
       setLoading(false);
     }
@@ -133,7 +135,7 @@ export default function EvolutionCenterPage() {
       setHealingLog(prev => [...prev, `[Mutasi] Auto-Imputation selesai.`]);
       await runDNAProfiler(tableName);
     } catch (e) {
-      setHealingLog(prev => [...prev, `[Error] Imputasi Gagal: ${String(e)}`]);
+      setHealingLog(prev => [...prev, t("logImputeFail", { error: String(e) })]);
     } finally {
       setLoading(false);
     }
@@ -154,10 +156,10 @@ export default function EvolutionCenterPage() {
         a.download = `Clean_${tableName}.parquet`;
         a.click();
         URL.revokeObjectURL(url);
-        setHealingLog(prev => [...prev, `[Cryo-Export] Berhasil mengunduh Parquet murni.`]);
+        setHealingLog(prev => [...prev, t("logExportSuccess")]);
       }
     } catch (e) {
-      setHealingLog(prev => [...prev, `[Error] Ekspor Gagal: ${String(e)}`]);
+      setHealingLog(prev => [...prev, t("logExportFail", { error: String(e) })]);
     } finally {
       setLoading(false);
     }

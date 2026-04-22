@@ -41,7 +41,7 @@ export default function ProfileForm({ initialUid, initialName, role }: ProfileFo
       (document.getElementById("password") as HTMLInputElement).value = "";
       (document.getElementById("confirmPassword") as HTMLInputElement).value = "";
     } else {
-      setErrorMsg(res.message || "Gagal memperbarui profil.");
+      setErrorMsg(res.message || t("updateFail"));
     }
     setIsSaving(false);
   };
@@ -66,10 +66,11 @@ export default function ProfileForm({ initialUid, initialName, role }: ProfileFo
       <div className="space-y-6">
         {/* NAMA LENGKAP */}
         <div>
-          <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2 mb-2">
+          <label htmlFor="fullName" className="text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2 mb-2">
             <User className="w-4 h-4 text-indigo-500" /> {t('fullName')}
           </label>
           <input 
+            id="fullName"
             type="text" 
             name="fullName"
             defaultValue={initialName}
@@ -80,10 +81,11 @@ export default function ProfileForm({ initialUid, initialName, role }: ProfileFo
 
         {/* ROLE */}
         <div>
-          <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2 mb-2">
+          <label htmlFor="role" className="text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2 mb-2">
             <ShieldCheck className="w-4 h-4 text-emerald-500" /> {t('role')}
           </label>
           <input 
+            id="role"
             type="text" 
             value={role.toUpperCase()}
             disabled
@@ -96,7 +98,7 @@ export default function ProfileForm({ initialUid, initialName, role }: ProfileFo
         {/* SANDI BARU */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
            <div>
-             <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-2 block">
+             <label htmlFor="password" className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-2 block">
                {t('newPassword')}
              </label>
              <input 
@@ -108,7 +110,7 @@ export default function ProfileForm({ initialUid, initialName, role }: ProfileFo
              />
            </div>
            <div>
-             <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-2 block">
+             <label htmlFor="confirmPassword" className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-2 block">
                {t('confirmPassword')}
              </label>
              <input 

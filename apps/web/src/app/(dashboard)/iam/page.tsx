@@ -76,7 +76,7 @@ export default function IAMConsolePage() {
       {loading ? (
         <div className="animate-pulse space-y-4">
            <div className="h-10 bg-gray-200 dark:bg-white/5 rounded-xl w-full"></div>
-           <div className="h-64 bg-gray-100 dark:bg-white/[0.02] rounded-xl w-full"></div>
+           <div className="h-64 bg-gray-100 dark:bg-white/2 rounded-xl w-full"></div>
         </div>
       ) : (
         <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 ease-out space-y-6">

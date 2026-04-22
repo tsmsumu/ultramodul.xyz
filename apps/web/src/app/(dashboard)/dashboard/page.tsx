@@ -195,11 +195,11 @@ export default function DashboardPage() {
                    initial={{ height: 0 }}
                    animate={{ height: `${height}%` }}
                    transition={{ duration: 1, delay: i * 0.05, repeat: Infinity, repeatType: "reverse", repeatDelay: Math.random() * 2 }}
-                   className="flex-1 bg-gradient-to-t from-emerald-600/80 to-teal-400/40 rounded-t-sm opacity-50"
+                   className="flex-1 bg-linear-to-t from-emerald-600/80 to-teal-400/40 rounded-t-sm opacity-50"
                  />
                )
              })}
-             <div className="absolute inset-0 bg-gradient-to-t from-zinc-50 dark:from-black via-transparent to-transparent pointer-events-none" />
+             <div className="absolute inset-0 bg-linear-to-t from-zinc-50 dark:from-black via-transparent to-transparent pointer-events-none" />
              <div className="absolute top-4 left-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">NETWORK TRAFFIC FLOW</div>
           </div>
 

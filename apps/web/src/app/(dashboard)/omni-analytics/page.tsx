@@ -6,6 +6,7 @@ import { useDropzone } from "react-dropzone";
 import ReactECharts from 'echarts-for-react';
 import { duckEngine } from "@/core/duckdb-engine";
 import { getActiveUserId } from "../../actions/auth";
+import { useTranslations } from "next-intl";
 
 // --- UNIVERSAL CATALOG TYPES ---
 interface OmniCatalogItem {
@@ -19,12 +20,13 @@ interface OmniCatalogItem {
   // But for now, we will store the catalog metadata. If WASM doesn't have the table, we'll ask user to re-upload or simulate it.
   // Actually, since PUM is universal, we can store the RAW JSON data in localStorage if it's small, OR we just keep it session-based for the demo.
   // Let's store raw data in IndexedDB/LocalStorage for true persistence across reloads.
-  rawJsonData?: any[]; // Fallback persistence
+  rawJsonData?: Record<string, unknown>[]; // Fallback persistence
 }
 
 const COLORS = ["blue", "emerald", "amber", "rose", "purple", "indigo", "cyan"];
 
 export default function OmniAnalyticsPage() {
+  const t = useTranslations("analytics");
   // MODE STATE
   const [analystMode, setAnalystMode] = useState<'standard' | 'advance'>('standard');
   const [isClient, setIsClient] = useState(false);
@@ -35,14 +37,14 @@ export default function OmniAnalyticsPage() {
 
   // --- GLOBAL STATE ---
   const [loading, setLoading] = useState(false);
-  const [chartData, setChartData] = useState<any[]>([]);
+  const [chartData, setChartData] = useState<Record<string, unknown>[]>([]);
   const [isAggregating, setIsAggregating] = useState(false);
   const [chartType, setChartType] = useState<'bar' | 'treemap' | 'line'>('bar');
 
   // --- ADVANCE MODE STATE ---
   const [tableName, setTableName] = useState<string>('');
   const [fileIngested, setFileIngested] = useState(false);
-  const [schemaRows, setSchemaRows] = useState<any[]>([]);
+  const [schemaRows, setSchemaRows] = useState<Record<string, unknown>[]>([]);
   const [xAxisCol, setXAxisCol] = useState<string | null>(null);
   const [yAxisCol, setYAxisCol] = useState<string | null>(null);
   const [draggedCol, setDraggedCol] = useState<string | null>(null);
@@ -55,9 +57,12 @@ export default function OmniAnalyticsPage() {
   const [numericCols, setNumericCols] = useState<string[]>([]);
   const [categoricalCols, setCategoricalCols] = useState<string[]>([]);
 
-  // LOAD CATALOG FROM LOCAL STORAGE
   useEffect(() => {
     setIsClient(true);
+  }, []);
+
+  // LOAD CATALOG FROM LOCAL STORAGE
+  useEffect(() => {
     getActiveUserId().then(id => {
        setUserId(id);
        const storageKey = `omniCatalog_v2_${id}`;
@@ -72,7 +77,7 @@ export default function OmniAnalyticsPage() {
                  duckEngine.ingestJSONData(item.tableName, item.rawJsonData).catch(console.error);
               }
            });
-         } catch (e) {
+         } catch (_e) {
            setCatalog([]);
          }
        }
@@ -85,7 +90,7 @@ export default function OmniAnalyticsPage() {
     // Don't save rawJsonData if it's too huge, but for Universal PUM demo we will save up to 1000 rows.
     try {
       localStorage.setItem(storageKey, JSON.stringify(newCat));
-    } catch(e) {
+    } catch(_e) {
       console.warn("Storage quota exceeded, stripping raw data");
       const stripped = newCat.map(c => ({...c, rawJsonData: []}));
       localStorage.setItem(storageKey, JSON.stringify(stripped));
@@ -144,7 +149,7 @@ export default function OmniAnalyticsPage() {
       }
     } catch (e) {
       console.error(e);
-      alert("Gagal menelan file ke WASM");
+      alert(t("ingestFail"));
     } finally {
       setLoading(false);
     }
@@ -154,9 +159,9 @@ export default function OmniAnalyticsPage() {
 
   const publishToCatalog = async () => {
     if (!tableName) return;
-    const title = prompt("Masukkan Judul Dataset (Widget) untuk Mode Standard:");
+    const title = prompt(t("promptTitle"));
     if (!title) return;
-    const desc = prompt("Masukkan Deskripsi singkat:");
+    const desc = prompt(t("promptDesc"));
     
     setIsAggregating(true);
     try {
@@ -171,10 +176,10 @@ export default function OmniAnalyticsPage() {
         rawJsonData: rawData
       };
       saveCatalog([...catalog, newItem]);
-      alert("Dataset berhasil di-publish ke Katalog Standard!");
+      alert(t("publishSuccess"));
     } catch(e) {
       console.error(e);
-      alert("Gagal mem-publish");
+      alert(t("publishFail"));
     } finally {
       setIsAggregating(false);
     }
@@ -182,7 +187,7 @@ export default function OmniAnalyticsPage() {
 
   const deleteCatalogItem = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if(confirm("Hapus widget dataset ini dari katalog?")) {
+    if(confirm(t("confirmDelete"))) {
       saveCatalog(catalog.filter(c => c.id !== id));
       if (activeCatalogId === id) setActiveCatalogId(null);
     }
@@ -198,7 +203,7 @@ export default function OmniAnalyticsPage() {
       let tableReady = true;
       try {
         await duckEngine.executeRaw(`SELECT 1 FROM ${item.tableName} LIMIT 1`);
-      } catch(e) {
+      } catch(_e) {
         tableReady = false;
       }
 
@@ -233,7 +238,7 @@ export default function OmniAnalyticsPage() {
 
     } catch(e) {
       console.error(e);
-      alert("Gagal memuat dataset dari Katalog.");
+      alert(t("loadFail"));
       setActiveCatalogId(null);
       setStandardStep(1);
     } finally {
@@ -266,7 +271,7 @@ export default function OmniAnalyticsPage() {
       setChartData(res);
     } catch (e) {
       console.error(e);
-      alert("Error menjalankan query analitik.");
+      alert(t("errQuery"));
     } finally {
       setIsAggregating(false);
     }
@@ -362,8 +367,8 @@ export default function OmniAnalyticsPage() {
                 {catalog.length === 0 ? (
                   <div className="border border-dashed border-zinc-800 rounded-3xl p-10 flex flex-col items-center max-w-lg">
                     <Database className="w-16 h-16 text-zinc-700 mb-4" />
-                    <h3 className="text-lg font-bold text-zinc-500 uppercase tracking-widest mb-2">Katalog Kosong</h3>
-                    <p className="text-sm text-zinc-600">Belum ada dataset yang dipublish. Silakan masuk ke Mode ADVANCED, unggah file, lalu klik "Publish ke Katalog".</p>
+                    <h3 className="text-lg font-bold text-zinc-500 uppercase tracking-widest mb-2">{t("emptyCatalog")}</h3>
+                    <p className="text-sm text-zinc-600">{t("emptyCatalogDesc")}</p>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full px-6">
@@ -371,7 +376,7 @@ export default function OmniAnalyticsPage() {
                       const color = COLORS[idx % COLORS.length];
                       return (
                         <button key={item.id} onClick={() => openCatalogItem(item)} className={`bg-${color}-950/20 hover:bg-${color}-900/40 border border-${color}-500/30 p-8 rounded-3xl transition-all group text-left relative overflow-hidden flex flex-col`}>
-                            <div className={`absolute -right-10 -top-10 bg-${color}-500/20 w-32 h-32 rounded-full blur-[40px] group-hover:bg-${color}-500/40 transition`} />
+                            <div className={`absolute -right-10 -top-10 bg-${color}-500/20 w-32 h-32 rounded-full blur-2xl group-hover:bg-${color}-500/40 transition`} />
                             <div className="flex justify-between items-start mb-4">
                               <LayoutDashboard className={`w-10 h-10 text-${color}-400`} />
                               <ShieldCheck className={`w-5 h-5 text-${color}-600`} />
@@ -391,7 +396,7 @@ export default function OmniAnalyticsPage() {
                 
                 {/* GUIDED STORYTELLING (MADLIBS UI) - DYNAMIC UNIVERSAL */}
                 <div className="bg-blue-950/20 border border-blue-500/30 p-8 rounded-3xl shadow-[0_0_40px_rgba(59,130,246,0.1)] shrink-0 relative">
-                   <button onClick={() => { setStandardStep(1); setActiveCatalogId(null); }} className="absolute top-4 right-4 text-zinc-500 hover:text-white transition">
+                   <button onClick={() => { setStandardStep(1); setActiveCatalogId(null); }} title="Close" className="absolute top-4 right-4 text-zinc-500 hover:text-white transition">
                      <XIcon className="w-5 h-5" />
                    </button>
                    <div className="text-sm font-bold text-blue-400 uppercase tracking-widest mb-4 flex items-center gap-2">
@@ -400,24 +405,26 @@ export default function OmniAnalyticsPage() {
                    
                    {loading ? (
                      <div className="flex items-center gap-4 text-blue-400">
-                       <Loader2 className="w-5 h-5 animate-spin" /> Mengkalkulasi Dimensi Tabel...
+                       <Loader2 className="w-5 h-5 animate-spin" /> {t("calcDim")}
                      </div>
                    ) : (
                      <div className="text-2xl font-light text-zinc-300 leading-relaxed flex flex-wrap items-center gap-3">
-                        <span>"Saya ingin melihat</span>
+                        <span>&quot;Saya ingin melihat</span>
                         
-                        <select 
+                          <select 
+                          aria-label="Story Metric"
                           value={storyMetric} 
                           onChange={(e) => setStoryMetric(e.target.value)}
                           className="bg-blue-600/20 text-blue-300 border-b-2 border-blue-500 px-3 py-1 font-bold outline-none cursor-pointer hover:bg-blue-600/40 transition rounded-t-lg appearance-none max-w-xs truncate"
                         >
-                           {numericCols.length === 0 && <option value="COUNT_ALL">Total Jumlah (Count)</option>}
+                           {numericCols.length === 0 && <option value="COUNT_ALL">{t("totalCount")}</option>}
                            {numericCols.map(col => <option key={col} value={col}>Total {col}</option>)}
                         </select>
 
-                        <span>yang dikelompokkan berdasarkan</span>
+                        <span>{t("groupedBy")}</span>
 
                         <select 
+                          aria-label="Story Group"
                           value={storyGroup} 
                           onChange={(e) => setStoryGroup(e.target.value)}
                           className="bg-emerald-600/20 text-emerald-300 border-b-2 border-emerald-500 px-3 py-1 font-bold outline-none cursor-pointer hover:bg-emerald-600/40 transition rounded-t-lg appearance-none max-w-xs truncate"
@@ -426,7 +433,7 @@ export default function OmniAnalyticsPage() {
                            {numericCols.map(col => <option key={col} value={col}>{col}</option>)}
                         </select>
 
-                        <span>."</span>
+                        <span>.&quot;</span>
 
                         <button 
                           onClick={runStoryQuery}
@@ -503,7 +510,7 @@ export default function OmniAnalyticsPage() {
                             <div className="font-bold text-white">{item.title}</div>
                             <div className="text-xs text-zinc-500 font-mono">Tabel: {item.tableName}</div>
                           </div>
-                          <button onClick={(e) => deleteCatalogItem(item.id, e)} className="w-8 h-8 bg-red-900/20 text-red-500 hover:bg-red-600 hover:text-white rounded flex items-center justify-center transition opacity-0 group-hover:opacity-100">
+                          <button onClick={(e) => deleteCatalogItem(item.id, e)} title="Delete" className="w-8 h-8 bg-red-900/20 text-red-500 hover:bg-red-600 hover:text-white rounded flex items-center justify-center transition opacity-0 group-hover:opacity-100">
                              <Trash2 className="w-4 h-4" />
                           </button>
                        </div>

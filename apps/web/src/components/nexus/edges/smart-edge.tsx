@@ -141,7 +141,7 @@ export function SmartEdge({
 
            {/* Kaca Panel Pintar (Muncul Saat Kabel Diklik) */}
            {isOpen && (
-               <div className="absolute top-10 w-72 bg-white/95 dark:bg-[#0a0a0c]/98 backdrop-blur-2xl border border-blue-500/30 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] p-4 overflow-hidden animate-in zoom-in-95 duration-200 z-[60]">
+               <div className="absolute top-10 w-72 bg-white/95 dark:bg-[#0a0a0c]/98 backdrop-blur-2xl border border-blue-500/30 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] p-4 overflow-hidden animate-in zoom-in-95 duration-200 z-60">
                   <div className="flex justify-between items-center mb-3">
                      <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-[11px] uppercase tracking-wider">
                        <Cpu className="w-3 h-3"/> {getNode(source)?.type === 'metadata' ? 'Visual Dictionary Link' : 'Neural Joiner (PNE)'}

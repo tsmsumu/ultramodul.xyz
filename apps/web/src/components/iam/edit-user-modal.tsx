@@ -109,7 +109,7 @@ export function EditUserModal({
                   
                   <div>
                     <label className="block text-sm font-medium mb-1.5 opacity-80">{t("labelName")}</label>
-                    <input required defaultValue={user.name} name="name" className="w-full px-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition" />
+                    <input aria-label="Name" id="name" required defaultValue={user.name} name="name" className="w-full px-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition" />
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
@@ -119,13 +119,13 @@ export function EditUserModal({
                     </div>
                     <div>
                       <label className="block text-sm font-medium mb-1.5 opacity-80">{t("labelEmail")}</label>
-                      <input defaultValue={user.email || ""} name="email" type="email" className="w-full px-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition" />
+                      <input aria-label="Email" id="email" defaultValue={user.email || ""} name="email" type="email" className="w-full px-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition" />
                     </div>
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium mb-1.5 opacity-80">{t("labelRole")}</label>
-                    <select required defaultValue={user.role} name="role" className="w-full px-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition appearance-none">
+                    <select aria-label="Role" id="role" required defaultValue={user.role} name="role" className="w-full px-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition appearance-none">
                       {currentUserRole === "owner" && <option value="owner" className="font-bold">{t("roleOwner")}</option>}
                       <option value="super_admin">{t("roleSuperAdmin")}</option>
                       <option value="admin">{t("roleAdmin")}</option>

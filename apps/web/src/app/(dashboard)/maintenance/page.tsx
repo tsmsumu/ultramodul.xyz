@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { ServerCog, Activity, Shield, Terminal, RefreshCw, Power, Lock, Unlock, AlertTriangle } from "lucide-react";
+import { ServerCog, Activity, Shield, Terminal, RefreshCw, Power, Lock } from "lucide-react";
 import { getPm2Status, restartPm2Process, getUfwStatus, toggleFirewallStealth, fetchLatestLogs } from "../../actions/panopticon";
 
 export default function AegisPanopticonPage() {
-  const [pm2Data, setPm2Data] = useState<any[]>([]);
-  const [ufwData, setUfwData] = useState<any>({ active: false, rules: [] });
+  const [pm2Data, setPm2Data] = useState<Record<string, any>[]>([]);
+  const [ufwData, setUfwData] = useState<Record<string, any>>({ active: false, rules: [] });
   const [logs, setLogs] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [logPolling, setLogPolling] = useState(true);
@@ -91,7 +91,7 @@ export default function AegisPanopticonPage() {
              <div className="text-xs text-zinc-500">SERVER IP</div>
              <div className="text-sm font-bold text-white">208.122.28.26</div>
            </div>
-           <button onClick={fetchInitialData} className="p-3 bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white rounded-xl transition">
+           <button onClick={fetchInitialData} title="Refresh Data" className="p-3 bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white rounded-xl transition">
              <RefreshCw className="w-5 h-5" />
            </button>
         </div>
@@ -143,7 +143,7 @@ export default function AegisPanopticonPage() {
 
               <div className="text-[10px] text-zinc-500 mb-2 uppercase border-b border-white/5 pb-2">Active Port Rules</div>
               <div className="space-y-1 h-32 overflow-y-auto custom-scrollbar">
-                 {ufwData.rules?.length > 0 ? ufwData.rules.map((r: any, idx: number) => (
+                 {ufwData.rules?.length > 0 ? ufwData.rules.map((r: Record<string, any>, idx: number) => (
                    <div key={idx} className="flex justify-between text-xs py-1.5 px-2 hover:bg-white/5 rounded">
                      <span className="text-zinc-300 w-16">{r.to}</span>
                      <span className="text-emerald-400 w-24">{r.action}</span>

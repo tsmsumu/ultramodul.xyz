@@ -162,7 +162,7 @@ export function DataTable({ initialUsers, currentUserRole }: { initialUsers: any
   return (
     <div className="w-full">
       {/* Omni-Toolbar */}
-      <div className="p-4 border-b border-gray-100 dark:border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4 bg-gray-50/50 dark:bg-white/[0.01]">
+      <div className="p-4 border-b border-gray-100 dark:border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4 bg-gray-50/50 dark:bg-white/1">
          <div className="relative w-full sm:w-96">
             <Search className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
             <input 
@@ -199,7 +199,7 @@ export function DataTable({ initialUsers, currentUserRole }: { initialUsers: any
         <thead className="text-xs text-gray-500 uppercase bg-gray-50/50 dark:bg-white/5 border-b border-gray-200 dark:border-white/10">
           <tr>
             <th className="px-6 py-4 w-10">
-              <input 
+              <input aria-label="Select row" 
                 type="checkbox" 
                 checked={selectedIds.size === filteredUsers.length && filteredUsers.length > 0}
                 onChange={toggleSelectAll}
@@ -218,7 +218,7 @@ export function DataTable({ initialUsers, currentUserRole }: { initialUsers: any
           {filteredUsers.map((user) => (
             <tr key={user.id} className={`group border-b border-gray-100 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors ${selectedIds.has(user.id) ? 'bg-indigo-50/30 dark:bg-indigo-900/10' : ''}`}>
               <td className="px-6 py-4">
-                <input 
+                <input aria-label="Select row" 
                   type="checkbox" 
                   checked={selectedIds.has(user.id)}
                   onChange={() => toggleSelectRow(user.id)}

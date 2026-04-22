@@ -113,7 +113,7 @@ export function HologramTerminal({ nodeData, onClose }: { nodeData: any | null, 
           <span className={`text-[10px] uppercase font-bold px-2 py-1 rounded flex items-center gap-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400`}>
             <Play className="w-3 h-3"/> DUCKDB WASM LOCALLY COMPILED
           </span>
-          <button onClick={onClose} className="p-1 hover:bg-black/10 dark:hover:bg-white/10 rounded cursor-pointer transition">
+          <button aria-label="Close Terminal" title="Close Terminal" onClick={onClose} className="p-1 hover:bg-black/10 dark:hover:bg-white/10 rounded cursor-pointer transition">
             <X className="w-4 h-4 text-gray-500 dark:text-gray-400" />
           </button>
         </div>
@@ -150,7 +150,7 @@ export function HologramTerminal({ nodeData, onClose }: { nodeData: any | null, 
             </thead>
             <tbody className="font-mono text-[11px] text-gray-700 dark:text-gray-300">
               {data.map((row, idx) => (
-                <tr key={idx} className="hover:bg-blue-50 dark:hover:bg-white/[0.03] transition-colors border-b border-gray-100 dark:border-white/5">
+                <tr key={idx} className="hover:bg-blue-50 dark:hover:bg-white/3 transition-colors border-b border-gray-100 dark:border-white/5">
                   <td className="px-3 py-1.5 border-r border-gray-100 dark:border-white/10 text-gray-400 text-center">{idx + 1}</td>
                   {columns.map((col) => (
                     <td key={col} className="px-3 py-1.5 truncate max-w-[200px]" title={String(row[col])}>

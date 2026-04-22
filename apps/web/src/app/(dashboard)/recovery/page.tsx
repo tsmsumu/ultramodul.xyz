@@ -4,9 +4,11 @@ import { useEffect, useState } from "react";
 import { getTimelineHologram, attachMemoryNote, executeQuantumRollback } from "@/app/actions/time-machine";
 import { motion, AnimatePresence } from "framer-motion";
 import { Clock, ShieldAlert, Download, UploadCloud, RotateCcw, AlertTriangle, Save, Loader2, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function NexusRecoveryPage() {
-  const [timeline, setTimeline] = useState<any[]>([]);
+  const t = useTranslations("recovery");
+  const [timeline, setTimeline] = useState<Record<string, any>[]>([]);
   const [loading, setLoading] = useState(true);
   
   // States Resolusi Berbahaya
@@ -21,10 +23,6 @@ export default function NexusRecoveryPage() {
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
   const [noteDraft, setNoteDraft] = useState("");
 
-  useEffect(() => {
-    loadTimeline();
-  }, []);
-
   const loadTimeline = async () => {
     setLoading(true);
     const res = await getTimelineHologram();
@@ -33,6 +31,10 @@ export default function NexusRecoveryPage() {
     }
     setLoading(false);
   };
+
+  useEffect(() => {
+    loadTimeline();
+  }, []);
 
   const handleSaveNote = async (hash: string) => {
     setIsProcessing(true);
@@ -82,7 +84,7 @@ export default function NexusRecoveryPage() {
       } else {
         alert("An error occurred while attempting to extract the External ZIP file.");
       }
-    } catch(e) {
+    } catch(_e) {
       alert("Failed to contact restoration base.");
     }
     setIsProcessing(false);
@@ -173,8 +175,8 @@ export default function NexusRecoveryPage() {
                              className="w-full h-20 bg-black/50 border border-emerald-900/50 rounded-lg p-3 text-sm focus:outline-none focus:border-emerald-500"
                            ></textarea>
                            <div className="flex flex-col gap-2">
-                             <button disabled={isProcessing} onClick={() => handleSaveNote(point.hash)} className="p-3 bg-emerald-600 hover:bg-emerald-500 text-black rounded-lg transition disabled:opacity-50"><Save className="w-4 h-4"/></button>
-                             <button onClick={() => { setEditingNoteId(null); setNoteDraft(""); }} className="p-3 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg transition"><X className="w-4 h-4"/></button>
+                             <button disabled={isProcessing} onClick={() => handleSaveNote(point.hash)} title="Save Note" className="p-3 bg-emerald-600 hover:bg-emerald-500 text-black rounded-lg transition disabled:opacity-50"><Save className="w-4 h-4"/></button>
+                             <button onClick={() => { setEditingNoteId(null); setNoteDraft(""); }} title="Cancel" className="p-3 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg transition"><X className="w-4 h-4"/></button>
                            </div>
                          </div>
                        )}
@@ -201,7 +203,7 @@ export default function NexusRecoveryPage() {
       {/* MODAL: KONFIRMASI ROLLBACK QUANTUM */}
       <AnimatePresence>
         {rollbackTarget && (
-          <motion.div initial={{opacity: 0}} animate={{opacity: 1}} exit={{opacity: 0}} className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <motion.div initial={{opacity: 0}} animate={{opacity: 1}} exit={{opacity: 0}} className="fixed inset-0 z-100 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
              <motion.div initial={{scale: 0.9}} animate={{scale: 1}} exit={{scale: 0.9}} className="bg-zinc-950 border border-red-900/50 rounded-2xl max-w-lg w-full p-6 shadow-[0_0_50px_-10px_rgba(220,38,38,0.2)]">
                <div className="flex items-center gap-3 text-red-500 mb-4">
                  <AlertTriangle className="w-8 h-8"/>
@@ -211,6 +213,7 @@ export default function NexusRecoveryPage() {
                  You are about to alter the space-time continuum of the Server. All configurations will revert exactly to Hash <span className="font-mono text-emerald-500">{rollbackTarget.substring(0,7)}</span>. Type <span className="font-bold text-red-500 select-all">I AM SURE</span> in the matrix below to proceed.
                </p>
                <input 
+                 aria-label="Confirm Rollback"
                  type="text" 
                  placeholder="Type your confirmation..." 
                  value={rollbackConfirm}
@@ -230,15 +233,15 @@ export default function NexusRecoveryPage() {
 
         {/* MODAL: UPLOAD EKSTERNAL SNAPSHOT */}
         {uploadOpen && (
-          <motion.div initial={{opacity: 0}} animate={{opacity: 1}} exit={{opacity: 0}} className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <motion.div initial={{opacity: 0}} animate={{opacity: 1}} exit={{opacity: 0}} className="fixed inset-0 z-100 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
              <motion.div initial={{y: 20}} animate={{y: 0}} exit={{y: 20}} className="bg-zinc-950 border border-amber-900/50 rounded-2xl max-w-lg w-full p-6 shadow-[0_0_50px_-10px_rgba(245,158,11,0.2)]">
                <div className="flex justify-between items-center mb-6">
                  <h2 className="text-xl font-black uppercase tracking-widest text-amber-500 flex items-center gap-2"><UploadCloud className="w-6 h-6"/> Manual Synchronization</h2>
-                 <button onClick={() => setUploadOpen(false)} className="text-gray-500 hover:text-white"><AlertTriangle className="w-5 h-5 text-transparent"/></button>
+                 <button onClick={() => setUploadOpen(false)} title="Close" className="text-gray-500 hover:text-white"><AlertTriangle className="w-5 h-5 text-transparent"/></button>
                </div>
                
                <p className="text-gray-400 text-sm mb-6 leading-relaxed">
-                 God-tier feature. Select a bundle archive (.ZIP) previously downloaded from this system. The VPS will be entirely overwritten and resurrected with the contents of this ZIP.
+                 {t("desc")}
                </p>
 
                <div className="border-2 border-dashed border-amber-900/50 rounded-xl p-8 mb-6 flex flex-col items-center justify-center gap-4 hover:bg-amber-950/10 transition cursor-pointer" onClick={() => document.getElementById('snapshot-upload')?.click()}>
@@ -247,7 +250,7 @@ export default function NexusRecoveryPage() {
                    <p className="font-bold text-gray-300">Select Backup Crown (.ZIP)</p>
                    <p className="text-xs text-gray-600 mt-1">{selectedFile?.name || 'Maximum size determined by Server RAM'}</p>
                  </div>
-                 <input type="file" id="snapshot-upload" className="hidden" accept=".zip" onChange={(e) => setSelectedFile(e.target.files?.[0] || null)} />
+                 <input aria-label="Upload Snapshot" type="file" id="snapshot-upload" className="hidden" accept=".zip" onChange={(e) => setSelectedFile(e.target.files?.[0] || null)} />
                </div>
 
                <div className="flex justify-end gap-3 border-t border-gray-800 pt-6">

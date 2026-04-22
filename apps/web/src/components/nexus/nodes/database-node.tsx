@@ -16,7 +16,7 @@ export function DatabaseNode({ id, data, selected }: { id: string, data: any, se
     <div className={`bg-white dark:bg-[#09090b] border-2 rounded-xl shadow-2xl min-w-[280px] overflow-hidden transition-all ${selected ? 'border-emerald-400 shadow-emerald-500/20' : 'border-emerald-500/50'}`}>
       <Handle type="target" position={Position.Left} className="w-3 h-3 bg-emerald-500 border-2 border-white dark:border-[#09090b]" />
       
-      <div className="bg-gradient-to-r from-emerald-600 to-emerald-500 text-white p-3 text-xs font-bold flex justify-between items-center shadow-sm">
+      <div className="bg-linear-to-r from-emerald-600 to-emerald-500 text-white p-3 text-xs font-bold flex justify-between items-center shadow-sm">
         <div className="flex items-center gap-2">
           <Database className="w-4 h-4" />
           <span className="tracking-wider">LIVE DB CONNECTOR</span>

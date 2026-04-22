@@ -29,7 +29,7 @@ export async function getPm2Status() {
   try {
     const { stdout } = await execAsync("pm2 jlist");
     const processes = JSON.parse(stdout);
-    return processes.map((p: any) => ({
+    return processes.map((p: Record<string, any>) => ({
       name: p.name,
       pid: p.pid,
       status: p.pm2_env.status,
@@ -119,7 +119,7 @@ export async function fetchLatestLogs(lines: number = 50) {
   try {
     const { stdout } = await execAsync(`tail -n ${lines} ~/.pm2/logs/ultramodul-out.log`);
     return stdout.split('\n').filter(Boolean);
-  } catch (e) {
+  } catch (_e) {
     return [
       "[SYSTEM] PM2 Log tail failed. You might be on Windows.",
       "[MOCK] 2026-04-21 15:00:00 - UltraModul Engine started.",

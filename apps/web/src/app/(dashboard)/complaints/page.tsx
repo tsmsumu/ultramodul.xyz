@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { MessageSquareWarning, Send, AlertTriangle, ShieldCheck, CheckCircle2, Zap, Radio, LocateFixed, Activity, Crosshair, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslations } from "next-intl";
 
 type Urgency = "Kritis" | "Sedang" | "Rendah";
 
@@ -17,6 +18,7 @@ interface ComplaintData {
 }
 
 export default function NexusVoicePage() {
+  const t = useTranslations("complaints");
   const [citizenInput, setCitizenInput] = useState("");
   const [isTransmitting, setIsTransmitting] = useState(false);
   const [complaints, setComplaints] = useState<ComplaintData[]>([]);
@@ -101,7 +103,7 @@ export default function NexusVoicePage() {
          <div className="absolute -right-20 -bottom-20 bg-emerald-500/10 w-64 h-64 rounded-full blur-[60px]" />
          
          <div className="flex items-center gap-6 relative z-10">
-            <div className="w-16 h-16 bg-gradient-to-br from-indigo-900/40 to-black border border-indigo-500/50 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(99,102,241,0.2)]">
+            <div className="w-16 h-16 bg-linear-to-br from-indigo-900/40 to-black border border-indigo-500/50 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(99,102,241,0.2)]">
               <Radio className="w-8 h-8 text-indigo-400" />
             </div>
             <div>
@@ -142,26 +144,26 @@ export default function NexusVoicePage() {
                <h2 className="text-sm font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
                   <MessageSquareWarning className="w-5 h-5 text-indigo-400" /> Simulator Warga
                </h2>
-               <span className="text-[10px] bg-indigo-950 text-indigo-400 px-2 py-1 rounded font-mono">App/Web Warga</span>
+               <span className="text-[10px] bg-indigo-950 text-indigo-400 px-2 py-1 rounded font-mono">{t("citizenApp")}</span>
             </div>
 
             <div className="flex-1 flex flex-col justify-end relative z-10 mb-6 bg-black/40 border border-white/5 rounded-2xl p-4 overflow-y-auto custom-scrollbar">
-               <div className="text-center text-xs text-zinc-600 font-mono mb-4">-- Sesi dimulai --</div>
+               <div className="text-center text-xs text-zinc-600 font-mono mb-4">{t("sessionStart")}</div>
                <div className="bg-indigo-950/30 border border-indigo-900/50 rounded-2xl rounded-tl-sm p-4 text-sm text-indigo-200/80 mb-4 max-w-[90%]">
-                  Halo! Saya adalah sistem *Zero-Form* PUM Nexus. Ceritakan masalah, keluhan, atau saran Anda dengan bahasa sehari-hari. Saya akan memproses sisanya.
+                  {t("welcomeMsg")}
                </div>
 
                {/* Mock Chat History based on complaints */}
                {[...complaints].reverse().map(c => (
                  <div key={c.id} className="bg-zinc-800/50 border border-zinc-700/50 rounded-2xl rounded-tr-sm p-4 text-sm text-zinc-300 mb-4 self-end max-w-[90%]">
                     {c.originalText}
-                    <div className="text-[9px] text-zinc-500 font-mono mt-2 text-right">{c.timestamp} • Terkirim</div>
+                    <div className="text-[9px] text-zinc-500 font-mono mt-2 text-right">{c.timestamp} • {t("sent")}</div>
                  </div>
                ))}
                
                {isTransmitting && (
                  <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-2xl rounded-tr-sm p-4 text-sm text-zinc-300 mb-4 self-end max-w-[90%] flex items-center gap-2">
-                    <Activity className="w-4 h-4 text-indigo-400 animate-spin" /> <span className="text-xs text-zinc-500 font-mono">Mengirim ke Pusat...</span>
+                    <Activity className="w-4 h-4 text-indigo-400 animate-spin" /> <span className="text-xs text-zinc-500 font-mono">{t("sending")}</span>
                  </div>
                )}
                <div ref={endOfChatRef} />
@@ -172,11 +174,12 @@ export default function NexusVoicePage() {
                  value={citizenInput}
                  onChange={(e) => setCitizenInput(e.target.value)}
                  disabled={isTransmitting}
-                 placeholder="Ketik log operasional/insiden di sini (Misal: 'Terjadi anomali pada sub-sistem B')..."
+                 placeholder={t("placeholder")}
                  className="w-full bg-zinc-900 border border-white/10 rounded-2xl p-4 pr-14 text-white focus:outline-none focus:border-indigo-500/50 transition-colors placeholder:text-zinc-600 font-light resize-none h-24"
                />
                <button 
                  type="submit" 
+                 title={t('sent')}
                  disabled={isTransmitting || !citizenInput.trim()} 
                  className="absolute right-3 bottom-3 w-10 h-10 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-xl flex items-center justify-center transition-colors shadow-lg"
                >
@@ -190,7 +193,7 @@ export default function NexusVoicePage() {
          {/* ======================================================== */}
          <div className="col-span-1 lg:col-span-8 bg-zinc-950/80 border border-white/5 rounded-3xl p-6 shadow-2xl flex flex-col relative overflow-hidden">
             {/* Grid background for Radar vibe */}
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:30px_30px]" />
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-size-[30px_30px]" />
             
             <div className="flex justify-between items-center mb-6 relative z-10 shrink-0">
                <h2 className="text-sm font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
@@ -219,7 +222,7 @@ export default function NexusVoicePage() {
                                 <span className="text-[10px] font-mono text-zinc-500">{c.id}</span>
                                 <span className="text-[9px] bg-red-950 text-red-400 px-1.5 py-0.5 rounded font-bold uppercase border border-red-900/50">URGENT</span>
                              </div>
-                             <p className="text-sm text-white mb-4 line-clamp-3">"{c.originalText}"</p>
+                             <p className="text-sm text-white mb-4 line-clamp-3">&quot;{c.originalText}&quot;</p>
                              
                              <div className="flex flex-wrap gap-2 mb-4">
                                 <span className="text-[9px] bg-blue-950/50 text-blue-300 px-2 py-1 rounded flex items-center gap-1 border border-blue-900/50"><ShieldCheck className="w-3 h-3"/> {c.category}</span>
@@ -250,7 +253,7 @@ export default function NexusVoicePage() {
                                 <span className="text-[10px] font-mono text-zinc-500">{c.id}</span>
                                 <span className="text-[9px] bg-amber-950 text-amber-400 px-1.5 py-0.5 rounded font-bold uppercase border border-amber-900/50">NORMAL</span>
                              </div>
-                             <p className="text-sm text-zinc-300 mb-4 line-clamp-3">"{c.originalText}"</p>
+                             <p className="text-sm text-zinc-300 mb-4 line-clamp-3">&quot;{c.originalText}&quot;</p>
                              
                              <div className="flex flex-wrap gap-2 mb-4">
                                 <span className="text-[9px] bg-blue-950/50 text-blue-300 px-2 py-1 rounded flex items-center gap-1 border border-blue-900/50"><ShieldCheck className="w-3 h-3"/> {c.category}</span>
@@ -281,7 +284,7 @@ export default function NexusVoicePage() {
                                 <span className="text-[10px] font-mono text-zinc-500">{c.id}</span>
                                 <CheckCircle2 className="w-4 h-4 text-emerald-500" />
                              </div>
-                             <p className="text-xs text-zinc-500 line-clamp-1 italic">"{c.originalText}"</p>
+                             <p className="text-xs text-zinc-500 line-clamp-1 italic">&quot;{c.originalText}&quot;</p>
                              <div className="mt-2 text-[9px] text-emerald-500 font-bold uppercase tracking-widest">Terkirim ke Dinas {c.category}</div>
                           </motion.div>
                         ))}

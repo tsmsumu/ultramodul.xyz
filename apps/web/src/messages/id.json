@@ -31,7 +31,8 @@
     "Omni-Forge (Alat Data)": "Omni-Forge (Alat Data)",
     "Omni-Analytics": "Analytics Omniverse",
     "Omni-Codex": "Omni-Codex",
-    "Time-Machine Nexus": "Time-Machine Nexus"
+    "Time-Machine Nexus": "Nexus Time-Machine",
+    "Panduan Developer": "Blueprint Tim Dev"
   },
   "customizer": {
     "title": "Pengaturan Tampilan",
@@ -267,5 +268,103 @@
     "btnDelete": "Hapus",
     "alertFill": "Isi Nama Kamus dan Target Kolom!",
     "alertDelete": "Hapus kamus ini?"
+  },
+  "access": {
+    "title": "Active Identity Matrix",
+    "subtitle": "Cross-Module Authority Grid (LIVE)",
+    "searchPlaceholder": "Cari Universal ID...",
+    "matrixConfig": "Matrix Configuration",
+    "matrixDesc": "Assign module clearance levels directly to SQLite.",
+    "save": "Simpan",
+    "saving": "Menyimpan..."
+  },
+  "evolution": {
+    "logExtractSuccess": "[Sistem] File berhasil diekstrak ke RAM DuckDB WASM.",
+    "logIngestFail": "Gagal menelan file Parquet/CSV!",
+    "logProfileFail": "[Error] Gagal menjalankan profil: {error}",
+    "logMutateFail": "[Error] Mutasi Gagal: {error}",
+    "logImputeFail": "[Error] Imputasi Gagal: {error}",
+    "logExportSuccess": "[Cryo-Export] Berhasil mengunduh Parquet murni.",
+    "logExportFail": "[Error] Ekspor Gagal: {error}"
+  },
+  "mandate": {
+    "title": "Delegasi & Mandat",
+    "subtitle": "Engine perpindahan beban kerja (*Workflow*) seketika.",
+    "btnDelegate": "Delegasikan Mandat",
+    "emptyTitle": "Beban Kerja Kosong",
+    "emptyDesc": "Belum ada delegasi tugas yang diterbitkan.",
+    "deadline": "Batas:",
+    "delegator": "Pemberi:",
+    "delegatee": "Penerima:",
+    "btnAccept": "Terima",
+    "btnReject": "Tolak",
+    "btnRevoke": "Cabut Mandat",
+    "modalTitle": "Menerbitkan Mandat Baru",
+    "selectDelegatee": "Pilih Rekan (Delegatee)",
+    "selectTarget": "-- Pilih target --",
+    "taskDesc": "Deskripsi Beban Kerja",
+    "taskPlaceholder": "Instruksi operasional mandat...",
+    "validHours": "Masa Berlaku (Jam)",
+    "btnCancel": "Batal",
+    "btnPublish": "Terbitkan Mandat"
+  },
+  "analytics": {
+    "ingestFail": "Gagal menelan file ke WASM",
+    "promptTitle": "Masukkan Judul Dataset (Widget) untuk Mode Standard:",
+    "promptDesc": "Masukkan Deskripsi singkat:",
+    "publishSuccess": "Dataset berhasil di-publish ke Katalog Standard!",
+    "publishFail": "Gagal mem-publish",
+    "confirmDelete": "Hapus widget dataset ini dari katalog?",
+    "loadFail": "Gagal memuat dataset dari Katalog.",
+    "emptyState": "Pilih widget dataset yang telah dipublish oleh Admin. PUM beroperasi sebagai Canvas Kosong, data di bawah ini adalah cerminan langsung dari file yang diolah di ruang Advanced.",
+    "emptyCatalog": "Katalog Kosong",
+    "emptyCatalogDesc": "Belum ada dataset yang dipublish. Silakan masuk ke Mode ADVANCED, unggah file, lalu klik 'Publish ke Katalog'.",
+    "wantToSee": "Saya ingin melihat",
+    "calcDim": "Mengkalkulasi Dimensi Tabel...",
+    "errQuery": "Error menjalankan query analitik.",
+    "totalCount": "Total Jumlah (Count)",
+    "groupedBy": "yang dikelompokkan berdasarkan"
+  },
+  "profile": {
+    "updateFail": "Gagal memperbarui profil."
+  },
+  "complaints": {
+    "sent": "Terkirim",
+    "sentToDept": "Terkirim ke Dinas {dept}",
+    "citizenApp": "App/Web Warga",
+    "sessionStart": "-- Sesi dimulai --",
+    "welcomeMsg": "Halo! Saya adalah sistem *Zero-Form* PUM Nexus. Ceritakan masalah, keluhan, atau saran Anda dengan bahasa sehari-hari. Saya akan memproses sisanya.",
+    "sending": "Mengirim ke Pusat...",
+    "placeholder": "Ketik log operasional/insiden di sini (Misal: 'Terjadi anomali pada sub-sistem B')..."
+  },
+  "recovery": {
+    "desc": "God-tier feature. Select a bundle archive (.ZIP) previously downloaded from this system. The VPS will be entirely overwritten and resurrected with the contents of this ZIP."
+  },
+  "devmanual": {
+    "subtitle": "Cetak Biru Orkestrasi Tim Jarak Jauh Kelas Dunia. Standar operasional arsitektur Zero-Trust yang digunakan oleh perusahaan global.",
+    "p1Title": "Jaringan Sentris GitHub",
+    "p1Desc": "TIDAK ADA tukar menukar folder ZIP secara manual. Proyek bersemayam aman di Pangkalan Git Cloud.",
+    "p1S1": "Developer membuat akun GitHub gratis.",
+    "p1S2": "Admin mengundang username mereka melalui menu Settings > Collaborators.",
+    "p1S4": "Seluruh struktur kode akan 'Tumbuh' (ter-clone) di laptop mereka tanpa akses Database.",
+    "p2Title": "Tembok Pembatas Data (Blindfold Security)",
+    "p2Warning": "Developer SAMA SEKALI tidak memiliki akses ke data asli. Mereka bekerja dalam kebutaan total menggunakan database bohongan di laptop mereka.",
+    "p2L1": "File Local DB telah disegel dengan .gitignore.",
+    "p2L2": "Kode hasil kloning hanya berisi struktur skema, nol record rahasia.",
+    "p2L3": "Developer wajib menggunakan `drizzle-kit push` secara lokal untuk membuat lingkungan dummy.",
+    "p3Title": "Strategi Cabang Multiverse (Branching)",
+    "p3Desc": "Jangan pernah mendorong kode secara langsung ke jalur utama (main). Seluruh Developer wajib dikarantina dalam jalur/branch terpisah.",
+    "p3Main": "Khusus Admin / VPS",
+    "p3Andi": "Karantina Jalur A",
+    "p3Susi": "Karantina Jalur B",
+    "p3Merge": "Mekanisme Penggabungan (Pull Request)",
+    "p3Merge1": "Developer menyelesaikan modul, mengirimnya ke cabang lokal, dan membuka Pull Request (Permohonan Penggabungan).",
+    "p3Merge2": "Admin memeriksa hasil kode tersebut dengan cermat di GitHub.",
+    "p3Merge3": "Jika disetujui, Admin akan melakukan merge ke jalur main. Kode tergabung mulus tanpa bentrokan.",
+    "p4Title": "Monopoli Akses Mesin VPS",
+    "p4Desc": "Tim Developer TIDAK BOLEH DAN TIDAK BUTUH akses SSH jarak jauh ke server produksi.",
+    "p4L1": "Skrip deploy yang mengandung kunci rahasia dijaga sangat ketat.",
+    "p4L2": "Developer hanya menguji pekerjaan mereka di localhost:3000.",
+    "p4L3": "Hanya Bapak/Admin tunggal yang berhak mengeksekusi peluncuran kode ke angkasa (VPS)."
   }
 }

@@ -9,6 +9,7 @@ import { ModuleRegistry, getRegisteredModuleIds } from "@/core/module-registry";
 import { motion } from "framer-motion";
 
 export default function AccessMatrixPage() {
+  const t = useTranslations("access");
   const [users, setUsers] = useState<any[]>([]);
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -64,9 +65,9 @@ export default function AccessMatrixPage() {
           <BoxSelect className="w-6 h-6" />
         </div>
         <div>
-          <h1 className="text-2xl font-black tracking-widest uppercase">Active Identity Matrix</h1>
+          <h1 className="text-2xl font-black tracking-widest uppercase">{t("title")}</h1>
           <p className="text-gray-500 dark:text-gray-400 text-sm mt-1 uppercase font-mono tracking-widest">
-            Cross-Module Authority Grid (LIVE)
+            {t("subtitle")}
           </p>
         </div>
       </div>
@@ -78,7 +79,7 @@ export default function AccessMatrixPage() {
            <div className="bg-white dark:bg-[#0a0a0c] border border-gray-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-xl shadow-black/5">
              <div className="p-4 border-b border-gray-200 dark:border-white/10 flex items-center gap-2">
                <Search className="w-4 h-4 text-gray-500" />
-               <input type="text" placeholder="Cari Universal ID..." className="bg-transparent border-none outline-none text-sm w-full placeholder:text-zinc-600" />
+               <input type="text" placeholder={t("searchPlaceholder")} className="bg-transparent border-none outline-none text-sm w-full placeholder:text-zinc-600" />
              </div>
              <div className="max-h-[500px] overflow-y-auto p-2 space-y-1">
                {users.map(u => (
@@ -107,16 +108,16 @@ export default function AccessMatrixPage() {
         {/* Kolom Kanan: Matrix Toggles */}
         <div className="w-full lg:w-2/3">
            <div className="bg-white dark:bg-[#0a0a0c] border border-gray-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-xl shadow-black/5">
-             <div className="p-6 border-b border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/[0.02]">
-                <h3 className="text-lg font-bold">Matrix Configuration</h3>
-                <p className="text-xs text-gray-500 mt-1 uppercase tracking-widest font-mono">Assign module clearance levels directly to SQLite.</p>
+             <div className="p-6 border-b border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/2">
+                <h3 className="text-lg font-bold">{t("matrixConfig")}</h3>
+                <p className="text-xs text-gray-500 mt-1 uppercase tracking-widest font-mono">{t("matrixDesc")}</p>
              </div>
              
              <div className="p-0">
                {ModuleRegistry.map((mod, idx) => {
                  const perms = matrix[mod.id] || [];
                  return (
-                   <div key={mod.id} className="p-4 md:p-6 border-b border-gray-200 dark:border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-gray-50 dark:hover:bg-white/[0.01] transition-colors">
+                   <div key={mod.id} className="p-4 md:p-6 border-b border-gray-200 dark:border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-gray-50 dark:hover:bg-white/1 transition-colors">
                      
                      <div className="flex items-center gap-4 w-full md:w-1/3">
                        <div className="p-2 bg-gray-100 dark:bg-white/5 rounded-lg border border-gray-200 dark:border-white/10">
@@ -149,7 +150,7 @@ export default function AccessMatrixPage() {
                        className="shrink-0 px-4 py-2 border border-emerald-500/50 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500 hover:text-white rounded-lg text-xs font-bold uppercase tracking-widest transition flex items-center gap-2"
                      >
                        {saving === mod.id ? <Loader2 className="w-3 h-3 animate-spin"/> : <Save className="w-3 h-3" />}
-                       Save
+                       {saving === mod.id ? t("saving") : t("save")}
                      </button>
                    </div>
                  );

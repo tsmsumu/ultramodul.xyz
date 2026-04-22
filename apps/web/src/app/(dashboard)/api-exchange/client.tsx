@@ -84,12 +84,12 @@ export default function ApiMatrixDashboard({ endpoints, logs, initialStats }: an
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className={\`relative overflow-hidden bg-white dark:bg-slate-900 p-6 rounded-3xl border shadow-sm transition-all hover:shadow-xl \${ep.isActive ? 'border-indigo-500/30 dark:border-indigo-400/20' : 'border-slate-200 dark:border-slate-800 opacity-70'}\`}
+              className={`relative overflow-hidden bg-white dark:bg-slate-900 p-6 rounded-3xl border shadow-sm transition-all hover:shadow-xl ${ep.isActive ? 'border-indigo-500/30 dark:border-indigo-400/20' : 'border-slate-200 dark:border-slate-800 opacity-70'}`}
             >
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
-                    <span className={\`text-xs font-bold px-2 py-1 rounded-md \${ep.method==='GET'?'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : ep.method==='POST'?'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'}\`}>
+                    <span className={`text-xs font-bold px-2 py-1 rounded-md ${ep.method==='GET'?'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : ep.method==='POST'?'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'}`}>
                       {ep.method}
                     </span>
                     <span className="text-xs font-semibold px-2 py-1 rounded-md bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
@@ -112,7 +112,7 @@ export default function ApiMatrixDashboard({ endpoints, logs, initialStats }: an
                   <button 
                     onClick={() => handleToggleActive(ep.id, ep.isActive)}
                     disabled={isPending}
-                    className={\`p-2 rounded-full transition-colors \${ep.isActive ? 'bg-green-100 text-green-600 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400' : 'bg-slate-100 text-slate-400 hover:bg-slate-200 dark:bg-slate-800'}\`}
+                    className={`p-2 rounded-full transition-colors ${ep.isActive ? 'bg-green-100 text-green-600 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400' : 'bg-slate-100 text-slate-400 hover:bg-slate-200 dark:bg-slate-800'}`}
                   >
                     <Power size={18} />
                   </button>
@@ -172,7 +172,7 @@ export default function ApiMatrixDashboard({ endpoints, logs, initialStats }: an
                   <td className="px-6 py-3 font-semibold text-xs">{log.requestMethod}</td>
                   <td className="px-6 py-3 font-mono text-xs text-indigo-500">{log.requestPath}</td>
                   <td className="px-6 py-3">
-                    <span className={\`px-2 py-1 rounded-md text-xs font-bold \${log.responseStatus >= 200 && log.responseStatus < 300 ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}\`}>
+                    <span className={`px-2 py-1 rounded-md text-xs font-bold ${log.responseStatus >= 200 && log.responseStatus < 300 ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}`}>
                       {log.responseStatus}
                     </span>
                   </td>
@@ -259,8 +259,8 @@ export default function ApiMatrixDashboard({ endpoints, logs, initialStats }: an
                     <label className="flex items-center gap-3 cursor-pointer">
                       <div className="relative">
                         <input type="checkbox" className="sr-only" checked={formData.isActive} onChange={e=>setFormData({...formData, isActive: e.target.checked})} />
-                        <div className={\`block w-14 h-8 rounded-full transition-colors \${formData.isActive ? 'bg-indigo-500' : 'bg-slate-300 dark:bg-slate-700'}\`}></div>
-                        <div className={\`absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform \${formData.isActive ? 'transform translate-x-6' : ''}\`}></div>
+                        <div className={`block w-14 h-8 rounded-full transition-colors ${formData.isActive ? 'bg-indigo-500' : 'bg-slate-300 dark:bg-slate-700'}`}></div>
+                        <div className={`absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform ${formData.isActive ? 'transform translate-x-6' : ''}`}></div>
                       </div>
                       <span className="font-semibold">Route is Active</span>
                     </label>
@@ -268,8 +268,8 @@ export default function ApiMatrixDashboard({ endpoints, logs, initialStats }: an
                     <label className="flex items-center gap-3 cursor-pointer">
                       <div className="relative">
                         <input type="checkbox" className="sr-only" checked={formData.requireAuth} onChange={e=>setFormData({...formData, requireAuth: e.target.checked})} />
-                        <div className={\`block w-14 h-8 rounded-full transition-colors \${formData.requireAuth ? 'bg-purple-500' : 'bg-slate-300 dark:bg-slate-700'}\`}></div>
-                        <div className={\`absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform \${formData.requireAuth ? 'transform translate-x-6' : ''}\`}></div>
+                        <div className={`block w-14 h-8 rounded-full transition-colors ${formData.requireAuth ? 'bg-purple-500' : 'bg-slate-300 dark:bg-slate-700'}`}></div>
+                        <div className={`absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform ${formData.requireAuth ? 'transform translate-x-6' : ''}`}></div>
                       </div>
                       <span className="font-semibold">Require Auth (API Key)</span>
                     </label>

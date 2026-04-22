@@ -24,11 +24,11 @@ export default function UltraCodexPage() {
   if (!mounted) return null;
 
   const TABS = [
-    { id: "PRIME", icon: ShieldCheck, en: "Prime Directive", id: "Hukum Mutlak" },
-    { id: "ENV", icon: Terminal, en: "Environment Setup", id: "Persiapan Lokal" },
-    { id: "ARCH", icon: Layers, en: "Architecture Strictness", id: "Standar Arsitektur" },
-    { id: "GIT", icon: GitBranch, en: "Multiverse Branching", id: "Protokol Git" },
-    { id: "DEPLOY", icon: Server, en: "Deployment Engine", id: "Peluncuran Sistem" }
+    { id: "PRIME", icon: ShieldCheck, en: "Prime Directive", ina: "Hukum Mutlak" },
+    { id: "ENV", icon: Terminal, en: "Environment Setup", ina: "Persiapan Lokal" },
+    { id: "ARCH", icon: Layers, en: "Architecture Strictness", ina: "Standar Arsitektur" },
+    { id: "GIT", icon: GitBranch, en: "Multiverse Branching", ina: "Protokol Git" },
+    { id: "DEPLOY", icon: Server, en: "Deployment Engine", ina: "Peluncuran Sistem" }
   ];
 
   const CONTENT = {
@@ -198,7 +198,7 @@ export default function UltraCodexPage() {
                   `}
                 >
                   <Icon className={`w-5 h-5 transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`} />
-                  <span className="text-sm font-bold tracking-wider uppercase">{lang === 'en' ? tab.en : tab.id}</span>
+                  <span className="text-sm font-bold tracking-wider uppercase">{lang === 'en' ? tab.en : tab.ina}</span>
                   {isActive && (
                     <motion.div layoutId="activeTabIndicator" className="absolute inset-0 bg-white/10" transition={{ type: "spring", stiffness: 300, damping: 30 }} />
                   )}

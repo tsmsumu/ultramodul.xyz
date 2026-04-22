@@ -13,7 +13,7 @@ export async function getUsers() {
   }
 }
 
-export async function createIdentity(data: { username: string; name: string; role: string; plainPassword?: string }) {
+export async function createIdentity(data: { username: string; name: string; role: string; plainPassword?: string; phoneNumber?: string; email?: string }) {
   try {
     const newId = randomUUID();
     let passwordHash = null;
@@ -28,6 +28,8 @@ export async function createIdentity(data: { username: string; name: string; rol
       role: data.role,
       status: "pending", // KABINET RESOLUSI: Identitas baru harus PENDING
       passwordHash,
+      phoneNumber: data.phoneNumber ? data.phoneNumber.replace(/\D/g, "") : undefined,
+      email: data.email,
       createdAt: new Date(),
     });
 

@@ -202,6 +202,7 @@ export function DataTable({ initialUsers }: { initialUsers: any[] }) {
             </th>
             <th className="px-6 py-4 font-semibold tracking-wider">Identitas Global (UID)</th>
             <th className="px-6 py-4 font-semibold tracking-wider">Nama Lengkap</th>
+            <th className="px-6 py-4 font-medium">Kontak (HP / Email)</th>
             <th className="px-6 py-4 font-medium">Domain Otoritas</th>
             <th className="px-6 py-4 font-medium">Batas Izin (Status)</th>
             <th className="px-6 py-4 font-medium text-right">Tindakan</th>
@@ -223,6 +224,21 @@ export function DataTable({ initialUsers }: { initialUsers: any[] }) {
                 <div className="text-xs text-gray-400 mt-1 flex items-center gap-1 font-sans"><BoxSelect className="w-3 h-3"/> {user.branchCode}</div>
               </td>
               <td className="px-6 py-4 font-medium">{user.name}</td>
+              <td className="px-6 py-4">
+                <div className="flex flex-col gap-1">
+                  {user.phoneNumber ? (
+                    <span className="text-[10px] bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded font-mono border border-zinc-200 dark:border-zinc-700 w-fit">
+                      {user.phoneNumber}
+                    </span>
+                  ) : <span className="text-[10px] text-zinc-400 italic">No Phone</span>}
+                  
+                  {user.email ? (
+                    <span className="text-[10px] bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 px-2 py-0.5 rounded border border-blue-100 dark:border-blue-900/50 w-fit">
+                      {user.email}
+                    </span>
+                  ) : <span className="text-[10px] text-zinc-400 italic">No Email</span>}
+                </div>
+              </td>
               <td className="px-6 py-4">
                 <span className={`px-2.5 py-1 rounded-full text-[10px] uppercase font-black tracking-widest border
                   ${user.role === 'admin' ? 'bg-purple-100 border-purple-200 text-purple-700 dark:bg-purple-900/40 dark:border-purple-800/50 dark:text-purple-400 shadow-[0_0_15px_-3px_rgba(168,85,247,0.4)]' : 

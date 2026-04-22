@@ -31,7 +31,9 @@ export function UserModal({ isOpen, onClose, onRefresh }: { isOpen: boolean; onC
       username: formData.get("username") as string,
       name: formData.get("name") as string,
       role: formData.get("role") as string,
-      plainPassword: generatedPass || undefined
+      plainPassword: generatedPass || undefined,
+      phoneNumber: formData.get("phoneNumber") as string || undefined,
+      email: formData.get("email") as string || undefined
     });
 
     if (res.success) {
@@ -92,6 +94,16 @@ export function UserModal({ isOpen, onClose, onRefresh }: { isOpen: boolean; onC
                   <div>
                     <label className="block text-sm font-medium mb-1.5 opacity-80">Nama Lengkap</label>
                     <input required name="name" className="w-full px-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Nama sesuai identitas..." />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-1.5 opacity-80">Nomor HP</label>
+                      <input name="phoneNumber" type="tel" className="w-full px-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="+62..." />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1.5 opacity-80">Email</label>
+                      <input name="email" type="email" className="w-full px-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="mail@..." />
+                    </div>
                   </div>
                   <div className="hidden">
                     <input type="hidden" name="role" value="user" />

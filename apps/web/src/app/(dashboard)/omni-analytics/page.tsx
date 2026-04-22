@@ -235,13 +235,13 @@ export default function OmniAnalyticsPage() {
               onClick={() => setAnalystMode('standard')}
               className={`px-8 py-3 rounded-xl text-sm font-bold tracking-widest flex items-center gap-3 transition-all duration-300 ${analystMode === 'standard' ? 'bg-blue-600 text-white shadow-[0_0_20px_rgba(37,99,235,0.4)]' : 'text-zinc-500 hover:text-white hover:bg-white/5'}`}
             >
-              <GraduationCap className="w-5 h-5" /> MODE JUNIOR (STANDARD)
+              <GraduationCap className="w-5 h-5" /> STANDARD
             </button>
             <button 
               onClick={() => setAnalystMode('advance')}
               className={`px-8 py-3 rounded-xl text-sm font-bold tracking-widest flex items-center gap-3 transition-all duration-300 ${analystMode === 'advance' ? 'bg-indigo-600 text-white shadow-[0_0_20px_rgba(79,70,229,0.4)]' : 'text-zinc-500 hover:text-white hover:bg-white/5'}`}
             >
-              <Microscope className="w-5 h-5" /> MODE SENIOR (ADVANCE)
+              <Microscope className="w-5 h-5" /> ADVANCED
             </button>
          </div>
       </div>

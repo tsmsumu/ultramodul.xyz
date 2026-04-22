@@ -1,10 +1,10 @@
 {
   "platform": "PUM Universal (Nexus Engine)",
-  "version": "22042026.170441.1.96(VSCode OSS).Commit:0388ca0.(today)",
+  "version": "22042026.170427.1.96(VSCode OSS).Commit:507316f.(today)",
   "raw": {
     "date": "22042026",
-    "time": "170441",
-    "hash": "0388ca0",
+    "time": "170427",
+    "hash": "507316f",
     "daysAgo": 0
   }
 }

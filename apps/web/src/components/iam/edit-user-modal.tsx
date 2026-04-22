@@ -123,6 +123,7 @@ export function EditUserModal({
                     <label className="block text-sm font-medium mb-1.5 opacity-80">Kasta Akses (Role)</label>
                     <select required defaultValue={user.role} name="role" className="w-full px-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition appearance-none">
                       <option value="owner" className="font-bold">👑 Owner (Kekuasaan Mutlak)</option>
+                      <option value="super_admin">🔥 Super Admin</option>
                       <option value="admin">🛡️ Admin</option>
                       <option value="member">⚔️ Member</option>
                       <option value="viewer">👁️ Viewer</option>

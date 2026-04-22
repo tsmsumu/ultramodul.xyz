@@ -120,9 +120,9 @@ export async function setRandomPassword(id: string, plainText: string) {
 export async function deleteIdentity(id: string) {
   try {
     const targetUser = await db.select().from(users).where(eq(users.id, id)).limit(1);
-    if (!targetUser.length) return { success: false, error: "Identitas tidak ditemukan." };
+    if (!targetUser.length) return { success: false, error: "Identity not found." };
     if (targetUser[0].role === "owner") {
-      return { success: false, error: "TINDAKAN ILEGAL: Kasta Owner dilindungi secara mutlak dan tidak bisa dimusnahkan." };
+      return { success: false, error: "ILLEGAL ACTION: The Owner tier is absolutely protected and cannot be destroyed." };
     }
 
     // KABINET RESOLUSI: Tidak lagi dihapus langsung! Lempar ke Majelis Persidangan.
@@ -147,7 +147,7 @@ export async function deleteIdentity(id: string) {
     return { success: true };
   } catch (error) {
     console.error("Delete proposal failed:", error);
-    return { success: false, error: "Gagal memproses antrean hapus user." };
+    return { success: false, error: "Failed to process user deletion queue." };
   }
 }
 
@@ -189,7 +189,7 @@ export async function importCSVIdentities(csvText: string) {
     return { success: true, count: imported };
   } catch (error) {
     console.error("CSV Import failed:", error);
-    return { success: false, error: "Gagal mengimpor CSV. Pastikan format: username,name,role" };
+    return { success: false, error: "Failed to import CSV. Ensure format is: username,name,role" };
   }
 }
 
@@ -207,16 +207,16 @@ export async function updateIdentityLanguages(id: string, languages: string[]) {
     return { success: true };
   } catch (error) {
     console.error("Update languages failed:", error);
-    return { success: false, error: "Gagal memperbarui bahasa." };
+    return { success: false, error: "Failed to update language preferences." };
   }
 }
 
 export async function updateIdentityByAdmin(id: string, data: { name: string; role: string; phoneNumber?: string; email?: string }) {
   try {
     const targetUser = await db.select().from(users).where(eq(users.id, id)).limit(1);
-    if (!targetUser.length) return { success: false, error: "Identitas tidak ditemukan." };
+    if (!targetUser.length) return { success: false, error: "Identity not found." };
     if (targetUser[0].role === "owner" && data.role !== "owner") {
-      return { success: false, error: "TINDAKAN ILEGAL: Kasta Owner tidak bisa diturunkan jabatannya secara sepihak." };
+      return { success: false, error: "ILLEGAL ACTION: Owner tier cannot be demoted arbitrarily." };
     }
 
     const phoneNumber = data.phoneNumber ? data.phoneNumber.replace(/\D/g, "") : null;
@@ -238,6 +238,6 @@ export async function updateIdentityByAdmin(id: string, data: { name: string; ro
     return { success: true, message: `Identity updated.` };
   } catch (error) {
     console.error("Update failed", error);
-    return { success: false, error: "Gagal memperbarui profil identitas." };
+    return { success: false, error: "Failed to update identity profile." };
   }
 }

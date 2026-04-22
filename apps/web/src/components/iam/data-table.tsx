@@ -8,8 +8,10 @@ import { OmniEtlModal } from "./omni-etl-modal";
 import { LanguageModal } from "./language-modal";
 import { EditUserModal } from "./edit-user-modal";
 import { Globe2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export function DataTable({ initialUsers, currentUserRole }: { initialUsers: any[], currentUserRole: string }) {
+  const t = useTranslations("iam");
   const [users, setUsers] = useState(initialUsers);
   const [loadingId, setLoadingId] = useState<string | null>(null);
   
@@ -72,7 +74,7 @@ export function DataTable({ initialUsers, currentUserRole }: { initialUsers: any
       window.URL.revokeObjectURL(url);
       setEtlOpen(false);
     } else {
-      alert("Format Belum Diaktifkan untuk Front-end Download. Menunggu integrasi DuckDB Wasm.");
+      alert(t("alertExportFail"));
     }
   };
 
@@ -85,16 +87,16 @@ export function DataTable({ initialUsers, currentUserRole }: { initialUsers: any
   };
 
   const handleJIT = async (id: string) => {
-    if (confirm("Aktifkan Akses Dewa (Bypass JIT) selama 30 menit? Sirine Logbook akan berbunyi!")) {
+    if (confirm(t("alertJitConfirm"))) {
       setLoadingId(id);
       await triggerEmergencyJit(id, 30);
       setLoadingId(null);
-      alert("JIT Aktif. Menu Navigasi akan terbuka semua untuk User ini selama 30 menit ke depan.");
+      alert(t("alertJitSuccess"));
     }
   };
 
   const handleGeneratePassword = async (id: string, username: string) => {
-    if (confirm(`Apakah Anda yakin ingin men-generate password baru untuk UID ${username}? Sandi lama akan hangus.`)) {
+    if (confirm(t("alertPassConfirm", { uid: username }))) {
       setLoadingId(id);
       
       const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*";
@@ -107,32 +109,31 @@ export function DataTable({ initialUsers, currentUserRole }: { initialUsers: any
       if (result.success) {
         try {
           await navigator.clipboard.writeText(pass);
-          alert(`SUKSES! Sandi baru untuk UID ${username} adalah:\n\n${pass}\n\n✔️ Sandi telah OTOMATIS DISALIN (Copied) ke perangkat Anda! Silakan tekan Paste (Ctrl+V) di tempat yang aman.`);
+          alert(t("alertPassSuccess", { uid: username, pass }));
         } catch (e) {
-          // Fallback jika browser memblokir clipboard API
-          prompt(`SUKSES! Sandi baru UID ${username} berhasil dibuat.\n\nSilakan block dan COPY (Salin) sandi di kotak bawah ini SEKARANG:`, pass);
+          prompt(t("alertPassSuccessFallback", { uid: username }), pass);
         }
       } else {
-        alert("Gagal membuat password. Hubungi sysadmin.");
+        alert(t("alertPassFail"));
       }
     }
   };
 
   const handleDeleteUser = async (id: string, username: string) => {
-    if (confirm(`PERINGATAN KRITIKAL!\n\nAnda akan mengajukan eksekusi pemusnahan permanen untuk UID ${username} ke Peladen. Lanjutkan?`)) {
+    if (confirm(t("alertDelConfirm", { uid: username }))) {
       setLoadingId(id);
       const result = await deleteIdentity(id);
       setLoadingId(null);
       if (result.success) {
-         alert(`Vonis eksekusi untuk ${username} telah masuk ke dalam Antrean Persidangan (Approval Inbox).`);
+         alert(t("alertDelSuccess", { uid: username }));
       } else {
-         alert(result.error || "Gagal mengajukan operasi penghapusan.");
+         alert(result.error || t("alertDelFail"));
       }
     }
   };
 
   const handleBulkDelete = async () => {
-    if (confirm(`PERINGATAN KRITIKAL MAJEMUK!\n\nAnda akan mengajukan pemusnahan massal untuk ${selectedIds.size} identitas sekaligus ke Antrean Persidangan. Lanjutkan?`)) {
+    if (confirm(t("alertBulkDelConfirm", { count: selectedIds.size }))) {
       setLoadingId("bulk-delete");
       let successCount = 0;
       
@@ -144,7 +145,7 @@ export function DataTable({ initialUsers, currentUserRole }: { initialUsers: any
       
       setLoadingId(null);
       setSelectedIds(new Set());
-      alert(`Berhasil melemparkan ${successCount} permohonan pemusnahan masal ke dalam Approval Inbox.`);
+      alert(t("alertBulkDelSuccess", { count: successCount }));
     }
   };
 
@@ -152,8 +153,8 @@ export function DataTable({ initialUsers, currentUserRole }: { initialUsers: any
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center border border-dashed border-gray-200 dark:border-white/10 rounded-xl bg-gray-50/50 dark:bg-white/5">
         <ShieldAlert className="w-12 h-12 text-gray-400 mb-4 opacity-50" />
-        <h3 className="text-lg font-medium">Belum ada Identitas</h3>
-        <p className="text-sm text-gray-500 mt-1">Sistem Matrix saat ini masih kosong.</p>
+        <h3 className="text-lg font-medium">{t("noIdentityTitle")}</h3>
+        <p className="text-sm text-gray-500 mt-1">{t("noIdentityDesc")}</p>
       </div>
     );
   }
@@ -166,7 +167,7 @@ export function DataTable({ initialUsers, currentUserRole }: { initialUsers: any
             <Search className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
             <input 
               type="text" 
-              placeholder="Omni-Search: Cari Nama, UID, atau Cabang..." 
+              placeholder={t("searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-9 pr-4 py-2 text-sm bg-white dark:bg-zinc-900 border border-gray-200 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm"
@@ -181,13 +182,13 @@ export function DataTable({ initialUsers, currentUserRole }: { initialUsers: any
                  disabled={loadingId !== null}
                  className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl shadow-lg shadow-red-600/20 text-sm font-bold transition disabled:opacity-50"
                >
-                 <Trash2 className="w-4 h-4" /> Pemusnahan Massal ({selectedIds.size})
+                 <Trash2 className="w-4 h-4" /> {t("btnBulkDelete")} ({selectedIds.size})
                </button>
                <button 
                  onClick={() => setEtlOpen(true)}
                  className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-lg shadow-indigo-600/20 text-sm font-bold transition"
                >
-                 <HardDriveDownload className="w-4 h-4" /> Export {selectedIds.size} Identitas
+                 <HardDriveDownload className="w-4 h-4" /> {t("btnExport")}
                </button>
              </>
            )}
@@ -205,12 +206,12 @@ export function DataTable({ initialUsers, currentUserRole }: { initialUsers: any
                 className="w-4 h-4 rounded appearance-none border border-gray-300 dark:border-gray-600 checked:bg-indigo-600 checked:border-indigo-600 focus:ring-0 cursor-pointer"
               />
             </th>
-            <th className="px-6 py-4 font-semibold tracking-wider">Identitas Global (UID)</th>
-            <th className="px-6 py-4 font-semibold tracking-wider">Nama Lengkap</th>
-            <th className="px-6 py-4 font-medium">Kontak (HP / Email)</th>
-            <th className="px-6 py-4 font-medium">Domain Otoritas</th>
-            <th className="px-6 py-4 font-medium">Batas Izin (Status)</th>
-            <th className="px-6 py-4 font-medium text-right">Tindakan</th>
+            <th className="px-6 py-4 font-semibold tracking-wider">UID</th>
+            <th className="px-6 py-4 font-semibold tracking-wider">{t("tableHeadName")}</th>
+            <th className="px-6 py-4 font-medium">{t("tableHeadContact")}</th>
+            <th className="px-6 py-4 font-medium">{t("tableHeadRole")}</th>
+            <th className="px-6 py-4 font-medium">{t("tableHeadStatus")}</th>
+            <th className="px-6 py-4 font-medium text-right">{t("tableHeadActions")}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100 dark:divide-white/5">
@@ -235,13 +236,13 @@ export function DataTable({ initialUsers, currentUserRole }: { initialUsers: any
                     <span className="text-[10px] bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded font-mono border border-zinc-200 dark:border-zinc-700 w-fit">
                       {user.phoneNumber}
                     </span>
-                  ) : <span className="text-[10px] text-zinc-400 italic">No Phone</span>}
+                  ) : <span className="text-[10px] text-zinc-400 italic">{t("noPhone")}</span>}
                   
                   {user.email ? (
                     <span className="text-[10px] bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 px-2 py-0.5 rounded border border-blue-100 dark:border-blue-900/50 w-fit">
                       {user.email}
                     </span>
-                  ) : <span className="text-[10px] text-zinc-400 italic">No Email</span>}
+                  ) : <span className="text-[10px] text-zinc-400 italic">{t("noEmail")}</span>}
                 </div>
               </td>
               <td className="px-6 py-4">
@@ -272,7 +273,7 @@ export function DataTable({ initialUsers, currentUserRole }: { initialUsers: any
                 <button 
                   onClick={() => handleJIT(user.id)}
                   className="p-2 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition"
-                  title="Panic Button: JIT Emergency Bypass (30 Mnt)"
+                  title={t("tooltipJit")}
                 >
                   <Siren className="w-4 h-4" />
                 </button>
@@ -280,21 +281,21 @@ export function DataTable({ initialUsers, currentUserRole }: { initialUsers: any
                   disabled={loadingId === user.id}
                   onClick={() => handleGeneratePassword(user.id, user.username)}
                   className="p-2 text-gray-500 hover:text-yellow-600 dark:text-gray-400 dark:hover:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/30 rounded-lg transition"
-                  title="Generate Password Sementara"
+                  title={t("tooltipPass")}
                 >
                   <Key className="w-4 h-4" />
                 </button>
                 <button 
                   onClick={() => { setSelectedEditUser(user); setEditModalOpen(true); }}
                   className="p-2 text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition"
-                  title="Ultra-Edit Profil Identitas"
+                  title={t("tooltipEdit")}
                 >
                   <Pen className="w-4 h-4" />
                 </button>
                 <button 
                   onClick={() => { setSelectedUser({id: user.id, name: user.name}); setMatrixOpen(true); }}
                   className="p-2 text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition"
-                  title="Atur Hak Akses Matrix"
+                  title={t("tooltipMatrix")}
                 >
                   <Settings className="w-4 h-4" />
                 </button>
@@ -305,7 +306,7 @@ export function DataTable({ initialUsers, currentUserRole }: { initialUsers: any
                     setLangModalOpen(true); 
                   }}
                   className="p-2 text-gray-500 hover:text-cyan-600 dark:text-gray-400 dark:hover:text-cyan-400 hover:bg-cyan-50 dark:hover:bg-cyan-900/30 rounded-lg transition"
-                  title="Atur Preferensi Bahasa (Rosetta Protocol)"
+                  title={t("tooltipLang")}
                 >
                   <Globe2 className="w-4 h-4" />
                 </button>
@@ -313,7 +314,7 @@ export function DataTable({ initialUsers, currentUserRole }: { initialUsers: any
                   disabled={loadingId === user.id}
                   onClick={() => handleToggle(user.id, user.status)}
                   className="p-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg transition disabled:opacity-50"
-                  title={user.status === 'active' ? 'Kunci Akses (Blokir)' : 'Buka Akses (Approve/Aktifkan)'}
+                  title={user.status === 'active' ? t("tooltipLock") : t("tooltipUnlock")}
                 >
                   {user.status === 'active' ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
                 </button>
@@ -322,7 +323,7 @@ export function DataTable({ initialUsers, currentUserRole }: { initialUsers: any
                   disabled={loadingId === user.id}
                   onClick={() => handleDeleteUser(user.id, user.username)}
                   className="p-2 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition disabled:opacity-50"
-                  title="Hapus Identitas Permanen"
+                  title={t("tooltipDelete")}
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>

@@ -172,7 +172,7 @@ export default function NexusVoicePage() {
                  value={citizenInput}
                  onChange={(e) => setCitizenInput(e.target.value)}
                  disabled={isTransmitting}
-                 placeholder="Ketik keluhan di sini (Misal: 'Jalan di Cibinong rusak parah')..."
+                 placeholder="Ketik log operasional/insiden di sini (Misal: 'Terjadi anomali pada sub-sistem B')..."
                  className="w-full bg-zinc-900 border border-white/10 rounded-2xl p-4 pr-14 text-white focus:outline-none focus:border-indigo-500/50 transition-colors placeholder:text-zinc-600 font-light resize-none h-24"
                />
                <button 

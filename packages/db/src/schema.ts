@@ -22,7 +22,7 @@ export const users = sqliteTable('users', {
   email: text('email'),
   
   // Future-Proofing: API Exchange
-  publicUuid: text('public_uuid'), // UUID alias for hiding NIK in API responses
+  publicUuid: text('public_uuid'), // UUID alias for hiding UID in API responses
 
   // Language Preferences (Rosetta Protocol) - Array of language codes like ["id", "en"]
   languages: text('languages').notNull().default('["id"]'),
@@ -77,7 +77,7 @@ export const systemLogs = sqliteTable("system_logs", {
   timestamp: integer("timestamp").notNull(), // Waktu persis kejadian
   module: text("module").notNull(),          // Modul asal: IAM, TAILOR, AUTH, SYSTEM
   actionData: text("action_data"),           // Bentuk JSON kejadian (Matrix, SQL, dll)
-  userId: text("user_id").notNull(),         // NIK / ID Pelaku
+  userId: text("user_id").notNull(),         // UID / ID Pelaku
   ipAddress: text("ip_address"),             // Koordinat IP Address Perekam
   userAgent: text("user_agent"),             // Browser Perekam
   severity: text("severity").notNull(),      // INFO, WARNING, CRITICAL, FATAL
@@ -128,7 +128,7 @@ export const nexusBlueprints = sqliteTable('nexus_blueprints', {
 export const pengaduanPublik = sqliteTable('pengaduan_publik', {
   id: text('id').primaryKey(), // UUID laporan
   reporterId: text('reporter_id').notNull(), // Mengikat aduan ke ID Universal (Bukan anonim)
-  topic: text('topic').notNull(), // Kategori laporan (Infrastruktur, Pelayanan, dll)
+  topic: text('topic').notNull(), // Kategori laporan (Operasional, Insiden, dll)
   content: text('content').notNull(), // Isi detail pengaduan
   channelSource: text('channel_source').notNull().default('WEB_PORTAL'), // Future-proof: WEB_PORTAL, WHATSAPP_API, TELEGRAM
   status: text('status').notNull().default('OPEN'), // OPEN, IN_PROGRESS, RESOLVED, REJECTED
@@ -150,10 +150,10 @@ export const apiKeys = sqliteTable('api_keys', {
 // Omni-Codex (Universal Rosetta Stone Dictionary)
 export const omniDictionaries = sqliteTable('omni_dictionaries', {
   id: text('id').primaryKey(), // UUID
-  name: text('name').unique().notNull(), // e.g. "Kamus Master Wilayah BPS 2024"
+  name: text('name').unique().notNull(), // e.g. "Universal Metadata Global Dictionary"
   description: text('description'),
-  targetColumn: text('target_column').notNull(), // Kolom target utama (e.g. "kode_kabupaten", "jenis_lantai")
-  mappingData: text('mapping_data').notNull(), // JSON Array dari Obyek: [{ code: '3201', label: 'Kab. Bogor' }]
+  targetColumn: text('target_column').notNull(), // Kolom target utama (e.g. "kode_area", "jenis_sistem")
+  mappingData: text('mapping_data').notNull(), // JSON Array dari Obyek: [{ code: 'SYS-01', label: 'Main Subsystem A' }]
   isGlobal: integer('is_global', { mode: 'boolean' }).notNull().default(true), // Tersedia untuk semua user?
   authorId: text('author_id').notNull(),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),

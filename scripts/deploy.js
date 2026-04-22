@@ -43,7 +43,9 @@ fi
 
 echo "-> Installing Dependencies & Building Next.js..."
 pnpm install
-cd apps/web
+cd packages/db
+DATABASE_URL="file:../../apps/web/local.db" npx tsx migrate.ts
+cd ../../apps/web
 
 export NODE_ENV=production
 # Next build required

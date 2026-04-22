@@ -1,11 +1,12 @@
 import { toggleIdentityStatus, setRandomPassword, deleteIdentity } from "@/app/actions/iam";
 import { triggerEmergencyJit } from "@/app/actions/matrix";
 import { processBulkExport } from "@/app/actions/export";
-import { Lock, Unlock, ShieldAlert, Settings, Siren, Search, CheckSquare, HardDriveDownload, BoxSelect, Key, Trash2 } from "lucide-react";
+import { Lock, Unlock, ShieldAlert, Settings, Siren, Search, CheckSquare, HardDriveDownload, BoxSelect, Key, Trash2, Pen } from "lucide-react";
 import { useState, useMemo } from "react";
 import { MatrixDrawer } from "./matrix-drawer";
 import { OmniEtlModal } from "./omni-etl-modal";
 import { LanguageModal } from "./language-modal";
+import { EditUserModal } from "./edit-user-modal";
 import { Globe2 } from "lucide-react";
 
 export function DataTable({ initialUsers }: { initialUsers: any[] }) {
@@ -25,6 +26,10 @@ export function DataTable({ initialUsers }: { initialUsers: any[] }) {
   // Language Modal State
   const [langModalOpen, setLangModalOpen] = useState(false);
   const [selectedUserLang, setSelectedUserLang] = useState<{id: string, name: string, languages: string[]} | null>(null);
+
+  // Edit User State
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [selectedEditUser, setSelectedEditUser] = useState<any>(null);
 
   // Advanced Search Logic
   const filteredUsers = useMemo(() => {
@@ -241,11 +246,13 @@ export function DataTable({ initialUsers }: { initialUsers: any[] }) {
               </td>
               <td className="px-6 py-4">
                 <span className={`px-2.5 py-1 rounded-full text-[10px] uppercase font-black tracking-widest border
-                  ${user.role === 'admin' ? 'bg-purple-100 border-purple-200 text-purple-700 dark:bg-purple-900/40 dark:border-purple-800/50 dark:text-purple-400 shadow-[0_0_15px_-3px_rgba(168,85,247,0.4)]' : 
+                  ${user.role === 'owner' ? 'bg-yellow-100 border-yellow-300 text-yellow-800 dark:bg-yellow-900/40 dark:border-yellow-600/50 dark:text-yellow-400 shadow-[0_0_20px_-3px_rgba(234,179,8,0.6)] flex items-center gap-1' :
+                    user.role === 'admin' ? 'bg-purple-100 border-purple-200 text-purple-700 dark:bg-purple-900/40 dark:border-purple-800/50 dark:text-purple-400 shadow-[0_0_15px_-3px_rgba(168,85,247,0.4)]' : 
                     user.role === 'member' ? 'bg-cyan-100 border-cyan-200 text-cyan-700 dark:bg-cyan-900/40 dark:border-cyan-800/50 dark:text-cyan-400' : 
                     user.role === 'viewer' ? 'bg-gray-100 border-gray-200 text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300' : 
                     'bg-blue-100 border-blue-200 text-blue-700 dark:bg-blue-900/40 dark:border-blue-800/50 dark:text-blue-400'}
                 `}>
+                  {user.role === 'owner' && <span className="text-[10px]">👑</span>}
                   {user.role}
                 </span>
               </td>
@@ -274,6 +281,13 @@ export function DataTable({ initialUsers }: { initialUsers: any[] }) {
                   title="Generate Password Sementara"
                 >
                   <Key className="w-4 h-4" />
+                </button>
+                <button 
+                  onClick={() => { setSelectedEditUser(user); setEditModalOpen(true); }}
+                  className="p-2 text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition"
+                  title="Ultra-Edit Profil Identitas"
+                >
+                  <Pen className="w-4 h-4" />
                 </button>
                 <button 
                   onClick={() => { setSelectedUser({id: user.id, name: user.name}); setMatrixOpen(true); }}
@@ -341,6 +355,15 @@ export function DataTable({ initialUsers }: { initialUsers: any[] }) {
           // Fire global event to refresh IAM users
           window.dispatchEvent(new Event("iam-refresh"));
         }}
+      />
+
+      <EditUserModal 
+        isOpen={editModalOpen}
+        onClose={() => { setEditModalOpen(false); setSelectedEditUser(null); }}
+        onRefresh={() => {
+          window.dispatchEvent(new Event("iam-refresh"));
+        }}
+        user={selectedEditUser}
       />
     </div>
   );

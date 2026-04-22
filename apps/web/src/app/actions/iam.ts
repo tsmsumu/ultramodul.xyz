@@ -98,6 +98,12 @@ export async function setRandomPassword(id: string, plainText: string) {
 
 export async function deleteIdentity(id: string) {
   try {
+    const targetUser = await db.select().from(users).where(eq(users.id, id)).limit(1);
+    if (!targetUser.length) return { success: false, error: "Identitas tidak ditemukan." };
+    if (targetUser[0].role === "owner") {
+      return { success: false, error: "TINDAKAN ILEGAL: Kasta Owner dilindungi secara mutlak dan tidak bisa dimusnahkan." };
+    }
+
     // KABINET RESOLUSI: Tidak lagi dihapus langsung! Lempar ke Majelis Persidangan.
     await db.insert(matrixApprovals).values({
       id: randomUUID(),
@@ -181,5 +187,36 @@ export async function updateIdentityLanguages(id: string, languages: string[]) {
   } catch (error) {
     console.error("Update languages failed:", error);
     return { success: false, error: "Gagal memperbarui bahasa." };
+  }
+}
+
+export async function updateIdentityByAdmin(id: string, data: { name: string; role: string; phoneNumber?: string; email?: string }) {
+  try {
+    const targetUser = await db.select().from(users).where(eq(users.id, id)).limit(1);
+    if (!targetUser.length) return { success: false, error: "Identitas tidak ditemukan." };
+    if (targetUser[0].role === "owner" && data.role !== "owner") {
+      return { success: false, error: "TINDAKAN ILEGAL: Kasta Owner tidak bisa diturunkan jabatannya secara sepihak." };
+    }
+
+    const phoneNumber = data.phoneNumber ? data.phoneNumber.replace(/\D/g, "") : null;
+
+    await db.update(users).set({
+      name: data.name,
+      role: data.role,
+      phoneNumber,
+      email: data.email || null
+    }).where(eq(users.id, id));
+
+    await createAuditLog({
+      action: "ADMIN_UPDATE_IDENTITY",
+      actorId: "SYSTEM",
+      target: id,
+      metadata: { role: data.role, origin: "IAM Console - Super Edit" }
+    });
+
+    return { success: true, message: `Identity updated.` };
+  } catch (error) {
+    console.error("Update failed", error);
+    return { success: false, error: "Gagal memperbarui profil identitas." };
   }
 }

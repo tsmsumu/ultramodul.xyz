@@ -105,8 +105,14 @@ export function UserModal({ isOpen, onClose, onRefresh }: { isOpen: boolean; onC
                       <input name="email" type="email" className="w-full px-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="mail@..." />
                     </div>
                   </div>
-                  <div className="hidden">
-                    <input type="hidden" name="role" value="user" />
+                  <div>
+                    <label className="block text-sm font-medium mb-1.5 opacity-80">Kasta Akses (Role)</label>
+                    <select required defaultValue="member" name="role" className="w-full px-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition appearance-none">
+                      <option value="owner" className="font-bold">👑 Owner (Kekuasaan Mutlak)</option>
+                      <option value="admin">🛡️ Admin</option>
+                      <option value="member">⚔️ Member</option>
+                      <option value="viewer">👁️ Viewer</option>
+                    </select>
                   </div>
                   
                   <div>

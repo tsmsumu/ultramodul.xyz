@@ -1,12 +1,33 @@
 "use server";
 
-import { db, users, eq, matrixApprovals } from "@ultra/db";
+import { db, users, eq, matrixApprovals, ne } from "@ultra/db";
 import { createAuditLog } from "@ultra/db/src/logger";
 import { randomUUID, createHash } from "crypto";
+import { cookies } from "next/headers";
+
+export async function getCurrentUserRole() {
+  const cookieStore = await cookies();
+  const sessionId = cookieStore.get("UNIVERSAL_SESSION_ID")?.value;
+  if (!sessionId) return "viewer";
+  if (sessionId === "SYSTEM_ROOT") return "owner";
+  
+  try {
+    const user = await db.select({ role: users.role }).from(users).where(eq(users.id, sessionId)).limit(1);
+    if (user.length > 0) return user[0].role;
+  } catch (e) {
+    console.error("Failed to fetch user role", e);
+  }
+  return "viewer";
+}
 
 export async function getUsers() {
   try {
-    return await db.select().from(users).orderBy(users.createdAt);
+    const role = await getCurrentUserRole();
+    if (role === "owner") {
+      return await db.select().from(users).orderBy(users.createdAt);
+    } else {
+      return await db.select().from(users).where(ne(users.role, "owner")).orderBy(users.createdAt);
+    }
   } catch (error) {
     console.error("Failed to fetch users", error);
     return [];

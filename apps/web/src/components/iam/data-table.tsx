@@ -9,7 +9,7 @@ import { LanguageModal } from "./language-modal";
 import { EditUserModal } from "./edit-user-modal";
 import { Globe2 } from "lucide-react";
 
-export function DataTable({ initialUsers }: { initialUsers: any[] }) {
+export function DataTable({ initialUsers, currentUserRole }: { initialUsers: any[], currentUserRole: string }) {
   const [users, setUsers] = useState(initialUsers);
   const [loadingId, setLoadingId] = useState<string | null>(null);
   
@@ -366,6 +366,7 @@ export function DataTable({ initialUsers }: { initialUsers: any[] }) {
           window.dispatchEvent(new Event("iam-refresh"));
         }}
         user={selectedEditUser}
+        currentUserRole={currentUserRole}
       />
     </div>
   );

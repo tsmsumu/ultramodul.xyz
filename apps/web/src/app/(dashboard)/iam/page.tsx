@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { UserPlus, ShieldAlert } from "lucide-react";
-import { getUsers } from "@/app/actions/iam";
+import { getUsers, getCurrentUserRole } from "@/app/actions/iam";
 import { DataTable } from "@/components/iam/data-table";
 import { UserModal } from "@/components/iam/user-modal";
 import { ImportModal } from "@/components/iam/import-modal";
@@ -12,6 +12,7 @@ import { useTranslations } from "next-intl";
 export default function IAMConsolePage() {
   const t = useTranslations("iam");
   const [users, setUsers] = useState<any[]>([]);
+  const [currentUserRole, setCurrentUserRole] = useState("viewer");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -19,7 +20,9 @@ export default function IAMConsolePage() {
   const fetchUsers = async () => {
     setLoading(true);
     const data = await getUsers();
+    const role = await getCurrentUserRole();
     setUsers(data);
+    setCurrentUserRole(role);
     setLoading(false);
   };
 
@@ -79,7 +82,7 @@ export default function IAMConsolePage() {
         <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 ease-out space-y-6">
           <ApprovalInbox />
           <div className="bg-white dark:bg-[#0a0a0c] border border-gray-200 dark:border-white/10 rounded-2xl shadow-xl overflow-hidden">
-            <DataTable initialUsers={users} />
+            <DataTable initialUsers={users} currentUserRole={currentUserRole} />
           </div>
         </div>
       )}
@@ -89,6 +92,7 @@ export default function IAMConsolePage() {
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
         onRefresh={fetchUsers}
+        currentUserRole={currentUserRole}
       />
       <ImportModal 
         isOpen={isImportOpen} 

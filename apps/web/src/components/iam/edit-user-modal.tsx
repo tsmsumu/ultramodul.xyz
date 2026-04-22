@@ -9,12 +9,14 @@ export function EditUserModal({
   isOpen, 
   onClose, 
   onRefresh, 
-  user 
+  user,
+  currentUserRole
 }: { 
   isOpen: boolean; 
   onClose: () => void; 
   onRefresh: () => void;
   user: any;
+  currentUserRole?: string;
 }) {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -87,8 +89,8 @@ export function EditUserModal({
               {success ? (
                 <div className="flex flex-col items-center justify-center py-12 text-emerald-500">
                   <CheckCircle2 className="w-16 h-16 mb-4" />
-                  <p className="text-lg font-medium">Profil Diperbarui!</p>
-                  <p className="text-sm opacity-80 mt-1">Audit Log otomatis tercatat.</p>
+                  <p className="text-lg font-medium">Profile Updated!</p>
+                  <p className="text-sm opacity-80 mt-1">Audit log has been recorded automatically.</p>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -104,25 +106,25 @@ export function EditUserModal({
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium mb-1.5 opacity-80">Nama Lengkap</label>
+                    <label className="block text-sm font-medium mb-1.5 opacity-80">Full Name</label>
                     <input required defaultValue={user.name} name="name" className="w-full px-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition" />
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium mb-1.5 opacity-80">Nomor HP</label>
+                      <label className="block text-sm font-medium mb-1.5 opacity-80">Phone Number</label>
                       <input defaultValue={user.phoneNumber || ""} name="phoneNumber" type="tel" className="w-full px-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition" />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-1.5 opacity-80">Email</label>
+                      <label className="block text-sm font-medium mb-1.5 opacity-80">Email Address</label>
                       <input defaultValue={user.email || ""} name="email" type="email" className="w-full px-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition" />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-1.5 opacity-80">Kasta Akses (Role)</label>
+                    <label className="block text-sm font-medium mb-1.5 opacity-80">Access Tier (Role)</label>
                     <select required defaultValue={user.role} name="role" className="w-full px-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition appearance-none">
-                      <option value="owner" className="font-bold">👑 Owner (Kekuasaan Mutlak)</option>
+                      {currentUserRole === "owner" && <option value="owner" className="font-bold">👑 Owner (Absolute Power)</option>}
                       <option value="super_admin">🔥 Super Admin</option>
                       <option value="admin">🛡️ Admin</option>
                       <option value="member">⚔️ Member</option>
@@ -132,10 +134,10 @@ export function EditUserModal({
 
                   <div className="pt-4 flex justify-end gap-3">
                     <button type="button" onClick={onClose} className="px-5 py-2.5 rounded-lg font-medium hover:bg-gray-100 dark:hover:bg-white/5 transition">
-                      Batal
+                      Cancel
                     </button>
                     <button disabled={loading} type="submit" className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition disabled:opacity-50 flex items-center gap-2">
-                      {loading ? "Menyimpan..." : "Simpan Perubahan"}
+                      {loading ? "Saving..." : "Save Changes"}
                     </button>
                   </div>
                 </form>

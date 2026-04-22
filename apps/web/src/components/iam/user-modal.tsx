@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, UserPlus, CheckCircle2, Shuffle, Copy } from "lucide-react";
 import { createIdentity } from "@/app/actions/iam";
 
-export function UserModal({ isOpen, onClose, onRefresh }: { isOpen: boolean; onClose: () => void; onRefresh: () => void }) {
+export function UserModal({ isOpen, onClose, onRefresh, currentUserRole }: { isOpen: boolean; onClose: () => void; onRefresh: () => void; currentUserRole?: string }) {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [generatedPass, setGeneratedPass] = useState("");
@@ -92,23 +92,23 @@ export function UserModal({ isOpen, onClose, onRefresh }: { isOpen: boolean; onC
                     <input required name="username" className="w-full px-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Enter Unique ID..." />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-1.5 opacity-80">Nama Lengkap</label>
-                    <input required name="name" className="w-full px-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Nama sesuai identitas..." />
+                    <label className="block text-sm font-medium mb-1.5 opacity-80">Full Name</label>
+                    <input required name="name" className="w-full px-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Enter full name..." />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium mb-1.5 opacity-80">Nomor HP</label>
+                      <label className="block text-sm font-medium mb-1.5 opacity-80">Phone Number</label>
                       <input name="phoneNumber" type="tel" className="w-full px-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="+62..." />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-1.5 opacity-80">Email</label>
+                      <label className="block text-sm font-medium mb-1.5 opacity-80">Email Address</label>
                       <input name="email" type="email" className="w-full px-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="mail@..." />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-1.5 opacity-80">Kasta Akses (Role)</label>
+                    <label className="block text-sm font-medium mb-1.5 opacity-80">Access Tier (Role)</label>
                     <select required defaultValue="member" name="role" className="w-full px-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition appearance-none">
-                      <option value="owner" className="font-bold">👑 Owner (Kekuasaan Mutlak)</option>
+                      {currentUserRole === "owner" && <option value="owner" className="font-bold">👑 Owner (Absolute Power)</option>}
                       <option value="super_admin">🔥 Super Admin</option>
                       <option value="admin">🛡️ Admin</option>
                       <option value="member">⚔️ Member</option>
@@ -118,13 +118,13 @@ export function UserModal({ isOpen, onClose, onRefresh }: { isOpen: boolean; onC
                   
                   <div>
                     <div className="flex justify-between items-end mb-1.5 opacity-80">
-                      <label className="block text-sm font-medium">Password Sementara (Opsional)</label>
+                      <label className="block text-sm font-medium">Temporary Password (Optional)</label>
                       <button type="button" onClick={generatePass} className="text-[10px] flex items-center gap-1 text-blue-600 dark:text-blue-400 font-bold hover:underline">
-                        <Shuffle className="w-3 h-3" /> ACAK BARU
+                        <Shuffle className="w-3 h-3" /> SHUFFLE
                       </button>
                     </div>
                     <div className="flex gap-2">
-                      <input readOnly value={generatedPass} className="w-full px-4 py-2 bg-gray-50 dark:bg-black border border-gray-200 dark:border-white/10 rounded-lg font-mono text-xs focus:outline-none text-gray-500" placeholder="Kosongkan jika sistem murni Passkey..." />
+                      <input readOnly value={generatedPass} className="w-full px-4 py-2 bg-gray-50 dark:bg-black border border-gray-200 dark:border-white/10 rounded-lg font-mono text-xs focus:outline-none text-gray-500" placeholder="Leave empty for pure Passkey..." />
                       {generatedPass && (
                         <button type="button" onClick={copyToClipboard} className="p-2 border border-gray-200 dark:border-white/10 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition" title="Salin Password">
                           <Copy className="w-4 h-4 text-gray-500" />
@@ -135,10 +135,10 @@ export function UserModal({ isOpen, onClose, onRefresh }: { isOpen: boolean; onC
 
                   <div className="pt-4 flex justify-end gap-3">
                     <button type="button" onClick={onClose} className="px-5 py-2.5 rounded-lg font-medium hover:bg-gray-100 dark:hover:bg-white/5 transition">
-                      Batal
+                      Cancel
                     </button>
                     <button disabled={loading} type="submit" className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition disabled:opacity-50">
-                      {loading ? "Menyimpan..." : "Simpan Identitas"}
+                      {loading ? "Saving..." : "Save Identity"}
                     </button>
                   </div>
                 </form>

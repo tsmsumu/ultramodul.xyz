@@ -111,6 +111,7 @@ export default function WarRoomVaultPage() {
   };
 
   const deleteFolder = (id: string, e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
     if(confirm(t('deleteMapPrompt'))) {
       saveVault(vault.filter(f => f.folderId !== id));
@@ -280,12 +281,12 @@ export default function WarRoomVaultPage() {
                                  <FIcon className={`w-6 h-6 text-${folder.folderColor}-400`} />
                                </div>
                                {isAdminRole && (
-                                 <div className="flex gap-2">
-                                   <button onClick={(e) => { e.stopPropagation(); setActiveFolderId(folder.folderId); setIsBuilderMode(true); }} className="w-8 h-8 bg-black/50 hover:bg-indigo-900/80 rounded-lg flex items-center justify-center text-zinc-500 hover:text-indigo-400 transition-colors" title={t('editMapTitle')}>
-                                     <Edit2 className="w-4 h-4" />
+                                 <div className="flex gap-2 relative z-50">
+                                   <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); setActiveFolderId(folder.folderId); setIsBuilderMode(true); }} className="w-8 h-8 bg-black/50 hover:bg-indigo-900/80 rounded-lg flex items-center justify-center text-zinc-500 hover:text-indigo-400 transition-colors" title={t('editMapTitle')}>
+                                     <Edit2 className="w-4 h-4 pointer-events-none" />
                                    </button>
                                    <button onClick={(e) => deleteFolder(folder.folderId, e)} className="w-8 h-8 bg-black/50 hover:bg-red-900/80 rounded-lg flex items-center justify-center text-zinc-500 hover:text-red-400 transition-colors">
-                                     <Trash2 className="w-4 h-4" />
+                                     <Trash2 className="w-4 h-4 pointer-events-none" />
                                    </button>
                                  </div>
                                )}

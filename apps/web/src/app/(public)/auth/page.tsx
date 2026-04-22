@@ -58,7 +58,7 @@ export default function UniversalAuthPage() {
             )}
 
             <div>
-              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2 px-1">Identity (UID / Phone / Email)</label>
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2 px-1">Identity (Phone / Email / UID)</label>
               <div className="relative">
                 <Fingerprint className="w-4 h-4 absolute left-4 top-4 text-zinc-500" />
                 <input 

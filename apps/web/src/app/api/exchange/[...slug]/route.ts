@@ -5,8 +5,9 @@ import { eq, and } from 'drizzle-orm';
 import crypto from 'crypto';
 
 // Generic handler for ALL methods
-async function handleRequest(request: NextRequest, { params }: { params: { slug: string[] } }) {
+async function handleRequest(request: NextRequest, props: { params: Promise<{ slug: string[] }> }) {
   const startTime = Date.now();
+  const params = await props.params;
   const slugArray = params.slug || [];
   const pathSlug = slugArray.join('/');
   const method = request.method;

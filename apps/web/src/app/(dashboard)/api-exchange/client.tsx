@@ -225,7 +225,7 @@ export default function ApiMatrixDashboard({ endpoints, logs, initialStats }: an
                     <label className="block text-sm font-semibold mb-2">Path Slug</label>
                     <div className="flex items-center">
                       <span className="bg-slate-100 dark:bg-slate-800 px-4 py-3 rounded-l-xl border border-r-0 border-slate-200 dark:border-slate-700 text-slate-500 font-mono text-sm">/api/exchange/</span>
-                      <input required value={formData.pathSlug} onChange={e=>setFormData({...formData, pathSlug: e.target.value.replace(/^\\/+/, '')})} className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-r-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 outline-none transition-all font-mono" placeholder="v1/service/action" />
+                      <input required value={formData.pathSlug} onChange={e=>setFormData({...formData, pathSlug: e.target.value.replace(new RegExp('^/+'), '')})} className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-r-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 outline-none transition-all font-mono" placeholder="v1/service/action" />
                     </div>
                   </div>
 

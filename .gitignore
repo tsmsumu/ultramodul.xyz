@@ -30,3 +30,6 @@ build/
 local.db
 *.parquet
 *.xlsx
+# Database
+*.db
+local.db

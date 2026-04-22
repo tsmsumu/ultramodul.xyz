@@ -2,7 +2,9 @@ import { createClient } from '@libsql/client';
 import path from 'path';
 
 // Fix relative path for db
-const dbPath = path.resolve(__dirname, 'local.db');
+const dbPath = process.env.NODE_ENV === 'production' 
+  ? '/var/www/ultramodul/production.db'
+  : path.resolve(__dirname, 'local.db');
 const db = createClient({ url: `file:${dbPath}` });
 
 async function migrate() {

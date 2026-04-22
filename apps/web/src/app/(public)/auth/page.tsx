@@ -58,17 +58,18 @@ export default function UniversalAuthPage() {
             )}
 
             <div>
-              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2 px-1">Universal Identity Code</label>
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2 px-1">Identity / UID / Phone (default) / Email / Name</label>
               <div className="relative">
                 <Fingerprint className="w-4 h-4 absolute left-4 top-4 text-zinc-500" />
                 <input 
                   name="identity" 
                   required 
                   autoComplete="off"
-                  placeholder="Enter secure ID..."
+                  placeholder="Enter any identity format..."
                   className="w-full pl-11 pr-4 py-3.5 bg-black/50 border border-white/10 rounded-xl focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition text-white placeholder:text-zinc-700 font-mono text-sm"
                 />
               </div>
+              <p className="text-[9px] text-zinc-600 mt-2 px-1 italic">Ketik format apa saja. Sistem otomatis mengenalinya.</p>
             </div>
             
             <div>

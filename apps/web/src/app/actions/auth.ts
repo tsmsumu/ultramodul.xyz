@@ -1,7 +1,7 @@
 "use server";
 
 import { db, users } from "@ultra/db";
-import { eq } from "drizzle-orm";
+import { eq, or } from "drizzle-orm";
 import { createHash } from "crypto";
 import { cookies } from "next/headers";
 import { createAuditLog } from "@ultra/db/src/logger";
@@ -22,8 +22,22 @@ export async function loginAction(data: FormData) {
       return { success: true };
     }
 
-    // Cek Real Database
-    const records = await db.select().from(users).where(eq(users.username, identCode)).limit(1);
+    // Auto-Sanitizer for Phone Numbers
+    let normalizedPhone = identCode.replace(/\D/g, ""); // Strip non-digits
+    if (normalizedPhone.startsWith("0")) {
+      normalizedPhone = "62" + normalizedPhone.slice(1);
+    }
+
+    // Cek Real Database via Omni-Search (Satu input mencari ke semua titik identitas)
+    const records = await db.select().from(users).where(
+      or(
+        eq(users.username, identCode),
+        eq(users.name, identCode),
+        eq(users.email, identCode),
+        eq(users.phoneNumber, normalizedPhone)
+      )
+    ).limit(1);
+    
     if (!records.length) {
       return { success: false, message: "Identitas tidak ditemukan sistem." };
     }

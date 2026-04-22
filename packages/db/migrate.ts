@@ -50,6 +50,17 @@ async function migrate() {
     }
   }
 
+  try {
+    await db.execute(`CREATE TABLE auth_gateway_matrix (id TEXT PRIMARY KEY, type TEXT NOT NULL, provider TEXT NOT NULL UNIQUE, name TEXT NOT NULL, is_active INTEGER NOT NULL DEFAULT 0, config_payload TEXT, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL)`);
+    console.log("Created auth_gateway_matrix table.");
+  } catch (e: any) {
+    if (e.message && e.message.includes('table auth_gateway_matrix already exists')) {
+      console.log("Table auth_gateway_matrix already exists.");
+    } else {
+      console.error(e);
+    }
+  }
+
   console.log("Migration complete.");
 }
 migrate().catch(console.error);

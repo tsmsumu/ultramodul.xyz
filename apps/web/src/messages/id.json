@@ -35,7 +35,8 @@
     "Panduan Developer": "Blueprint Tim Dev",
     "Aegis System Core": "Aegis System Core",
     "Nexus War Room": "Nexus War Room",
-    "API Exchange": "API Exchange Universal"
+    "API Exchange": "API Exchange Universal",
+    "Auth/MFA Gateway": "Matriks Auth & MFA"
   },
   "customizer": {
     "title": "Pengaturan Tampilan",
@@ -372,5 +373,16 @@
     "p4L1": "Skrip deploy yang mengandung kunci rahasia dijaga sangat ketat.",
     "p4L2": "Developer hanya menguji pekerjaan mereka di localhost:3000.",
     "p4L3": "Hanya Bapak/Admin tunggal yang berhak mengeksekusi peluncuran kode ke angkasa (VPS)."
+  },
+  "auth_gateway": {
+    "title": "Auth & MFA Gateway Matrix",
+    "subtitle": "Konfigurasi global terpusat untuk SSO, Tanda Tangan Elektronik, dan Notifikasi Omni-Channel.",
+    "tab_sso": "SSO Providers",
+    "tab_messaging": "Messaging & OTP",
+    "tab_esign": "Tanda Tangan Elektronik",
+    "configure_btn": "Konfigurasi Kunci Rahasia",
+    "save_btn": "Simpan Konfigurasi",
+    "status_active": "AKTIF",
+    "status_inactive": "MATI"
   }
 }

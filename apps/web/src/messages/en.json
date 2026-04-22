@@ -35,7 +35,8 @@
     "Panduan Developer": "DevTeam Blueprint",
     "Aegis System Core": "Aegis System Core",
     "Nexus War Room": "Nexus War Room",
-    "API Exchange": "Universal API Exchange"
+    "API Exchange": "Universal API Exchange",
+    "Auth/MFA Gateway": "Auth & MFA Matrix"
   },
   "customizer": {
     "title": "Display Settings",
@@ -372,5 +373,16 @@
     "p4L1": "Deployment scripts containing server keys are strictly secured.",
     "p4L2": "Developers strictly test against localhost:3000.",
     "p4L3": "Only the Admin holds the 'Veto' right to execute remote deployment hooks."
+  },
+  "auth_gateway": {
+    "title": "Auth & MFA Gateway Matrix",
+    "subtitle": "Global configuration for SSO, Electronic Signature, and Messaging Omni-Channels.",
+    "tab_sso": "SSO Providers",
+    "tab_messaging": "Messaging & OTP",
+    "tab_esign": "Electronic Signature",
+    "configure_btn": "Configure Secrets",
+    "save_btn": "Save Configuration",
+    "status_active": "ACTIVE",
+    "status_inactive": "INACTIVE"
   }
 }

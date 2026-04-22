@@ -26,6 +26,7 @@ export const ModuleRegistry: OmniModule[] = [
   { id: "IAM Console", name: "IAM Console", path: "/iam", icon: Shield, isCore: true, category: "iam" },
   { id: "Keamanan Mandat", name: "Mandate Delegation", path: "/mandate", icon: Key, isCore: true, category: "iam" },
   { id: "Active Identity Matrix", name: "Active Identity", path: "/access", icon: Users, isCore: true, category: "iam" },
+  { id: "Auth/MFA Gateway", name: "Auth & MFA Gateway", path: "/auth-gateway", icon: Key, isCore: true, category: "iam" },
   { id: "Audit Logbook Intel", name: "Audit Logbook", path: "/logbook", icon: BookOpen, isCore: true, category: "iam" },
   { id: "Time-Machine Nexus", name: "Nexus Time-Machine", path: "/recovery", icon: Clock, isCore: true, category: "iam" },
 

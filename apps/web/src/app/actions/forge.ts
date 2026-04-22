@@ -17,8 +17,12 @@ export async function executeOmniForge(targetFormat: string, filterStr: string) 
 
     // Filter Murni di sisi Server (jika diminta)
     let processedData = data;
-    if (filterStr && filterStr.toLowerCase().includes("infrastruktur")) {
-      processedData = data.filter(d => d.topic.toLowerCase() === "infrastruktur");
+    if (filterStr && filterStr.trim() !== "") {
+      const lowerFilter = filterStr.toLowerCase();
+      processedData = data.filter(d => 
+        (d.topic && d.topic.toLowerCase().includes(lowerFilter)) || 
+        (d.content && d.content.toLowerCase().includes(lowerFilter))
+      );
     }
 
     if (processedData.length === 0) {

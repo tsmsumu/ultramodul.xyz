@@ -171,3 +171,32 @@ export const exchangeRates = sqliteTable('exchange_rates', {
   isAuto: integer('is_auto', { mode: 'boolean' }).notNull().default(true),
   lastUpdated: integer('last_updated', { mode: 'timestamp' }).notNull()
 });
+
+// --- API EXCHANGE (Matrix Routing) ---
+export const apiEndpoints = sqliteTable('api_endpoints', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(), // e.g., "Dukcapil NIK Check"
+  description: text('description'),
+  pathSlug: text('path_slug').unique().notNull(), // e.g., "v1/dukcapil/nik" (without leading slash)
+  method: text('method').notNull().default('GET'), // GET, POST, PUT, DELETE, PATCH, ALL
+  type: text('type').notNull().default('INBOUND'), // INBOUND, OUTBOUND
+  routingType: text('routing_type').notNull().default('AUTOMATIC'), // AUTOMATIC, MANUAL
+  targetUrl: text('target_url'), // Used if AUTOMATIC
+  handlerName: text('handler_name'), // Used if MANUAL (e.g. "customDukcapilLogic")
+  isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
+  requireAuth: integer('require_auth', { mode: 'boolean' }).notNull().default(true),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull()
+});
+
+export const apiTrafficLogs = sqliteTable('api_traffic_logs', {
+  id: text('id').primaryKey(),
+  endpointId: text('endpoint_id'), // Relates to apiEndpoints.id (optional if path not found)
+  requestPath: text('request_path').notNull(),
+  requestMethod: text('request_method').notNull(),
+  requestPayload: text('request_payload'), // Masked payload
+  responseStatus: integer('response_status').notNull(),
+  latencyMs: integer('latency_ms').notNull(),
+  ipAddress: text('ip_address'),
+  timestamp: integer('timestamp', { mode: 'timestamp' }).notNull()
+});

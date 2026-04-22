@@ -12,6 +12,8 @@ const BASH_SCRIPT = `
 set -e
 echo "Starting rescue deploy..."
 cd /var/www/ultramodul
+git stash
+git pull origin main
 pnpm install
 export DATABASE_URL="file:/var/www/production.db"
 cd packages/db

@@ -38,7 +38,7 @@ export function OmniDBNode({ id, data, selected }: { id: string, data: any, sele
   const activeColor = colors[engine] || colors.postgresql;
 
   return (
-    <div className={`bg-white dark:bg-[#09090b] border-2 rounded-xl shadow-2xl min-w-[320px] overflow-hidden transition-all ${selected ? 'shadow-blue-500/20 shadow-xl' : ''}`} style={{ borderColor: selected ? '#3b82f6' : '#1e3a8a' }}>
+    <div className={`bg-white dark:bg-[#09090b] border-2 rounded-xl shadow-2xl min-w-[320px] overflow-hidden transition-all ${selected ? 'shadow-blue-500/20 shadow-xl border-blue-500' : 'border-blue-900'}`}>
       <Handle type="target" position={Position.Left} className="w-3 h-3 bg-blue-500 border-2 border-white dark:border-[#09090b]" />
       
       <div className={`bg-linear-to-r ${activeColor} text-white p-3 text-xs font-bold flex justify-between items-center shadow-sm`}>
@@ -98,8 +98,10 @@ export function OmniDBNode({ id, data, selected }: { id: string, data: any, sele
         </div>
 
         <div>
-           <label className="text-[10px] uppercase font-bold tracking-widest text-blue-500 mb-1 flex items-center gap-1 block">SQL Extraction Query</label>
+           <label className="text-[10px] uppercase font-bold tracking-widest text-blue-500 mb-1 flex items-center gap-1">SQL Extraction Query</label>
            <textarea 
+             aria-label="SQL Extraction Query"
+             placeholder="Enter SQL query..."
              value={sqlQuery} 
              onChange={e => { setSqlQuery(e.target.value); setStatus("idle"); }} 
              rows={2}

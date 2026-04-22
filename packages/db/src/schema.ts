@@ -24,6 +24,9 @@ export const users = sqliteTable('users', {
   // Future-Proofing: API Exchange
   publicUuid: text('public_uuid'), // UUID alias for hiding NIK in API responses
 
+  // Language Preferences (Rosetta Protocol) - Array of language codes like ["id", "en"]
+  languages: text('languages').notNull().default('["id"]'),
+
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull()
 });
 

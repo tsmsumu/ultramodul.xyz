@@ -9,12 +9,14 @@ export default function ClientDashboardLayout({
   children, 
   layoutType,
   permissions,
-  activeUserId
+  activeUserId,
+  userLangs
 }: { 
   children: React.ReactNode; 
   layoutType: string;
   permissions: Record<string, string[]> | null;
   activeUserId: string | null;
+  userLangs: string[];
 }) {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
 
@@ -59,7 +61,7 @@ export default function ClientDashboardLayout({
   // DEFAULT SIDEBAR
   return (
     <div className="min-h-screen bg-transparent flex flex-col">
-      <Header toggleSidebar={() => setSidebarOpen(!isSidebarOpen)} activeUserId={activeUserId} />
+      <Header toggleSidebar={() => setSidebarOpen(!isSidebarOpen)} activeUserId={activeUserId} userLangs={userLangs} />
       
       <div className="flex flex-1 overflow-hidden relative">
         <Sidebar isOpen={isSidebarOpen} permissions={permissions} />

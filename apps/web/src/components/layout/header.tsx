@@ -5,8 +5,9 @@ import { useTheme } from "next-themes";
 import { logoutAction } from "@/app/actions/auth";
 import { EventBus, EVENTS } from "@/core/event-bus";
 import Link from "next/link";
+import { Globe2 } from "lucide-react";
 
-export function Header({ toggleSidebar, activeUserId }: { toggleSidebar: () => void, activeUserId: string | null }) {
+export function Header({ toggleSidebar, activeUserId, userLangs }: { toggleSidebar: () => void, activeUserId: string | null, userLangs: string[] }) {
   const tHome = useTranslations("home");
   const tHeader = useTranslations("header");
   const { theme, setTheme } = useTheme();
@@ -26,6 +27,25 @@ export function Header({ toggleSidebar, activeUserId }: { toggleSidebar: () => v
 
   const handleLogout = async () => {
     await logoutAction();
+    window.location.reload();
+  };
+
+  const handleLanguageSwitch = () => {
+    if (!userLangs || userLangs.length <= 1) return;
+    
+    // Temukan bahasa yang sedang aktif dari cookie atau default id
+    const currentCookie = document.cookie.split('; ').find(row => row.startsWith('NEXT_LOCALE='));
+    let currentLang = currentCookie ? currentCookie.split('=')[1] : "id";
+    
+    // Cari index bahasa saat ini di dalam array userLangs
+    let currentIndex = userLangs.indexOf(currentLang);
+    if (currentIndex === -1) currentIndex = 0; // fallback
+
+    // Lanjut ke bahasa berikutnya dalam urutan
+    const nextIndex = (currentIndex + 1) % userLangs.length;
+    const nextLang = userLangs[nextIndex];
+
+    document.cookie = `NEXT_LOCALE=${nextLang}; path=/; max-age=31536000`;
     window.location.reload();
   };
 
@@ -76,6 +96,18 @@ export function Header({ toggleSidebar, activeUserId }: { toggleSidebar: () => v
             {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
         </div>
+
+        {userLangs && userLangs.length > 1 && (
+          <div className="relative">
+            <button 
+               onClick={handleLanguageSwitch}
+               title="Ganti Bahasa (Rosetta)"
+               className="w-8 h-8 rounded-full flex items-center justify-center bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-all border border-indigo-200 dark:border-indigo-800/50"
+            >
+              <Globe2 className="w-4 h-4" />
+            </button>
+          </div>
+        )}
 
         <div className="relative">
           <button 

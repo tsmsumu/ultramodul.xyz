@@ -163,3 +163,21 @@ export async function importCSVIdentities(csvText: string) {
     return { success: false, error: "Gagal mengimpor CSV. Pastikan format: username,name,role" };
   }
 }
+
+export async function updateIdentityLanguages(id: string, languages: string[]) {
+  try {
+    await db.update(users).set({ languages: JSON.stringify(languages) }).where(eq(users.id, id));
+
+    await createAuditLog({
+      action: "UPDATE_LANGUAGES",
+      actorId: "SYSTEM",
+      target: id,
+      metadata: { languages }
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error("Update languages failed:", error);
+    return { success: false, error: "Gagal memperbarui bahasa." };
+  }
+}

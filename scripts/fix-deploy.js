@@ -30,7 +30,7 @@ pm2 delete ultramodul || true
 echo "-> Migrating Database Schema without deleting data (Drizzle Push)..."
 
 cd packages/db
-pnpm exec drizzle-kit push
+yes "" | pnpm exec drizzle-kit push
 cd ../..
 
 echo "-> Building Next.js Apps..."

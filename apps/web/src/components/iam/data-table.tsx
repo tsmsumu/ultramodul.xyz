@@ -5,6 +5,8 @@ import { Lock, Unlock, ShieldAlert, Settings, Siren, Search, CheckSquare, HardDr
 import { useState, useMemo } from "react";
 import { MatrixDrawer } from "./matrix-drawer";
 import { OmniEtlModal } from "./omni-etl-modal";
+import { LanguageModal } from "./language-modal";
+import { Globe2 } from "lucide-react";
 
 export function DataTable({ initialUsers }: { initialUsers: any[] }) {
   const [users, setUsers] = useState(initialUsers);
@@ -19,6 +21,10 @@ export function DataTable({ initialUsers }: { initialUsers: any[] }) {
 
   // Omni ETL State
   const [etlOpen, setEtlOpen] = useState(false);
+
+  // Language Modal State
+  const [langModalOpen, setLangModalOpen] = useState(false);
+  const [selectedUserLang, setSelectedUserLang] = useState<{id: string, name: string, languages: string[]} | null>(null);
 
   // Advanced Search Logic
   const filteredUsers = useMemo(() => {
@@ -261,6 +267,17 @@ export function DataTable({ initialUsers }: { initialUsers: any[] }) {
                   <Settings className="w-4 h-4" />
                 </button>
                 <button 
+                  onClick={() => { 
+                    const langs = user.languages ? JSON.parse(user.languages) : ["id"];
+                    setSelectedUserLang({id: user.id, name: user.name, languages: langs}); 
+                    setLangModalOpen(true); 
+                  }}
+                  className="p-2 text-gray-500 hover:text-cyan-600 dark:text-gray-400 dark:hover:text-cyan-400 hover:bg-cyan-50 dark:hover:bg-cyan-900/30 rounded-lg transition"
+                  title="Atur Preferensi Bahasa (Rosetta Protocol)"
+                >
+                  <Globe2 className="w-4 h-4" />
+                </button>
+                <button 
                   disabled={loadingId === user.id}
                   onClick={() => handleToggle(user.id, user.status)}
                   className="p-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg transition disabled:opacity-50"
@@ -296,6 +313,18 @@ export function DataTable({ initialUsers }: { initialUsers: any[] }) {
         onClose={() => setEtlOpen(false)}
         selectedCount={selectedIds.size}
         onExport={executeExport}
+      />
+
+      <LanguageModal 
+        isOpen={langModalOpen}
+        onClose={() => setLangModalOpen(false)}
+        userId={selectedUserLang?.id || null}
+        userName={selectedUserLang?.name || null}
+        initialLanguages={selectedUserLang?.languages || ["id"]}
+        onRefresh={() => {
+          // Fire global event to refresh IAM users
+          window.dispatchEvent(new Event("iam-refresh"));
+        }}
       />
     </div>
   );

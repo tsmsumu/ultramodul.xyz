@@ -56,25 +56,7 @@ echo "-> Starting Next.js via PM2..."
 pm2 start pnpm --name "ultramodul" -- run start
 pm2 save
 
-echo "-> Configuring Nginx Reverse Proxy for pum.ultramodul.xyz..."
-sudo bash -c 'cat << EOF > /etc/nginx/sites-available/pum.ultramodul.xyz
-server {
-    listen 80;
-    server_name pum.ultramodul.xyz;
-
-    location / {
-        proxy_pass http://localhost:3000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade \\$http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_set_header Host \\$host;
-        proxy_cache_bypass \\$http_upgrade;
-    }
-}
-EOF'
-
-sudo ln -sf /etc/nginx/sites-available/pum.ultramodul.xyz /etc/nginx/sites-enabled/
-sudo rm -f /etc/nginx/sites-enabled/default
+echo "-> Nginx is already configured and SSL is managed by Certbot. Skipping rewrite..."
 sudo nginx -t
 sudo systemctl restart nginx
 

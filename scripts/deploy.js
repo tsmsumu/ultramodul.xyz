@@ -44,6 +44,7 @@ fi
 echo "-> Installing Dependencies & Building Next.js..."
 pnpm install
 cd packages/db
+DATABASE_URL="file:/var/www/ultramodul/production.db" npx drizzle-kit push
 NODE_ENV=production npx tsx migrate.ts
 cd ../../apps/web
 

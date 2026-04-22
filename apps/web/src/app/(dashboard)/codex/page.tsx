@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { BookOpen, Database, UploadCloud, CheckCircle2, Server, Search, Trash2 } from "lucide-react";
 import { getActiveUserId } from "../../actions/auth";
+import { useTranslations } from "next-intl";
 
 interface Dictionary {
   id: string;
@@ -13,6 +14,7 @@ interface Dictionary {
 }
 
 export default function OmniCodexPage() {
+  const t = useTranslations("codex");
   const [isUploading, setIsUploading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [dictionaries, setDictionaries] = useState<Dictionary[]>([]);
@@ -36,7 +38,7 @@ export default function OmniCodexPage() {
   };
 
   const handleUpload = () => {
-    if (!dictName || !dictTarget) return alert("Isi Nama Kamus dan Target Kolom!");
+    if (!dictName || !dictTarget) return alert(t("alertFill"));
     setIsUploading(true);
     setTimeout(() => {
       setIsUploading(false);
@@ -56,7 +58,7 @@ export default function OmniCodexPage() {
   };
 
   const handleDelete = (id: string) => {
-    if(confirm("Hapus kamus ini?")) {
+    if(confirm(t("alertDelete"))) {
       saveDictionaries(dictionaries.filter(d => d.id !== id));
     }
   };
@@ -69,9 +71,9 @@ export default function OmniCodexPage() {
           <BookOpen className="w-8 h-8 text-blue-400" />
         </div>
         <div>
-          <h1 className="text-3xl font-black uppercase tracking-widest text-white mb-2">Omni-Codex Global Registry</h1>
+          <h1 className="text-3xl font-black uppercase tracking-widest text-white mb-2">{t("title")}</h1>
           <p className="text-zinc-400 max-w-2xl text-sm">
-            Perpustakaan Metadata Nasional (Rosetta Stone). Kamus yang diunggah di sini akan otomatis tersedia bagi semua Ahli Analis di seluruh platform untuk menerjemahkan kode sandi menjadi bahasa manusia secara Real-Time.
+            {t("desc")}
           </p>
         </div>
       </div>
@@ -80,17 +82,17 @@ export default function OmniCodexPage() {
         {/* PANEL UPLOAD */}
         <div className="bg-zinc-900/40 border border-white/5 rounded-3xl p-8 flex flex-col h-fit">
           <h2 className="text-sm font-bold uppercase tracking-widest text-blue-400 mb-6 flex items-center gap-2">
-            <Database className="w-4 h-4" /> Inject Rosetta Stone
+            <Database className="w-4 h-4" /> {t("injectTitle")}
           </h2>
           
           <div className="space-y-4 mb-6">
             <div>
-              <label className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-1 block">Nama Kamus</label>
-              <input value={dictName} onChange={e => setDictName(e.target.value)} type="text" placeholder="Contoh: Kamus Kodifikasi Sektor X" className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors" />
+              <label className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-1 block">{t("dictName")}</label>
+              <input value={dictName} onChange={e => setDictName(e.target.value)} type="text" placeholder={t("dictNamePlaceholder")} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors" />
             </div>
             <div>
-              <label className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-1 block">Target Kolom Utama</label>
-              <input value={dictTarget} onChange={e => setDictTarget(e.target.value)} type="text" placeholder="Contoh: kode_sektor" className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors" />
+              <label className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-1 block">{t("dictTarget")}</label>
+              <input value={dictTarget} onChange={e => setDictTarget(e.target.value)} type="text" placeholder={t("dictTargetPlaceholder")} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors" />
             </div>
           </div>
 
@@ -109,9 +111,9 @@ export default function OmniCodexPage() {
             
             <div className="text-center">
               <span className="text-sm font-bold uppercase tracking-widest block mb-1">
-                {isUploading ? 'Memproses Kamus...' : success ? 'Kamus Aktif!' : 'Drop Excel/CSV Metadata'}
+                {isUploading ? t("processing") : success ? t("active") : t("dropBox")}
               </span>
-              <span className="text-[10px] text-zinc-500 font-mono">Format: [code, label]</span>
+              <span className="text-[10px] text-zinc-500 font-mono">{t("format")}</span>
             </div>
           </div>
         </div>
@@ -120,18 +122,17 @@ export default function OmniCodexPage() {
         <div className="lg:col-span-2 bg-zinc-900/40 border border-white/5 rounded-3xl p-8">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-sm font-bold uppercase tracking-widest text-zinc-400 flex items-center gap-2">
-              <Server className="w-4 h-4" /> Kamus Nasional Tersedia
+              <Server className="w-4 h-4" /> {t("listTitle")}
             </h2>
             <div className="bg-black/40 border border-white/5 rounded-xl px-3 py-2 flex items-center gap-2 w-64">
               <Search className="w-4 h-4 text-zinc-500" />
-              <input type="text" placeholder="Cari Kamus..." className="bg-transparent border-none outline-none text-xs w-full text-zinc-300" />
+              <input type="text" placeholder={t("searchPlaceholder")} className="bg-transparent border-none outline-none text-xs w-full text-zinc-300" />
             </div>
           </div>
 
           <div className="space-y-3">
             {dictionaries.length === 0 ? (
-              <div className="text-center py-10 text-zinc-500 text-sm">
-                Belum ada Kamus/Metadata yang terdaftar. <br/>Silakan Upload pada panel di samping.
+              <div className="text-center py-10 text-zinc-500 text-sm" dangerouslySetInnerHTML={{ __html: t("emptyList") }}>
               </div>
             ) : (
               dictionaries.map((dict) => (
@@ -143,7 +144,7 @@ export default function OmniCodexPage() {
                     <div>
                       <h3 className="font-bold text-sm text-zinc-200">{dict.name}</h3>
                       <div className="text-xs text-zinc-500 font-mono mt-1">
-                        TARGET: <span className="text-blue-400">{dict.target}</span> • {dict.rows} Baris Teks
+                        {t("target")}: <span className="text-blue-400">{dict.target}</span> • {dict.rows} {t("rows")}
                       </div>
                     </div>
                   </div>
@@ -153,7 +154,7 @@ export default function OmniCodexPage() {
                       {dict.status}
                     </span>
                     <button onClick={() => handleDelete(dict.id)} className="p-2 bg-red-500/10 text-red-500 hover:bg-red-500/20 rounded-lg transition-colors border border-red-500/20 opacity-0 group-hover:opacity-100 uppercase tracking-widest text-[10px] font-bold">
-                      Hapus
+                      {t("btnDelete")}
                     </button>
                   </div>
                 </div>

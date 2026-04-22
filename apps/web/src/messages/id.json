@@ -244,7 +244,28 @@
     "confirmPasswordPlaceholder": "Ulangi sandi baru",
     "passwordMismatch": "Konfirmasi Sandi Baru tidak cocok.",
     "successMessage": "Profil diperbarui.",
-    "encrypting": "Menenkripsi...",
+    "encrypting": "Mengenknripsi...",
     "save": "Enkripsi & Simpan"
+  },
+  "codex": {
+    "title": "Omni-Codex Global Registry",
+    "desc": "Perpustakaan Metadata Nasional (Rosetta Stone). Kamus yang diunggah di sini akan otomatis tersedia bagi semua Ahli Analis di seluruh platform untuk menerjemahkan kode sandi menjadi bahasa manusia secara Real-Time.",
+    "injectTitle": "Inject Rosetta Stone",
+    "dictName": "Nama Kamus",
+    "dictNamePlaceholder": "Contoh: Kamus Kodifikasi Sektor X",
+    "dictTarget": "Target Kolom Utama",
+    "dictTargetPlaceholder": "Contoh: kode_sektor",
+    "processing": "Memproses Kamus...",
+    "active": "Kamus Aktif!",
+    "dropBox": "Drop Excel/CSV Metadata",
+    "format": "Format: [code, label]",
+    "listTitle": "Kamus Nasional Tersedia",
+    "searchPlaceholder": "Cari Kamus...",
+    "emptyList": "Belum ada Kamus/Metadata yang terdaftar. <br/>Silakan Upload pada panel di samping.",
+    "target": "TARGET",
+    "rows": "Baris Teks",
+    "btnDelete": "Hapus",
+    "alertFill": "Isi Nama Kamus dan Target Kolom!",
+    "alertDelete": "Hapus kamus ini?"
   }
 }

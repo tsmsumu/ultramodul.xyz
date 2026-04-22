@@ -246,5 +246,26 @@
     "successMessage": "Profile updated.",
     "encrypting": "Encrypting...",
     "save": "Encrypt & Save"
+  },
+  "codex": {
+    "title": "Omni-Codex Global Registry",
+    "desc": "National Metadata Library (Rosetta Stone). Dictionaries uploaded here will automatically be available to all Analysts across the platform to translate codifications into human language in Real-Time.",
+    "injectTitle": "Inject Rosetta Stone",
+    "dictName": "Dictionary Name",
+    "dictNamePlaceholder": "e.g. Sector X Codification Dictionary",
+    "dictTarget": "Primary Column Target",
+    "dictTargetPlaceholder": "e.g. sector_code",
+    "processing": "Processing Dictionary...",
+    "active": "Dictionary Active!",
+    "dropBox": "Drop Metadata Excel/CSV",
+    "format": "Format: [code, label]",
+    "listTitle": "Available National Dictionaries",
+    "searchPlaceholder": "Search Dictionaries...",
+    "emptyList": "No Dictionaries/Metadata registered yet. Please upload in the adjacent panel.",
+    "target": "TARGET",
+    "rows": "Text Rows",
+    "btnDelete": "Delete",
+    "alertFill": "Fill Dictionary Name and Target Column!",
+    "alertDelete": "Delete this dictionary?"
   }
 }

@@ -166,5 +166,23 @@
     "emptySlider": "Empty. Add a slider.",
     "colorLabel": "Icon Color:",
     "editMapTitle": "Assemble Folder"
+  },
+  "profile": {
+    "title": "Identity Vault",
+    "desc": "Personal Security Center",
+    "subdesc": "End-to-End Encryption",
+    "rootWarning": "The SYSTEM_ROOT account is an emergency bypass. This profile cannot be modified from the web interface for absolute security reasons.",
+    "universalId": "Universal ID (NIK)",
+    "locked": "Absolute / Locked",
+    "fullName": "Display Name (Username)",
+    "role": "Matrix Authority (Role)",
+    "newPassword": "New Security Password",
+    "newPasswordPlaceholder": "Leave blank if unchanged",
+    "confirmPassword": "Confirm New Password",
+    "confirmPasswordPlaceholder": "Repeat new password",
+    "passwordMismatch": "New Password confirmation does not match.",
+    "successMessage": "Profile updated.",
+    "encrypting": "Encrypting...",
+    "save": "Encrypt & Save"
   }
 }

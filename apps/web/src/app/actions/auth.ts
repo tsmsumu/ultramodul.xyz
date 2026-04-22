@@ -66,3 +66,51 @@ export async function logoutAction() {
   cookieStore.delete("UNIVERSAL_SESSION_ID");
   return { success: true };
 }
+
+export async function updateIdentity(formData: FormData) {
+  try {
+    const cookieStore = await cookies();
+    const sessionId = cookieStore.get("UNIVERSAL_SESSION_ID")?.value;
+    
+    if (!sessionId) {
+      return { success: false, message: "Akses Ditolak. Sesi kedaluwarsa." };
+    }
+
+    const currentRecords = await db.select().from(users).where(eq(users.id, sessionId)).limit(1);
+    if (!currentRecords.length) {
+      return { success: false, message: "Pengguna tidak ditemukan." };
+    }
+
+    const user = currentRecords[0];
+
+    const fullName = (formData.get("fullName") as string)?.trim();
+    const newPassword = (formData.get("password") as string)?.trim();
+    
+    const updatePayload: any = {};
+    if (fullName && fullName !== user.name) {
+      updatePayload.name = fullName;
+    }
+
+    if (newPassword && newPassword.length >= 3) {
+      updatePayload.passwordHash = createHash("sha256").update(newPassword).digest("hex");
+    }
+
+    if (Object.keys(updatePayload).length > 0) {
+      await db.update(users).set(updatePayload).where(eq(users.id, sessionId));
+      
+      await createAuditLog({
+        action: "IDENTITY_UPDATE",
+        actorId: sessionId,
+        metadata: { updatedFields: Object.keys(updatePayload) }
+      });
+      
+      return { success: true, message: "Identitas berhasil diperbarui di Vault." };
+    }
+
+    return { success: true, message: "Tidak ada perubahan." };
+
+  } catch (error: any) {
+    console.error("Update Identity Error:", error);
+    return { success: false, message: "Kesalahan internal server." };
+  }
+}

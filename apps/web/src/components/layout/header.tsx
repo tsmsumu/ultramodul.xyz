@@ -1,9 +1,10 @@
-import { Menu, Search, User, LogOut, Bell, Sun, Moon } from "lucide-react";
+import { Menu, Search, User, LogOut, Bell, Sun, Moon, UserCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import { logoutAction } from "@/app/actions/auth";
 import { EventBus, EVENTS } from "@/core/event-bus";
+import Link from "next/link";
 
 export function Header({ toggleSidebar, activeUserId }: { toggleSidebar: () => void, activeUserId: string | null }) {
   const tHome = useTranslations("home");
@@ -87,9 +88,13 @@ export function Header({ toggleSidebar, activeUserId }: { toggleSidebar: () => v
           
           {/* PROFILE DROPDOWN */}
           {showSandbox && (
-            <div className="absolute top-10 right-0 w-48 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-white/10 shadow-xl rounded-xl p-2 z-50">
+            <div className="absolute top-10 right-0 w-56 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-white/10 shadow-xl rounded-xl p-2 z-50">
+               <Link href="/profile" onClick={() => setShowSandbox(false)} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-gray-700 dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-white/10 rounded-md mb-1 font-bold">
+                 <UserCircle className="w-4 h-4 text-indigo-500" /> Identity Vault (Profil)
+               </Link>
+               <hr className="border-gray-100 dark:border-white/5 my-1" />
                <button onClick={handleLogout} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md">
-                 <LogOut className="w-3 h-3" /> Secure Logout
+                 <LogOut className="w-4 h-4" /> Secure Logout
                </button>
             </div>
           )}

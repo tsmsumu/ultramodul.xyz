@@ -166,5 +166,23 @@
     "emptySlider": "Kosong. Tambah tuas.",
     "colorLabel": "Warna Ikon:",
     "editMapTitle": "Rakit Map"
+  },
+  "profile": {
+    "title": "Identity Vault",
+    "desc": "Personal Security Center",
+    "subdesc": "Enkripsi End-to-End",
+    "rootWarning": "Akun SYSTEM_ROOT adalah bypass darurat. Profil ini tidak dapat diubah dari antarmuka web demi alasan keamanan mutlak.",
+    "universalId": "Universal ID (NIK)",
+    "locked": "Absolut / Terkunci",
+    "fullName": "Nama Tampilan (Username)",
+    "role": "Otoritas Matriks (Role)",
+    "newPassword": "Sandi Keamanan Baru",
+    "newPasswordPlaceholder": "Kosongkan jika tidak diubah",
+    "confirmPassword": "Konfirmasi Sandi Baru",
+    "confirmPasswordPlaceholder": "Ulangi sandi baru",
+    "passwordMismatch": "Konfirmasi Sandi Baru tidak cocok.",
+    "successMessage": "Profil diperbarui.",
+    "encrypting": "Menenkripsi...",
+    "save": "Enkripsi & Simpan"
   }
 }

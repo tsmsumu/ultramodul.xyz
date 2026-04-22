@@ -1,25 +1,64 @@
 "use client";
 
-import { useState } from "react";
-import { BookOpen, Database, UploadCloud, CheckCircle2, Server, Search } from "lucide-react";
+import { useState, useEffect } from "react";
+import { BookOpen, Database, UploadCloud, CheckCircle2, Server, Search, Trash2 } from "lucide-react";
+import { getActiveUserId } from "../../actions/auth";
+
+interface Dictionary {
+  id: string;
+  name: string;
+  target: string;
+  status: string;
+  rows: number;
+}
 
 export default function OmniCodexPage() {
   const [isUploading, setIsUploading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [dictionaries, setDictionaries] = useState<Dictionary[]>([]);
+  const [userId, setUserId] = useState("anonymous");
+  const [dictName, setDictName] = useState("");
+  const [dictTarget, setDictTarget] = useState("");
 
-  const mockDictionaries = [
-    { id: 1, name: "Kamus Master Wilayah BPS 2024", target: "kode_kabupaten", status: "Active", rows: 514 },
-    { id: 2, name: "Kamus KBLI 2020", target: "kode_lapangan_usaha", status: "Active", rows: 1240 },
-    { id: 3, name: "Kamus Pendidikan BPS", target: "r301", status: "Active", rows: 12 },
-  ];
+  useEffect(() => {
+    getActiveUserId().then(id => {
+      setUserId(id);
+      const saved = localStorage.getItem(`omniCodex_v2_${id}`);
+      if (saved) {
+        try { setDictionaries(JSON.parse(saved)); } catch(e){}
+      }
+    });
+  }, []);
+
+  const saveDictionaries = (newDicts: Dictionary[]) => {
+    setDictionaries(newDicts);
+    localStorage.setItem(`omniCodex_v2_${userId}`, JSON.stringify(newDicts));
+  };
 
   const handleUpload = () => {
+    if (!dictName || !dictTarget) return alert("Isi Nama Kamus dan Target Kolom!");
     setIsUploading(true);
     setTimeout(() => {
       setIsUploading(false);
       setSuccess(true);
+      const newDict: Dictionary = {
+        id: `dict_${Date.now()}`,
+        name: dictName,
+        target: dictTarget,
+        status: "Active",
+        rows: Math.floor(Math.random() * 1000) + 10 // Mock row count
+      };
+      saveDictionaries([...dictionaries, newDict]);
+      setDictName("");
+      setDictTarget("");
       setTimeout(() => setSuccess(false), 3000);
-    }, 2000);
+    }, 1500);
+  };
+
+  const handleDelete = (id: string) => {
+    if(confirm("Hapus kamus ini?")) {
+      saveDictionaries(dictionaries.filter(d => d.id !== id));
+    }
   };
 
   return (
@@ -47,11 +86,11 @@ export default function OmniCodexPage() {
           <div className="space-y-4 mb-6">
             <div>
               <label className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-1 block">Nama Kamus</label>
-              <input type="text" placeholder="Contoh: Kamus KBLI 2020" className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors" />
+              <input value={dictName} onChange={e => setDictName(e.target.value)} type="text" placeholder="Contoh: Kamus Kodifikasi Sektor X" className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors" />
             </div>
             <div>
               <label className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-1 block">Target Kolom Utama</label>
-              <input type="text" placeholder="Contoh: kode_lapangan_usaha" className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors" />
+              <input value={dictTarget} onChange={e => setDictTarget(e.target.value)} type="text" placeholder="Contoh: kode_sektor" className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors" />
             </div>
           </div>
 
@@ -90,30 +129,36 @@ export default function OmniCodexPage() {
           </div>
 
           <div className="space-y-3">
-            {mockDictionaries.map((dict) => (
-              <div key={dict.id} className="bg-black/40 border border-white/5 rounded-2xl p-4 flex items-center justify-between hover:bg-white/5 transition-colors group">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center">
-                    <BookOpen className="w-5 h-5 text-blue-500" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-sm text-zinc-200">{dict.name}</h3>
-                    <div className="text-xs text-zinc-500 font-mono mt-1">
-                      TARGET: <span className="text-blue-400">{dict.target}</span> • {dict.rows} Baris Teks
+            {dictionaries.length === 0 ? (
+              <div className="text-center py-10 text-zinc-500 text-sm">
+                Belum ada Kamus/Metadata yang terdaftar. <br/>Silakan Upload pada panel di samping.
+              </div>
+            ) : (
+              dictionaries.map((dict) => (
+                <div key={dict.id} className="bg-black/40 border border-white/5 rounded-2xl p-4 flex items-center justify-between hover:bg-white/5 transition-colors group">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center">
+                      <BookOpen className="w-5 h-5 text-blue-500" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-sm text-zinc-200">{dict.name}</h3>
+                      <div className="text-xs text-zinc-500 font-mono mt-1">
+                        TARGET: <span className="text-blue-400">{dict.target}</span> • {dict.rows} Baris Teks
+                      </div>
                     </div>
                   </div>
+                  
+                  <div className="flex items-center gap-4">
+                    <span className="px-3 py-1 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold tracking-widest uppercase rounded-lg border border-emerald-500/20">
+                      {dict.status}
+                    </span>
+                    <button onClick={() => handleDelete(dict.id)} className="p-2 bg-red-500/10 text-red-500 hover:bg-red-500/20 rounded-lg transition-colors border border-red-500/20 opacity-0 group-hover:opacity-100 uppercase tracking-widest text-[10px] font-bold">
+                      Hapus
+                    </button>
+                  </div>
                 </div>
-                
-                <div className="flex items-center gap-4">
-                  <span className="px-3 py-1 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold tracking-widest uppercase rounded-lg border border-emerald-500/20">
-                    {dict.status}
-                  </span>
-                  <button className="text-xs font-bold text-red-500 opacity-0 group-hover:opacity-100 transition-opacity uppercase tracking-widest">
-                    Hapus
-                  </button>
-                </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
 
         </div>

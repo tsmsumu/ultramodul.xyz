@@ -4,13 +4,12 @@ import { useState, useRef, useEffect } from "react";
 import { MessageSquareWarning, Send, AlertTriangle, ShieldCheck, CheckCircle2, Zap, Radio, LocateFixed, Activity, Crosshair, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-type ComplaintTag = "Infrastruktur" | "Pelayanan" | "Kesehatan" | "Keamanan" | "Lainnya";
 type Urgency = "Kritis" | "Sedang" | "Rendah";
 
 interface ComplaintData {
   id: string;
   originalText: string;
-  category: ComplaintTag;
+  category: string;
   urgency: Urgency;
   location: string;
   timestamp: string;
@@ -29,33 +28,33 @@ export default function NexusVoicePage() {
     endOfChatRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [complaints]);
 
-  // Mock AI Engine
+  // Universal NLP Engine (Blank Canvas)
   const analyzeComplaint = (text: string): Omit<ComplaintData, "id" | "timestamp" | "originalText" | "isResolved"> => {
     const lowerText = text.toLowerCase();
     
     // Default fallback
-    let category: ComplaintTag = "Lainnya";
+    let category = "Umum/Lainnya";
     let urgency: Urgency = "Rendah";
     let location = "Tidak Terdeteksi";
 
-    // 1. Sentiment & Urgency Analysis
+    // 1. Sentiment & Urgency Analysis (Basic Universal Tone)
     if (lowerText.match(/(bahaya|parah|mati|kecelakaan|darurat|tolong|hancur|kritis|marah)/)) urgency = "Kritis";
     else if (lowerText.match(/(buruk|jelek|rusak|lubang|bolong|macet|kotor|bau)/)) urgency = "Sedang";
     else urgency = "Rendah";
 
-    // 2. Category NLP Tagging
-    if (lowerText.match(/(jalan|jembatan|lubang|bolong|lampu|aspal|bangunan)/)) category = "Infrastruktur";
-    else if (lowerText.match(/(puskesmas|rumah sakit|dokter|bpjs|sakit|obat)/)) category = "Kesehatan";
-    else if (lowerText.match(/(rt|rw|kelurahan|kecamatan|ktp|kk|pelayanan|lambat|petugas)/)) category = "Pelayanan";
-    else if (lowerText.match(/(maling|rampok|begal|berantem|tawuran|aman)/)) category = "Keamanan";
+    // 2. Dynamic Category NLP Tagging (Mock Universal)
+    // Dalam skenario Universal sungguhan, kamus ini di-load dari localStorage milik Admin.
+    // Untuk sekarang, kita ganti ke tag generik.
+    if (lowerText.match(/(sistem|aplikasi|error|bug|login|password|akses)/)) category = "Teknis/Sistem";
+    else if (lowerText.match(/(uang|gaji|pembayaran|tagihan|dana|anggaran)/)) category = "Keuangan";
+    else if (lowerText.match(/(sdm|personel|pegawai|staff|admin|orang)/)) category = "SDM/Personalia";
+    else if (lowerText.match(/(fasilitas|gedung|ruangan|barang|aset)/)) category = "Aset Fisik";
 
-    // 3. Location Extraction (Mock dictionary)
-    const locations = ["bogor", "cibinong", "bandung", "sukabumi", "depok", "bekasi", "jakarta", "garut", "cianjur", "tasikmalaya", "alun-alun", "pasar"];
-    for (const loc of locations) {
-      if (lowerText.includes(loc)) {
-        location = loc.charAt(0).toUpperCase() + loc.slice(1); // Capitalize
-        break;
-      }
+    // 3. Location Extraction
+    // Menangkap entitas lokasi menggunakan Regex sederhana (kata setelah "di")
+    const locMatch = lowerText.match(/di\s+([a-zA-Z0-9_-]+)/i);
+    if (locMatch && locMatch[1]) {
+       location = locMatch[1].charAt(0).toUpperCase() + locMatch[1].slice(1);
     }
 
     return { category, urgency, location };

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Activity, MessageSquare, PhoneCall, Shield, Terminal as TerminalIcon, Users, Settings, Lock, Radio, Database, CheckCircle2, XCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { toggleProviderActive, updateProviderConfig, sendMessageViaEngine } from "@/app/actions/multi-channel";
+import { toggleProviderActive, updateProviderConfig, sendMessageViaEngine, getWaEngineStatus, getWaEngineQr } from "@/app/actions/multi-channel";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
@@ -208,12 +208,10 @@ export default function MultiChannelDashboard({
 
   const fetchWaStatus = async () => {
     try {
-      const res = await fetch('http://127.0.0.1:3001/status');
-      const data = await res.json();
+      const data = await getWaEngineStatus();
       setWaStatus(data.status);
       if (data.status === 'qr') {
-        const qrRes = await fetch('http://127.0.0.1:3001/qr');
-        const qrData = await qrRes.json();
+        const qrData = await getWaEngineQr();
         if (qrData.success) setQrCode(qrData.qr);
       } else {
         setQrCode(null);

@@ -171,3 +171,24 @@ export async function sendMessageViaEngine(providerType: string, to: string, mes
   }
 }
 
+export async function getWaEngineStatus() {
+  try {
+    const res = await fetch('http://127.0.0.1:3001/status', { cache: 'no-store' });
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    return { status: 'offline', hasSession: false };
+  }
+}
+
+export async function getWaEngineQr() {
+  try {
+    const res = await fetch('http://127.0.0.1:3001/qr', { cache: 'no-store' });
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    return { success: false, message: 'Failed to fetch QR' };
+  }
+}
+
+

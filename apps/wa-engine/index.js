@@ -35,18 +35,24 @@ function getNodeConfig(id) {
       wagTargets: config.wagTargets || [],
       chatTargets: config.chatTargets || [],
       syncHistory: config.syncHistory || false,
-      historyStart: config.historyStart || '',
-      historyEnd: config.historyEnd || '',
-      historyMediaMode: config.historyMediaMode || 'text_only',
       syncHistoryChat: config.syncHistoryChat !== false,
       historyChatTargets: config.historyChatTargets || '',
+      historyChatStart: config.historyChatStart || '',
+      historyChatEnd: config.historyChatEnd || '',
+      historyChatMediaMode: config.historyChatMediaMode || 'text_only',
       syncHistoryWag: config.syncHistoryWag !== false,
       historyWagTargets: config.historyWagTargets || '',
+      historyWagStart: config.historyWagStart || '',
+      historyWagEnd: config.historyWagEnd || '',
+      historyWagMediaMode: config.historyWagMediaMode || 'text_only',
       syncHistoryStatus: config.syncHistoryStatus !== false,
-      historyStatusTargets: config.historyStatusTargets || ''
+      historyStatusTargets: config.historyStatusTargets || '',
+      historyStatusStart: config.historyStatusStart || '',
+      historyStatusEnd: config.historyStatusEnd || '',
+      historyStatusMediaMode: config.historyStatusMediaMode || 'text_only'
     };
   } catch(e) {
-    return { name: 'Omni WA-Node', whitelist: [], statusTargets: [], wagTargets: [], chatTargets: [], syncHistory: false, historyStart: '', historyEnd: '', historyMediaMode: 'text_only', syncHistoryChat: true, historyChatTargets: '', syncHistoryWag: true, historyWagTargets: '', syncHistoryStatus: true, historyStatusTargets: '' };
+    return { name: 'Omni WA-Node', whitelist: [], statusTargets: [], wagTargets: [], chatTargets: [], syncHistory: false, syncHistoryChat: true, historyChatTargets: '', historyChatStart: '', historyChatEnd: '', historyChatMediaMode: 'text_only', syncHistoryWag: true, historyWagTargets: '', historyWagStart: '', historyWagEnd: '', historyWagMediaMode: 'text_only', syncHistoryStatus: true, historyStatusTargets: '', historyStatusStart: '', historyStatusEnd: '', historyStatusMediaMode: 'text_only' };
   }
 }
 
@@ -118,15 +124,12 @@ async function connectToWhatsApp(providerId) {
 
   sock.ev.on('messaging-history.set', async ({ chats, contacts, messages, isLatest }) => {
     console.log(`[HISTORY SYNC | ${providerId}] Received ${messages?.length || 0} historical messages.`);
-    const { syncHistory, historyStart, historyEnd, historyMediaMode, syncHistoryChat, historyChatTargets, syncHistoryWag, historyWagTargets, syncHistoryStatus, historyStatusTargets } = getNodeConfig(providerId);
+    const { syncHistory, syncHistoryChat, historyChatTargets, historyChatStart, historyChatEnd, historyChatMediaMode, syncHistoryWag, historyWagTargets, historyWagStart, historyWagEnd, historyWagMediaMode, syncHistoryStatus, historyStatusTargets, historyStatusStart, historyStatusEnd, historyStatusMediaMode } = getNodeConfig(providerId);
     
     if (!syncHistory) {
       console.log(`[HISTORY SYNC | ${providerId}] Skipped. (syncHistory=false)`);
       return;
     }
-
-    const startEpoch = historyStart ? new Date(historyStart).getTime() : 0;
-    const endEpoch = historyEnd ? new Date(historyEnd).getTime() : Infinity;
 
     // Parse specific targets into arrays
     const parseTargets = (str) => (str || '').split(',').map(s => {
@@ -139,7 +142,34 @@ async function connectToWhatsApp(providerId) {
     const statusTargetArr = parseTargets(historyStatusTargets);
     const wagTargetArr = (historyWagTargets || '').split(',').map(s => s.trim()).filter(s => s.length > 0);
 
+    // Epochs
+    const chatStartEpoch = historyChatStart ? new Date(historyChatStart).getTime() : 0;
+    const chatEndEpoch = historyChatEnd ? new Date(historyChatEnd).getTime() : Infinity;
+    const wagStartEpoch = historyWagStart ? new Date(historyWagStart).getTime() : 0;
+    const wagEndEpoch = historyWagEnd ? new Date(historyWagEnd).getTime() : Infinity;
+    const statusStartEpoch = historyStatusStart ? new Date(historyStatusStart).getTime() : 0;
+    const statusEndEpoch = historyStatusEnd ? new Date(historyStatusEnd).getTime() : Infinity;
+
     const bulkPayload = [];
+
+    // Helper to download media safely
+    const processMedia = async (msg, textMessage) => {
+      let mediaUrl = null;
+      let mediaType = null;
+      try {
+        const buffer = await downloadMediaMessage(msg, 'buffer', {}, { logger: pino({ level: 'silent' }) });
+        mediaType = msg.message.imageMessage ? 'image' : 'video';
+        const ext = mediaType === 'image' ? 'jpg' : 'mp4';
+        const filename = `history_${Date.now()}_${Math.floor(Math.random() * 1000)}.${ext}`;
+        const uploadPath = path.join(__dirname, '../web/public/uploads/history', filename);
+        if (!fs.existsSync(path.dirname(uploadPath))) fs.mkdirSync(path.dirname(uploadPath), { recursive: true });
+        fs.writeFileSync(uploadPath, buffer);
+        mediaUrl = `/uploads/history/${filename}`;
+      } catch(e) {
+        console.log(`[HISTORY SYNC] Failed to download media: ${e.message}`);
+      }
+      return { mediaUrl, mediaType, textMessage: textMessage || '' };
+    };
 
     for (const msg of messages || []) {
       if (!msg.message) continue;
@@ -152,51 +182,30 @@ async function connectToWhatsApp(providerId) {
       
       let textMessage = msg.message.conversation || msg.message.extendedTextMessage?.text || msg.message.imageMessage?.caption || msg.message.videoMessage?.caption;
       const msgTimestampNum = Number(msg.messageTimestamp || Date.now() / 1000) * 1000;
-      
-      // Time-Range Filter
-      if (msgTimestampNum < startEpoch || msgTimestampNum > endEpoch) {
-        continue;
-      }
-      
       const timestamp = new Date(msgTimestampNum).toISOString();
-
-      let mediaUrl = null;
-      let mediaType = null;
-
-      // Media Strategy Filter
-      if (historyMediaMode === 'all' && (msg.message.imageMessage || msg.message.videoMessage)) {
-        try {
-          // Warning: History media keys often expire, so this might fail frequently.
-          const buffer = await downloadMediaMessage(msg, 'buffer', {}, { logger: pino({ level: 'silent' }) });
-          mediaType = msg.message.imageMessage ? 'image' : 'video';
-          const ext = mediaType === 'image' ? 'jpg' : 'mp4';
-          const filename = `history_${Date.now()}_${Math.floor(Math.random() * 1000)}.${ext}`;
-          const uploadPath = path.join(__dirname, '../web/public/uploads/history', filename);
-          if (!fs.existsSync(path.dirname(uploadPath))) fs.mkdirSync(path.dirname(uploadPath), { recursive: true });
-          fs.writeFileSync(uploadPath, buffer);
-          mediaUrl = `/uploads/history/${filename}`;
-          if (!textMessage) textMessage = ''; // Ensure we still save the media even if no text
-        } catch(e) {
-          console.log(`[HISTORY SYNC] Failed to download media (Keys likely expired): ${e.message}`);
-        }
-      }
-
-      if (!textMessage && !mediaUrl) continue;
+      const hasMedia = msg.message.imageMessage || msg.message.videoMessage;
 
       // --- WAG History ---
       if (remoteJid.endsWith('@g.us')) {
         if (!syncHistoryWag) continue;
         if (wagTargetArr.length > 0 && !wagTargetArr.includes(remoteJid)) continue;
+        if (msgTimestampNum < wagStartEpoch || msgTimestampNum > wagEndEpoch) continue;
         
+        let mediaData = { mediaUrl: null, mediaType: null, textMessage };
+        if (historyWagMediaMode === 'all' && hasMedia) {
+          mediaData = await processMedia(msg, textMessage);
+        }
+        if (!mediaData.textMessage && !mediaData.mediaUrl) continue;
+
         bulkPayload.push({
           type: 'wag',
           providerId,
           groupId: remoteJid,
           senderNumber: msg.key.participant?.split('@')[0] || remoteJid.split('@')[0],
           senderName: pushName,
-          textContent: textMessage,
-          mediaUrl,
-          mediaType,
+          textContent: mediaData.textMessage,
+          mediaUrl: mediaData.mediaUrl,
+          mediaType: mediaData.mediaType,
           timestamp,
           isFromMe,
           peerNumber: remoteJid
@@ -205,32 +214,45 @@ async function connectToWhatsApp(providerId) {
       // --- Status History ---
       else if (remoteJid === 'status@broadcast') {
         if (!syncHistoryStatus) continue;
-        
         const senderNumber = msg.key.participant?.split('@')[0];
-        if (senderNumber) {
-          if (statusTargetArr.length > 0 && !statusTargetArr.includes(senderNumber)) continue;
-          
-          bulkPayload.push({
-            type: 'status',
-            providerId,
-            senderNumber,
-            senderName: pushName,
-            textContent: textMessage,
-            mediaUrl,
-            mediaType,
-            timestamp,
-            isFromMe,
-            peerNumber: senderNumber
-          });
+        if (!senderNumber) continue;
+        
+        if (statusTargetArr.length > 0 && !statusTargetArr.includes(senderNumber)) continue;
+        if (msgTimestampNum < statusStartEpoch || msgTimestampNum > statusEndEpoch) continue;
+
+        let mediaData = { mediaUrl: null, mediaType: null, textMessage };
+        if (historyStatusMediaMode === 'all' && hasMedia) {
+          mediaData = await processMedia(msg, textMessage);
         }
+        if (!mediaData.textMessage && !mediaData.mediaUrl) continue;
+
+        bulkPayload.push({
+          type: 'status',
+          providerId,
+          senderNumber,
+          senderName: pushName,
+          textContent: mediaData.textMessage,
+          mediaUrl: mediaData.mediaUrl,
+          mediaType: mediaData.mediaType,
+          timestamp,
+          isFromMe,
+          peerNumber: senderNumber
+        });
       }
       // --- Chat History ---
       else {
         if (!syncHistoryChat) continue;
-        
         const peerNumber = remoteJid.split('@')[0];
-        if (chatTargetArr.length > 0 && !chatTargetArr.includes(peerNumber)) continue;
         
+        if (chatTargetArr.length > 0 && !chatTargetArr.includes(peerNumber)) continue;
+        if (msgTimestampNum < chatStartEpoch || msgTimestampNum > chatEndEpoch) continue;
+
+        let mediaData = { mediaUrl: null, mediaType: null, textMessage };
+        if (historyChatMediaMode === 'all' && hasMedia) {
+          mediaData = await processMedia(msg, textMessage);
+        }
+        if (!mediaData.textMessage && !mediaData.mediaUrl) continue;
+
         bulkPayload.push({
           type: 'chat',
           providerId,
@@ -238,9 +260,9 @@ async function connectToWhatsApp(providerId) {
           isFromMe,
           senderNumber: isFromMe ? 'Me' : peerNumber,
           senderName: pushName,
-          textContent: textMessage,
-          mediaUrl,
-          mediaType,
+          textContent: mediaData.textMessage,
+          mediaUrl: mediaData.mediaUrl,
+          mediaType: mediaData.mediaType,
           timestamp
         });
       }
@@ -496,7 +518,7 @@ app.post('/init/:id', (req, res) => {
 
 app.post('/config/:id', (req, res) => {
   const id = req.params.id;
-  const { name, whitelist, statusTargets, wagTargets, chatTargets, syncHistory, historyStart, historyEnd, historyMediaMode, syncHistoryChat, historyChatTargets, syncHistoryWag, historyWagTargets, syncHistoryStatus, historyStatusTargets } = req.body;
+  const { name, whitelist, statusTargets, wagTargets, chatTargets, syncHistory, syncHistoryChat, historyChatTargets, historyChatStart, historyChatEnd, historyChatMediaMode, syncHistoryWag, historyWagTargets, historyWagStart, historyWagEnd, historyWagMediaMode, syncHistoryStatus, historyStatusTargets, historyStatusStart, historyStatusEnd, historyStatusMediaMode } = req.body;
   
   const updates = {};
   if (name !== undefined) updates.name = name;
@@ -505,15 +527,24 @@ app.post('/config/:id', (req, res) => {
   if (wagTargets !== undefined) updates.wagTargets = wagTargets;
   if (chatTargets !== undefined) updates.chatTargets = chatTargets;
   if (syncHistory !== undefined) updates.syncHistory = syncHistory;
-  if (historyStart !== undefined) updates.historyStart = historyStart;
-  if (historyEnd !== undefined) updates.historyEnd = historyEnd;
-  if (historyMediaMode !== undefined) updates.historyMediaMode = historyMediaMode;
+  
   if (syncHistoryChat !== undefined) updates.syncHistoryChat = syncHistoryChat;
   if (historyChatTargets !== undefined) updates.historyChatTargets = historyChatTargets;
+  if (historyChatStart !== undefined) updates.historyChatStart = historyChatStart;
+  if (historyChatEnd !== undefined) updates.historyChatEnd = historyChatEnd;
+  if (historyChatMediaMode !== undefined) updates.historyChatMediaMode = historyChatMediaMode;
+  
   if (syncHistoryWag !== undefined) updates.syncHistoryWag = syncHistoryWag;
   if (historyWagTargets !== undefined) updates.historyWagTargets = historyWagTargets;
+  if (historyWagStart !== undefined) updates.historyWagStart = historyWagStart;
+  if (historyWagEnd !== undefined) updates.historyWagEnd = historyWagEnd;
+  if (historyWagMediaMode !== undefined) updates.historyWagMediaMode = historyWagMediaMode;
+
   if (syncHistoryStatus !== undefined) updates.syncHistoryStatus = syncHistoryStatus;
   if (historyStatusTargets !== undefined) updates.historyStatusTargets = historyStatusTargets;
+  if (historyStatusStart !== undefined) updates.historyStatusStart = historyStatusStart;
+  if (historyStatusEnd !== undefined) updates.historyStatusEnd = historyStatusEnd;
+  if (historyStatusMediaMode !== undefined) updates.historyStatusMediaMode = historyStatusMediaMode;
   
   setNodeConfig(id, updates);
   res.json({ success: true, message: 'Node config updated locally' });

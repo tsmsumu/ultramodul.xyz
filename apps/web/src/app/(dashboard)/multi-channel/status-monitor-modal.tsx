@@ -71,28 +71,7 @@ export default function StatusMonitorModal({ providerId, onClose }: { providerId
     window.print();
   };
 
-  const exportOptions = {
-    filename: `Omni_Status_Logbook_${new Date().toISOString().split('T')[0]}`,
-    title: "Omni Intelligence - Status WA Monitor",
-    columns: [
-      { header: "Date", key: "date" },
-      { header: "Time", key: "time" },
-      { header: "Target Name", key: "targetName" },
-      { header: "Content", key: "content" },
-      { header: "Has Media", key: "hasMedia" },
-    ],
-    data: filteredLogs.map(l => {
-      const dt = new Date(l.timestamp);
-      const targetObj = targets.find(t => t.id === l.targetId);
-      return {
-        date: dt.toLocaleDateString(),
-        time: dt.toLocaleTimeString(),
-        targetName: targetObj?.targetName || 'Unknown Target',
-        content: l.textContent || '',
-        hasMedia: l.mediaUrl ? 'Yes' : 'No'
-      };
-    })
-  };
+
 
   const filteredLogs = logs.filter(l => {
     const isArchivedTarget = logTab === 'archived';
@@ -116,6 +95,29 @@ export default function StatusMonitorModal({ providerId, onClose }: { providerId
 
     return l.textContent?.toLowerCase().includes(searchQuery.toLowerCase());
   });
+
+  const exportOptions = {
+    filename: `Omni_Status_Logbook_${new Date().toISOString().split('T')[0]}`,
+    title: "Omni Intelligence - Status WA Monitor",
+    columns: [
+      { header: "Date", key: "date" },
+      { header: "Time", key: "time" },
+      { header: "Target Name", key: "targetName" },
+      { header: "Content", key: "content" },
+      { header: "Has Media", key: "hasMedia" },
+    ],
+    data: filteredLogs.map(l => {
+      const dt = new Date(l.timestamp);
+      const targetObj = targets.find(t => t.id === l.targetId);
+      return {
+        date: dt.toLocaleDateString(),
+        time: dt.toLocaleTimeString(),
+        targetName: targetObj?.targetName || 'Unknown Target',
+        content: l.textContent || '',
+        hasMedia: l.mediaUrl ? 'Yes' : 'No'
+      };
+    })
+  };
 
   const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) setSelectedRows(filteredLogs.map(l => l.id));

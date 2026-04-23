@@ -71,6 +71,33 @@ export default function ChatMonitorModal({ providerId, onClose }: { providerId: 
     window.print();
   };
 
+  const filteredLogs = logs.filter(l => {
+    const isArchivedTarget = logTab === 'archived';
+    if ((l.isArchived ? true : false) !== isArchivedTarget) return false;
+
+    // Time Filter
+    if (timeFilter !== 'all') {
+      const logDate = new Date(l.timestamp);
+      const now = new Date();
+      if (timeFilter === 'today' && logDate.toDateString() !== now.toDateString()) return false;
+      if (timeFilter === 'this_week') {
+        const weekAgo = new Date(); weekAgo.setDate(now.getDate() - 7);
+        if (logDate < weekAgo) return false;
+      }
+      if (timeFilter === 'this_month') {
+        if (logDate.getMonth() !== now.getMonth() || logDate.getFullYear() !== now.getFullYear()) return false;
+      }
+      if (timeFilter === 'this_year') {
+        if (logDate.getFullYear() !== now.getFullYear()) return false;
+      }
+    }
+
+    return (
+      l.textContent?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      targets.find(t => t.id === l.targetId)?.targetName?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  });
+
   const exportOptions = {
     filename: `Omni_Chat_Logbook_${new Date().toISOString().split('T')[0]}`,
     title: "Omni Intelligence - Chat History Logbook",
@@ -99,33 +126,6 @@ export default function ChatMonitorModal({ providerId, onClose }: { providerId: 
       };
     })
   };
-
-  const filteredLogs = logs.filter(l => {
-    const isArchivedTarget = logTab === 'archived';
-    if ((l.isArchived ? true : false) !== isArchivedTarget) return false;
-
-    // Time Filter
-    if (timeFilter !== 'all') {
-      const logDate = new Date(l.timestamp);
-      const now = new Date();
-      if (timeFilter === 'today' && logDate.toDateString() !== now.toDateString()) return false;
-      if (timeFilter === 'this_week') {
-        const weekAgo = new Date(); weekAgo.setDate(now.getDate() - 7);
-        if (logDate < weekAgo) return false;
-      }
-      if (timeFilter === 'this_month') {
-        if (logDate.getMonth() !== now.getMonth() || logDate.getFullYear() !== now.getFullYear()) return false;
-      }
-      if (timeFilter === 'this_year') {
-        if (logDate.getFullYear() !== now.getFullYear()) return false;
-      }
-    }
-
-    return (
-      l.textContent?.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      targets.find(t => t.id === l.targetId)?.targetName?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  });
 
   const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) setSelectedRows(filteredLogs.map(l => l.id));

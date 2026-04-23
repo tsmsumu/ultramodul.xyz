@@ -78,31 +78,6 @@ export default function WagMonitorModal({ providerId, onClose }: { providerId: s
     window.print();
   };
 
-  const exportOptions = {
-    filename: `Omni_WAG_Logbook_${new Date().toISOString().split('T')[0]}`,
-    title: "Omni Intelligence - WAG Logbook",
-    columns: [
-      { header: "Date", key: "date" },
-      { header: "Time", key: "time" },
-      { header: "Group", key: "group" },
-      { header: "Sender", key: "sender" },
-      { header: "Content", key: "content" },
-      { header: "Has Media", key: "hasMedia" },
-    ],
-    data: filteredLogs.map(l => {
-      const dt = new Date(l.timestamp);
-      const targetObj = targets.find(t => t.id === l.targetId);
-      return {
-        date: dt.toLocaleDateString(),
-        time: dt.toLocaleTimeString(),
-        group: targetObj?.groupName || 'Unknown',
-        sender: l.senderName || l.senderNumber,
-        content: l.textContent || '',
-        hasMedia: l.mediaUrl ? 'Yes' : 'No'
-      };
-    })
-  };
-
   const filteredLogs = logs.filter(l => {
     const isArchivedTarget = logTab === 'archived';
     if ((l.isArchived ? true : false) !== isArchivedTarget) return false;
@@ -127,6 +102,30 @@ export default function WagMonitorModal({ providerId, onClose }: { providerId: s
            l.senderName?.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
+  const exportOptions = {
+    filename: `Omni_WAG_Logbook_${new Date().toISOString().split('T')[0]}`,
+    title: "Omni Intelligence - WAG Logbook",
+    columns: [
+      { header: "Date", key: "date" },
+      { header: "Time", key: "time" },
+      { header: "Group", key: "group" },
+      { header: "Sender", key: "sender" },
+      { header: "Content", key: "content" },
+      { header: "Has Media", key: "hasMedia" },
+    ],
+    data: filteredLogs.map(l => {
+      const dt = new Date(l.timestamp);
+      const targetObj = targets.find(t => t.id === l.targetId);
+      return {
+        date: dt.toLocaleDateString(),
+        time: dt.toLocaleTimeString(),
+        group: targetObj?.groupName || 'Unknown',
+        sender: l.senderName || l.senderNumber,
+        content: l.textContent || '',
+        hasMedia: l.mediaUrl ? 'Yes' : 'No'
+      };
+    })
+  };
   const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) setSelectedRows(filteredLogs.map(l => l.id));
     else setSelectedRows([]);

@@ -14,7 +14,6 @@ export default function WaNodePanel({ provider, isArchived = false }: { provider
   const [simMsg, setSimMsg] = useState("");
   const [simLoading, setSimLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(provider.name);
   const [isStealthMode, setIsStealthMode] = useState(false);
 

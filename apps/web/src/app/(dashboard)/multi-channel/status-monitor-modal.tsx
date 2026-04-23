@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { X, Search, Plus, Trash2, Printer, Download, Image as ImageIcon, Video, Eye } from "lucide-react";
-import { getMonitorTargets, getStatusLogs, addStatusTarget, removeStatusTarget, bulkDeleteLogs, bulkArchiveLogs, bulkDeleteTargets } from "@/app/actions/wa-monitor";
+import { getMonitorTargets, getStatusLogs, addStatusTarget, removeStatusTarget, bulkDeleteLogs, bulkArchiveLogs, bulkDeleteTargets, importLogbookData } from "@/app/actions/wa-monitor";
 import ExportMenu from "@/components/ExportMenu";
+import ImportMenu from "@/components/ImportMenu";
 import AutoDeliverySettings from "@/components/AutoDeliverySettings";
 
 export default function StatusMonitorModal({ providerId, onClose }: { providerId: string, onClose: () => void }) {
@@ -9,6 +10,7 @@ export default function StatusMonitorModal({ providerId, onClose }: { providerId
   const [targets, setTargets] = useState<any[]>([]);
   const [logs, setLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [importing, setImporting] = useState(false);
 
   // Advanced Logbook States
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
@@ -80,6 +82,18 @@ export default function StatusMonitorModal({ providerId, onClose }: { providerId
   const handleSelectAllTargets = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) setSelectedTargetRows(targets.map(t => t.id));
     else setSelectedTargetRows([]);
+  };
+
+  const handleImportData = async (data: any[]) => {
+    setImporting(true);
+    const res = await importLogbookData(providerId, 'status', data);
+    if (res.success) {
+      alert(`Ultra Import Success! Integreated ${res.imported} logs. Duplicates were automatically rejected.`);
+      fetchData();
+    } else {
+      alert("Failed to import data.");
+    }
+    setImporting(false);
   };
 
   const toggleTargetRow = (id: string) => {
@@ -303,6 +317,7 @@ export default function StatusMonitorModal({ providerId, onClose }: { providerId
                       />
                     </div>
                     <div className="flex gap-2">
+                      <ImportMenu type="status" isLoading={importing} onImport={handleImportData} />
                       <ExportMenu options={exportOptions} />
                       <button onClick={handlePrint} className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors">
                         <Printer className="w-4 h-4" /> Print Report
@@ -317,7 +332,7 @@ export default function StatusMonitorModal({ providerId, onClose }: { providerId
                         {logTab === 'active' ? (
                           <button onClick={() => handleBulkArchive(true)} className="px-3 py-1 bg-zinc-800 hover:bg-zinc-700 text-white rounded text-xs font-bold">Move to Archive</button>
                         ) : (
-                          <button onClick={() => handleBulkArchive(false)} className="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded text-xs font-bold">Restore to Active</button>
+                          <button onClick={() => handleBulkArchive(false)} className="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded text-xs font-bold">Unarchive Selected</button>
                         )}
                         <button onClick={handleBulkDelete} className="px-3 py-1 bg-red-500/20 hover:bg-red-500/40 text-red-400 rounded text-xs font-bold flex items-center gap-1">
                           <Trash2 className="w-3 h-3" /> Delete

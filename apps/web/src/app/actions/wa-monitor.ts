@@ -219,3 +219,112 @@ export async function bulkDeleteTargets(type: 'chat' | 'wag' | 'status', targetI
     return { success: false };
   }
 }
+
+export async function importLogbookData(providerId: string, logType: 'chat' | 'wag' | 'status', data: any[]) {
+  try {
+    if (data.length === 0) return { success: true, imported: 0 };
+    let importedCount = 0;
+
+    if (logType === 'chat') {
+      const existingTargets = await db.select().from(waChatTargets).where(eq(waChatTargets.providerId, providerId));
+      const targetMap = new Map(existingTargets.map(t => [t.phoneNumber, t.id]));
+      
+      const existingLogs = await db.select().from(waChatLogs).where(eq(waChatLogs.providerId, providerId));
+      const logSet = new Set(existingLogs.map(l => `${l.targetId}_${l.timestamp.getTime()}_${l.textContent}`));
+
+      for (const row of data) {
+        if (!row.peerNumber) continue;
+        let tId = targetMap.get(row.peerNumber);
+        if (!tId) {
+          tId = randomUUID();
+          await db.insert(waChatTargets).values({ id: tId, providerId, phoneNumber: row.peerNumber, targetName: row.peerName || row.peerNumber, isTextOnly: false, createdAt: new Date() });
+          targetMap.set(row.peerNumber, tId);
+        }
+
+        const timestamp = row.date && row.time ? new Date(`${row.date} ${row.time}`) : new Date();
+        const hash = `${tId}_${timestamp.getTime()}_${row.content || ''}`;
+        if (!logSet.has(hash)) {
+          await db.insert(waChatLogs).values({
+            id: randomUUID(),
+            providerId,
+            targetId: tId,
+            isFromMe: row.direction === 'Outbound',
+            textContent: row.content || '',
+            timestamp,
+            isArchived: false
+          });
+          logSet.add(hash);
+          importedCount++;
+        }
+      }
+    } else if (logType === 'wag') {
+      const existingTargets = await db.select().from(wagTargets).where(eq(wagTargets.providerId, providerId));
+      const targetMap = new Map(existingTargets.map(t => [t.groupId, t.id]));
+      
+      const existingLogs = await db.select().from(wagLogs).where(eq(wagLogs.providerId, providerId));
+      const logSet = new Set(existingLogs.map(l => `${l.targetId}_${l.timestamp.getTime()}_${l.textContent}`));
+
+      for (const row of data) {
+        if (!row.groupJid) continue;
+        let tId = targetMap.get(row.groupJid);
+        if (!tId) {
+          tId = randomUUID();
+          await db.insert(wagTargets).values({ id: tId, providerId, groupId: row.groupJid, groupName: row.groupName || row.groupJid, isTextOnly: false, createdAt: new Date() });
+          targetMap.set(row.groupJid, tId);
+        }
+
+        const timestamp = row.date && row.time ? new Date(`${row.date} ${row.time}`) : new Date();
+        const hash = `${tId}_${timestamp.getTime()}_${row.content || ''}`;
+        if (!logSet.has(hash)) {
+          await db.insert(wagLogs).values({
+            id: randomUUID(),
+            providerId,
+            targetId: tId,
+            senderNumber: row.sender || '',
+            textContent: row.content || '',
+            timestamp,
+            isArchived: false
+          });
+          logSet.add(hash);
+          importedCount++;
+        }
+      }
+    } else if (logType === 'status') {
+      const existingTargets = await db.select().from(waStatusTargets).where(eq(waStatusTargets.providerId, providerId));
+      const targetMap = new Map(existingTargets.map(t => [t.phoneNumber, t.id]));
+      
+      const existingLogs = await db.select().from(waStatusLogs).where(eq(waStatusLogs.providerId, providerId));
+      const logSet = new Set(existingLogs.map(l => `${l.targetId}_${l.timestamp.getTime()}_${l.textContent}`));
+
+      for (const row of data) {
+        if (!row.targetNumber) continue;
+        let tId = targetMap.get(row.targetNumber);
+        if (!tId) {
+          tId = randomUUID();
+          await db.insert(waStatusTargets).values({ id: tId, providerId, phoneNumber: row.targetNumber, targetName: row.targetName || row.targetNumber, isTextOnly: false, createdAt: new Date() });
+          targetMap.set(row.targetNumber, tId);
+        }
+
+        const timestamp = row.date && row.time ? new Date(`${row.date} ${row.time}`) : new Date();
+        const hash = `${tId}_${timestamp.getTime()}_${row.content || ''}`;
+        if (!logSet.has(hash)) {
+          await db.insert(waStatusLogs).values({
+            id: randomUUID(),
+            providerId,
+            targetId: tId,
+            textContent: row.content || '',
+            timestamp,
+            isArchived: false
+          });
+          logSet.add(hash);
+          importedCount++;
+        }
+      }
+    }
+
+    return { success: true, imported: importedCount };
+  } catch (error) {
+    console.error("Smart Import Failed:", error);
+    return { success: false, message: "Import failed due to server error" };
+  }
+}

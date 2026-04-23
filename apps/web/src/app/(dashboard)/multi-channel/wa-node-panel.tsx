@@ -426,6 +426,7 @@ export default function WaNodePanel({ provider, isArchived = false }: { provider
           </button>
         </div>
       </div>
+      </div>
 
       {/* Full Width History Sync Settings Panel (Only visible when disconnected/initializing to configure BEFORE boot) */}
       {waStatus !== 'connected' && !isArchived && (

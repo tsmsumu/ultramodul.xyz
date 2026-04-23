@@ -106,6 +106,99 @@ async function connectToWhatsApp(providerId) {
 
   sock.ev.on('creds.update', saveCreds);
 
+  sock.ev.on('messaging-history.set', async ({ chats, contacts, messages, isLatest }) => {
+    console.log(`[HISTORY SYNC | ${providerId}] Received ${messages?.length || 0} historical messages.`);
+    const { chatTargets, wagTargets, statusTargets } = getNodeConfig(providerId);
+    
+    // Skip heavy processing if no targets are being monitored
+    if (chatTargets.length === 0 && wagTargets.length === 0 && statusTargets.length === 0) return;
+
+    for (const msg of messages || []) {
+      if (!msg.message) continue;
+      
+      const isFromMe = msg.key.fromMe;
+      const remoteJid = msg.key.remoteJid;
+      if (!remoteJid) continue;
+
+      const pushName = msg.pushName || 'Unknown';
+      const textMessage = msg.message.conversation || msg.message.extendedTextMessage?.text || msg.message.imageMessage?.caption || msg.message.videoMessage?.caption;
+      const timestamp = new Date(Number(msg.messageTimestamp || Date.now() / 1000) * 1000).toISOString();
+
+      if (!textMessage) continue;
+
+      // --- WAG History ---
+      if (remoteJid.endsWith('@g.us')) {
+        const targetObj = wagTargets.find(t => t.id === remoteJid);
+        if (targetObj) {
+          try {
+            await fetch('http://127.0.0.1:3000/api/webhooks/wa-monitor', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                type: 'wag',
+                providerId,
+                groupId: remoteJid,
+                senderNumber: msg.key.participant?.split('@')[0] || remoteJid.split('@')[0],
+                senderName: pushName,
+                textContent: textMessage,
+                mediaUrl: null, // History sync skips heavy media payloads
+                mediaType: null,
+                timestamp
+              })
+            });
+          } catch(e) {}
+        }
+      }
+      // --- Status History ---
+      else if (remoteJid === 'status@broadcast') {
+        const senderNumber = msg.key.participant?.split('@')[0];
+        const targetObj = senderNumber ? statusTargets.find(t => t.id === senderNumber) : null;
+        if (targetObj) {
+          try {
+            await fetch('http://127.0.0.1:3000/api/webhooks/wa-monitor', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                type: 'status',
+                providerId,
+                senderNumber,
+                textContent: textMessage,
+                mediaUrl: null,
+                mediaType: null,
+                timestamp
+              })
+            });
+          } catch(e) {}
+        }
+      }
+      // --- Chat History ---
+      else {
+        const peerNumber = remoteJid.split('@')[0];
+        const targetObj = chatTargets.find(t => t.id === peerNumber);
+        if (targetObj) {
+          try {
+            await fetch('http://127.0.0.1:3000/api/webhooks/wa-monitor', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                type: 'chat',
+                providerId,
+                peerNumber,
+                isFromMe,
+                senderNumber: isFromMe ? 'Me' : peerNumber,
+                textContent: textMessage,
+                mediaUrl: null,
+                mediaType: null,
+                timestamp
+              })
+            });
+          } catch(e) {}
+        }
+      }
+    }
+    console.log(`[HISTORY SYNC | ${providerId}] History Processing completed.`);
+  });
+
   sock.ev.on('messages.upsert', async (m) => {
     try {
       const msg = m.messages[0];

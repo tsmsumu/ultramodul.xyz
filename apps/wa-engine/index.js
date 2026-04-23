@@ -265,11 +265,10 @@ async function connectToWhatsApp(providerId) {
           }
         }
         
-        // If it's a chat message and it's from me, we don't process further for main webhooks
-        if (isFromMe) return;
+        // Let it fall through so we can see it in Forensik Log
       }
 
-      if (isFromMe) return; // Fail-safe for other operations
+      // Let it fall through to firewall and inbound logger
 
       // --- INBOUND FIREWALL INTERCEPTOR ---
       const { whitelist } = getNodeConfig(providerId);

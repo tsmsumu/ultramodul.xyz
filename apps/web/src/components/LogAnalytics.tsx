@@ -6,7 +6,7 @@ import ReactECharts from "echarts-for-react";
 interface LogAnalyticsProps {
   logs: any[];
   targets: any[];
-  type: "chat" | "wag" | "status" | "tgGroup" | "tgChannel" | "tgChat" | "sigGroup" | "sigStory" | "sigChat";
+  type: "chat" | "wag" | "status" | "tgGroup" | "tgChannel" | "tgChat" | "sigGroup" | "sigStory" | "sigChat" | "smsChat" | "smsGroup" | "smsStory"|"sigStory" | "sigChat" | "smsChat" | "smsGroup" | "smsStory";
 }
 
 export default function LogAnalytics({ logs, targets, type }: LogAnalyticsProps) {

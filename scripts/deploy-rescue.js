@@ -33,6 +33,9 @@ pm2 start index.js --name "tg-engine"
 cd /var/www/ultramodul/apps/sig-engine
 pm2 delete sig-engine || true
 pm2 start index.js --name "sig-engine"
+cd /var/www/ultramodul/apps/sms-engine
+pm2 delete sms-engine || true
+pm2 start index.js --name "sms-engine"
 pm2 restart all
 sudo systemctl restart nginx
 echo "Rescue deploy complete."

@@ -4,7 +4,7 @@ import { Upload, FileJson, X, Check, Loader2 } from "lucide-react";
 interface ImportMenuProps {
   onImport: (data: any[]) => Promise<void>;
   isLoading: boolean;
-  type: "chat" | "wag" | "status" | "tgGroup" | "tgChannel" | "tgChat" | "sigGroup" | "sigStory" | "sigChat";
+  type: "chat" | "wag" | "status" | "tgGroup" | "tgChannel" | "tgChat" | "sigGroup" | "sigStory" | "sigChat" | "smsChat" | "smsGroup" | "smsStory"|"sigStory" | "sigChat" | "smsChat" | "smsGroup" | "smsStory";
 }
 
 export default function ImportMenu({ onImport, isLoading, type }: ImportMenuProps) {

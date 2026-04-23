@@ -329,6 +329,75 @@ export const waChatLogs = sqliteTable('wa_chat_logs', {
   timestamp: integer('timestamp', { mode: 'timestamp' }).notNull(),
 });
 
+// --- TELEGRAM INTELLIGENCE MONITOR ---
+export const tgChannelTargets = sqliteTable('tg_channel_targets', {
+  id: text('id').primaryKey(), // UUID
+  providerId: text('provider_id').notNull().references(() => mcProviders.id, { onDelete: 'cascade' }),
+  channelId: text('channel_id').notNull(), // Channel username or ID
+  targetName: text('target_name').notNull(),
+  notes: text('notes'),
+  isTextOnly: integer('is_text_only', { mode: 'boolean' }).notNull().default(false),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+});
+
+export const tgChannelLogs = sqliteTable('tg_channel_logs', {
+  id: text('id').primaryKey(), // UUID
+  providerId: text('provider_id').notNull().references(() => mcProviders.id, { onDelete: 'cascade' }),
+  targetId: text('target_id').notNull().references(() => tgChannelTargets.id, { onDelete: 'cascade' }),
+  textContent: text('text_content'),
+  mediaUrl: text('media_url'), // Local path to downloaded media
+  mediaType: text('media_type'), // 'image', 'video'
+  isArchived: integer('is_archived', { mode: 'boolean' }).notNull().default(false),
+  timestamp: integer('timestamp', { mode: 'timestamp' }).notNull(),
+});
+
+export const tgGroupTargets = sqliteTable('tg_group_targets', {
+  id: text('id').primaryKey(), // UUID
+  providerId: text('provider_id').notNull().references(() => mcProviders.id, { onDelete: 'cascade' }),
+  groupId: text('group_id').notNull(), // Telegram Group ID
+  groupName: text('group_name').notNull(),
+  notes: text('notes'),
+  isTextOnly: integer('is_text_only', { mode: 'boolean' }).notNull().default(false),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+});
+
+export const tgGroupLogs = sqliteTable('tg_group_logs', {
+  id: text('id').primaryKey(), // UUID
+  providerId: text('provider_id').notNull().references(() => mcProviders.id, { onDelete: 'cascade' }),
+  targetId: text('target_id').notNull().references(() => tgGroupTargets.id, { onDelete: 'cascade' }),
+  senderNumber: text('sender_number').notNull(), // Can be username or ID
+  senderName: text('sender_name'),
+  textContent: text('text_content'),
+  mediaUrl: text('media_url'), // Local path to downloaded media
+  mediaType: text('media_type'), // 'image', 'video'
+  isArchived: integer('is_archived', { mode: 'boolean' }).notNull().default(false),
+  timestamp: integer('timestamp', { mode: 'timestamp' }).notNull(),
+});
+
+export const tgChatTargets = sqliteTable('tg_chat_targets', {
+  id: text('id').primaryKey(), // UUID
+  providerId: text('provider_id').notNull().references(() => mcProviders.id, { onDelete: 'cascade' }),
+  phoneNumber: text('phone_number').notNull(), // Can be username or ID
+  targetName: text('target_name').notNull(),
+  notes: text('notes'),
+  isTextOnly: integer('is_text_only', { mode: 'boolean' }).notNull().default(false),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+});
+
+export const tgChatLogs = sqliteTable('tg_chat_logs', {
+  id: text('id').primaryKey(), // UUID
+  providerId: text('provider_id').notNull().references(() => mcProviders.id, { onDelete: 'cascade' }),
+  targetId: text('target_id').notNull().references(() => tgChatTargets.id, { onDelete: 'cascade' }),
+  isFromMe: integer('is_from_me', { mode: 'boolean' }).notNull().default(false), // True if sent by the Node
+  senderNumber: text('sender_number').notNull(), // Actual sender (target or node)
+  textContent: text('text_content'),
+  mediaUrl: text('media_url'),
+  mediaType: text('media_type'),
+  isArchived: integer('is_archived', { mode: 'boolean' }).notNull().default(false),
+  timestamp: integer('timestamp', { mode: 'timestamp' }).notNull(),
+});
+
+
 // --- ADVANCED LOGBOOK AUTOMATION ---
 export const logbookSchedules = sqliteTable('logbook_schedules', {
   id: text('id').primaryKey(), // UUID

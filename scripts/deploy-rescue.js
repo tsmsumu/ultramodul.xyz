@@ -27,6 +27,9 @@ pm2 start pnpm --name "ultramodul" --cwd /var/www/ultramodul/apps/web --env DATA
 cd /var/www/ultramodul/apps/wa-engine
 pm2 delete wa-engine || true
 pm2 start index.js --name "wa-engine"
+cd /var/www/ultramodul/apps/tg-engine
+pm2 delete tg-engine || true
+pm2 start index.js --name "tg-engine"
 pm2 restart all
 sudo systemctl restart nginx
 echo "Rescue deploy complete."

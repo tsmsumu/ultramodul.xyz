@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Activity, MessageSquare, PhoneCall, Shield, Terminal as TerminalIcon, Users, Settings, Lock, Radio, Database, CheckCircle2, XCircle } from "lucide-react";
+import { Activity, MessageSquare, PhoneCall, Shield, Terminal as TerminalIcon, Users, Settings, Lock, Radio, Database, CheckCircle2, XCircle, Send } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { toggleProviderActive, updateProviderConfig, createWhatsAppNode } from "@/app/actions/multi-channel";
+import { toggleProviderActive, updateProviderConfig, createWhatsAppNode, createTelegramNode } from "@/app/actions/multi-channel";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import WaNodePanel from "./wa-node-panel";
+import TgNodePanel from "./tg-node-panel";
 
 export default function MultiChannelDashboard({
   initialProviders,
@@ -235,9 +236,20 @@ export default function MultiChannelDashboard({
     }
   };
 
+  const handleAddTgNode = async () => {
+    const res = await createTelegramNode();
+    if (res.success) {
+      router.refresh();
+    } else {
+      alert("Failed to create TG Node");
+    }
+  };
+
   const renderLiveExplorer = () => {
     const waProviders = initialProviders.filter(p => p.providerType === 'whatsapp');
     const waArchived = archivedProviders?.filter(p => p.providerType === 'whatsapp') || [];
+    const tgProviders = initialProviders.filter(p => p.providerType === 'telegram');
+    const tgArchived = archivedProviders?.filter(p => p.providerType === 'telegram') || [];
 
     return (
       <div className="space-y-6">
@@ -273,6 +285,41 @@ export default function MultiChannelDashboard({
             ))}
           </div>
         )}
+
+        <div className="mt-12 pt-8 border-t border-white/10">
+          <div className="flex justify-between items-center bg-zinc-950/80 p-6 rounded-3xl border border-white/5 mb-6">
+            <div>
+              <h2 className="text-sm font-bold text-white tracking-widest uppercase flex items-center gap-2">
+                <Send className="w-5 h-5 text-sky-400" /> Telegram Cluster Manager
+              </h2>
+              <p className="text-xs text-zinc-500 mt-1">Manage multiple Telegram MTProto nodes concurrently.</p>
+            </div>
+            <button onClick={handleAddTgNode} className="text-xs px-4 py-2 bg-sky-600 hover:bg-sky-500 rounded-xl text-white font-bold tracking-widest uppercase transition-all shadow-[0_0_20px_rgba(2,132,199,0.3)]">
+              + Deploy New Node
+            </button>
+          </div>
+
+          {tgProviders.length === 0 ? (
+            <div className="text-center py-20 text-zinc-500 border border-white/5 border-dashed rounded-3xl">
+              No Telegram Nodes active. Click deploy to start.
+            </div>
+          ) : (
+            tgProviders.map(p => <TgNodePanel key={p.id} provider={p} />)
+          )}
+
+          {tgArchived.length > 0 && (
+            <div className="mt-12 pt-8 border-t border-white/10">
+              <h3 className="text-sm font-bold text-zinc-500 tracking-widest uppercase flex items-center gap-2 mb-6">
+                <Send className="w-4 h-4" /> Archived Telegram Nodes
+              </h3>
+              {tgArchived.map(p => (
+                <div key={p.id} className="opacity-80">
+                   <TgNodePanel provider={p} isArchived={true} />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     );
   };

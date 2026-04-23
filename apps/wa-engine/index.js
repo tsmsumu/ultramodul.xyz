@@ -195,7 +195,11 @@ async function connectToWhatsApp(providerId) {
         if (historyWagMediaMode === 'all' && hasMedia) {
           mediaData = await processMedia(msg, textMessage);
         }
-        if (!mediaData.textMessage && !mediaData.mediaUrl) continue;
+        
+        if (!mediaData.textMessage && !mediaData.mediaUrl) {
+          if (hasMedia) mediaData.textMessage = '[Media Only - Image/Video]';
+          else continue;
+        }
 
         bulkPayload.push({
           type: 'wag',
@@ -224,7 +228,11 @@ async function connectToWhatsApp(providerId) {
         if (historyStatusMediaMode === 'all' && hasMedia) {
           mediaData = await processMedia(msg, textMessage);
         }
-        if (!mediaData.textMessage && !mediaData.mediaUrl) continue;
+        
+        if (!mediaData.textMessage && !mediaData.mediaUrl) {
+          if (hasMedia) mediaData.textMessage = '[Status Update - Media Only]';
+          else continue;
+        }
 
         bulkPayload.push({
           type: 'status',
@@ -251,7 +259,11 @@ async function connectToWhatsApp(providerId) {
         if (historyChatMediaMode === 'all' && hasMedia) {
           mediaData = await processMedia(msg, textMessage);
         }
-        if (!mediaData.textMessage && !mediaData.mediaUrl) continue;
+        
+        if (!mediaData.textMessage && !mediaData.mediaUrl) {
+          if (hasMedia) mediaData.textMessage = '[Media Only - Image/Video]';
+          else continue;
+        }
 
         bulkPayload.push({
           type: 'chat',

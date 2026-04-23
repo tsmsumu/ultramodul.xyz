@@ -138,3 +138,36 @@ export async function simulateForensicLog(providerId: string, action: string, me
     return { success: false };
   }
 }
+
+
+export async function sendMessageViaEngine(providerType: string, to: string, message: string) {
+  try {
+    if (providerType === "whatsapp") {
+      // Connect to the wa-engine microservice on port 3001
+      const response = await fetch("http://127.0.0.1:3001/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ to, message })
+      });
+      const data = await response.json();
+      
+      // Log to Forensik
+      const waProvider = await db.select().from(mcProviders).where(eq(mcProviders.providerType, "whatsapp")).limit(1);
+      if (waProvider.length > 0) {
+        await db.insert(mcLogs).values({
+          id: randomUUID(),
+          providerId: waProvider[0].id,
+          action: data.success ? "MESSAGE_SENT" : "ERROR_SENDING",
+          metadata: `To: ${to} | Msg: ${message} | Result: ${JSON.stringify(data)}`,
+          timestamp: new Date()
+        });
+      }
+      return data;
+    }
+    return { success: false, message: "Provider not fully integrated yet" };
+  } catch (error: any) {
+    console.error("Engine Send Error:", error);
+    return { success: false, message: error.message };
+  }
+}
+

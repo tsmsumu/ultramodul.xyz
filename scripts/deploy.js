@@ -54,9 +54,14 @@ pnpm run build
 
 echo "-> Stopping existing PM2 process..."
 pm2 delete ultramodul || true
+pm2 delete ultramodul-wa || true
 
-echo "-> Starting Next.js via PM2..."
+echo "-> Starting Next.js and WA-Engine via PM2..."
 pm2 start pnpm --name "ultramodul" -- run start
+
+cd ../wa-engine
+pm2 start index.js --name "ultramodul-wa"
+
 pm2 save
 
 echo "-> Nginx is already configured and SSL is managed by Certbot. Skipping rewrite..."

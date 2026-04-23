@@ -182,6 +182,7 @@ export async function simulateForensicLog(providerId: string, action: string, me
   } catch (error) {
     console.error("Failed to insert mcLog", error);
     return { success: false };
+  }
 }
 
 export async function deleteWaChatTargets(targetIds: string[]) {

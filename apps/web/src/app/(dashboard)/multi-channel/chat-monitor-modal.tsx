@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { X, Search, Plus, Trash2, Printer, Download, Image as ImageIcon, Video, MessageSquareQuote } from "lucide-react";
-import { getMonitorTargets, getChatLogs, addChatTarget, removeChatTarget, bulkDeleteLogs, bulkArchiveLogs } from "@/app/actions/wa-monitor";
+import { getMonitorTargets, getChatLogs, addChatTarget, removeChatTarget, bulkDeleteLogs, bulkArchiveLogs, bulkDeleteTargets } from "@/app/actions/wa-monitor";
 import ExportMenu from "@/components/ExportMenu";
 import AutoDeliverySettings from "@/components/AutoDeliverySettings";
 
@@ -12,6 +12,7 @@ export default function ChatMonitorModal({ providerId, onClose }: { providerId: 
   
   // Advanced Logbook States
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  const [selectedTargetRows, setSelectedTargetRows] = useState<string[]>([]);
   const [timeFilter, setTimeFilter] = useState('all');
   const [logTab, setLogTab] = useState<'active' | 'archived'>('active');
 
@@ -65,6 +66,24 @@ export default function ChatMonitorModal({ providerId, onClose }: { providerId: 
     await bulkArchiveLogs('chat', selectedRows, archive);
     setSelectedRows([]);
     fetchData();
+  };
+
+  const handleBulkDeleteTargets = async () => {
+    if (selectedTargetRows.length === 0) return;
+    if (window.confirm(`Delete ${selectedTargetRows.length} targets and all their associated logs? This action cannot be undone.`)) {
+      await bulkDeleteTargets('chat', selectedTargetRows);
+      setSelectedTargetRows([]);
+      fetchData();
+    }
+  };
+
+  const handleSelectAllTargets = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) setSelectedTargetRows(targets.map(t => t.id));
+    else setSelectedTargetRows([]);
+  };
+
+  const toggleTargetRow = (id: string) => {
+    setSelectedTargetRows(prev => prev.includes(id) ? prev.filter(rId => rId !== id) : [...prev, id]);
   };
 
   const handlePrint = () => {
@@ -214,9 +233,20 @@ export default function ChatMonitorModal({ providerId, onClose }: { providerId: 
                   </div>
 
                   <div className="bg-black/40 border border-white/5 rounded-2xl overflow-hidden">
+                    {selectedTargetRows.length > 0 && (
+                      <div className="bg-blue-900/20 px-6 py-3 border-b border-blue-500/20 flex justify-between items-center">
+                        <span className="text-sm font-bold text-blue-400">{selectedTargetRows.length} targets selected</span>
+                        <button onClick={handleBulkDeleteTargets} className="text-xs bg-red-600/20 hover:bg-red-600/40 text-red-400 px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition-colors border border-red-500/20">
+                          <Trash2 className="w-4 h-4" /> Delete Selected Targets & Logs
+                        </button>
+                      </div>
+                    )}
                     <table className="w-full text-left text-sm text-zinc-300">
                       <thead className="bg-zinc-900/80 text-xs uppercase text-zinc-500">
                         <tr>
+                          <th className="px-6 py-4 w-10">
+                            <input type="checkbox" onChange={handleSelectAllTargets} checked={targets.length > 0 && selectedTargetRows.length === targets.length} className="w-4 h-4 rounded bg-black/40 border-white/10 text-blue-500 focus:ring-blue-500" />
+                          </th>
                           <th className="px-6 py-4">Name</th>
                           <th className="px-6 py-4">Phone Number</th>
                           <th className="px-6 py-4">Added On</th>
@@ -225,7 +255,10 @@ export default function ChatMonitorModal({ providerId, onClose }: { providerId: 
                       </thead>
                       <tbody className="divide-y divide-white/5">
                         {targets.map(t => (
-                          <tr key={t.id} className="hover:bg-white/[0.02]">
+                          <tr key={t.id} className={`hover:bg-white/[0.02] ${selectedTargetRows.includes(t.id) ? 'bg-blue-500/5' : ''}`}>
+                            <td className="px-6 py-4">
+                              <input type="checkbox" checked={selectedTargetRows.includes(t.id)} onChange={() => toggleTargetRow(t.id)} className="w-4 h-4 rounded bg-black/40 border-white/10 text-blue-500 focus:ring-blue-500" />
+                            </td>
                             <td className="px-6 py-4 font-bold text-white">
                               {t.targetName}
                               {t.isTextOnly && <span className="ml-2 text-[10px] bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded-full">TEXT ONLY</span>}
@@ -240,7 +273,7 @@ export default function ChatMonitorModal({ providerId, onClose }: { providerId: 
                           </tr>
                         ))}
                         {targets.length === 0 && (
-                          <tr><td colSpan={4} className="px-6 py-8 text-center text-zinc-500 italic">No chat targets monitored.</td></tr>
+                          <tr><td colSpan={5} className="px-6 py-8 text-center text-zinc-500 italic">No chat targets monitored.</td></tr>
                         )}
                       </tbody>
                     </table>

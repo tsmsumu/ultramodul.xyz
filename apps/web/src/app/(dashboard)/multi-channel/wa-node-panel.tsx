@@ -211,24 +211,26 @@ export default function WaNodePanel({ provider, isArchived = false }: { provider
               </div>
             )}
           </h2>
-          {!isArchived && (
-            <div className="flex flex-wrap gap-2 justify-start">
-              {waStatus === 'connected' && (
-                <button onClick={handleLogoutSession} className="text-[10px] px-3 py-1.5 bg-orange-500/10 hover:bg-orange-500/30 rounded-lg text-orange-400 font-bold uppercase transition-all flex items-center gap-1">
-                  <LogOut className="w-3 h-3" /> Logout
+          <div className="flex flex-wrap gap-2 justify-start">
+            {!isArchived && (
+              <>
+                {waStatus === 'connected' && (
+                  <button onClick={handleLogoutSession} className="text-[10px] px-3 py-1.5 bg-orange-500/10 hover:bg-orange-500/30 rounded-lg text-orange-400 font-bold uppercase transition-all flex items-center gap-1">
+                    <LogOut className="w-3 h-3" /> Logout
+                  </button>
+                )}
+                <button onClick={handleInitNode} className="text-[10px] px-3 py-1.5 bg-indigo-500/20 hover:bg-indigo-500/40 rounded-lg text-indigo-300 font-bold uppercase transition-all">
+                  Start Node
                 </button>
-              )}
-              <button onClick={handleInitNode} className="text-[10px] px-3 py-1.5 bg-indigo-500/20 hover:bg-indigo-500/40 rounded-lg text-indigo-300 font-bold uppercase transition-all">
-                Start Node
-              </button>
-              <button onClick={fetchWaStatus} className="text-[10px] px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-zinc-300 font-bold uppercase transition-all">
-                Refresh
-              </button>
-              <button onClick={handleDeleteNode} className="text-[10px] px-3 py-1.5 bg-red-500/10 hover:bg-red-500/30 rounded-lg text-red-400 font-bold uppercase transition-all flex items-center gap-1">
-                <Trash2 className="w-3 h-3" /> Delete
-              </button>
-            </div>
-          )}
+                <button onClick={fetchWaStatus} className="text-[10px] px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-zinc-300 font-bold uppercase transition-all">
+                  Refresh
+                </button>
+              </>
+            )}
+            <button onClick={handleDeleteNode} className="text-[10px] px-3 py-1.5 bg-red-500/10 hover:bg-red-500/30 rounded-lg text-red-400 font-bold uppercase transition-all flex items-center gap-1 ml-auto">
+              <Trash2 className="w-3 h-3" /> Delete {isArchived ? 'Archived Node' : ''}
+            </button>
+          </div>
         </div>
 
         {!isArchived && (
@@ -245,7 +247,7 @@ export default function WaNodePanel({ provider, isArchived = false }: { provider
 
             {/* History Sync Toggle */}
             {waStatus !== 'connected' && (
-              <div className="mb-6 flex flex-col gap-4 bg-black/50 p-4 rounded-xl border border-white/5 w-full max-w-sm">
+              <div className="mb-6 flex flex-col gap-4 bg-black/50 p-4 rounded-xl border border-white/5 w-full max-w-lg">
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input type="checkbox" className="sr-only peer" checked={syncHistory} onChange={(e) => saveHistoryConfig({ syncHistory: e.target.checked })} />
                   <div className="w-9 h-5 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-400 after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500 peer-checked:after:bg-white"></div>

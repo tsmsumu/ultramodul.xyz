@@ -199,3 +199,23 @@ export async function removeLogbookSchedule(id: string) {
     return { success: false };
   }
 }
+
+export async function bulkDeleteTargets(type: 'chat' | 'wag' | 'status', targetIds: string[]) {
+  try {
+    if (targetIds.length === 0) return { success: true };
+    if (type === 'chat') {
+      await db.delete(waChatLogs).where(inArray(waChatLogs.targetId, targetIds));
+      await db.delete(waChatTargets).where(inArray(waChatTargets.id, targetIds));
+    } else if (type === 'wag') {
+      await db.delete(wagLogs).where(inArray(wagLogs.targetId, targetIds));
+      await db.delete(wagTargets).where(inArray(wagTargets.id, targetIds));
+    } else if (type === 'status') {
+      await db.delete(waStatusLogs).where(inArray(waStatusLogs.targetId, targetIds));
+      await db.delete(waStatusTargets).where(inArray(waStatusTargets.id, targetIds));
+    }
+    return { success: true };
+  } catch (error) {
+    console.error(`Failed to bulk delete ${type} targets`, error);
+    return { success: false };
+  }
+}

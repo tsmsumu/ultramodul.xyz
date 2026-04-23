@@ -1,8 +1,8 @@
 "use server";
 
 import { db } from "@ultra/db";
-import { mcProviders, mcMappings, mcSessions, mcLogs, users } from "@ultra/db/src/schema";
-import { eq, desc } from "drizzle-orm";
+import { mcProviders, mcMappings, mcSessions, mcLogs, users, waChatLogs, waChatTargets, wagLogs, wagTargets, waStatusLogs, waStatusTargets } from "@ultra/db/src/schema";
+import { eq, desc, inArray } from "drizzle-orm";
 import { randomUUID } from "crypto";
 import { exec } from "child_process";
 import { promisify } from "util";
@@ -182,9 +182,43 @@ export async function simulateForensicLog(providerId: string, action: string, me
   } catch (error) {
     console.error("Failed to insert mcLog", error);
     return { success: false };
+}
+
+export async function deleteWaChatTargets(targetIds: string[]) {
+  try {
+    if (targetIds.length === 0) return { success: true };
+    await db.delete(waChatLogs).where(inArray(waChatLogs.targetId, targetIds));
+    await db.delete(waChatTargets).where(inArray(waChatTargets.id, targetIds));
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to delete chat targets", error);
+    return { success: false };
   }
 }
 
+export async function deleteWagTargets(targetIds: string[]) {
+  try {
+    if (targetIds.length === 0) return { success: true };
+    await db.delete(wagLogs).where(inArray(wagLogs.targetId, targetIds));
+    await db.delete(wagTargets).where(inArray(wagTargets.id, targetIds));
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to delete WAG targets", error);
+    return { success: false };
+  }
+}
+
+export async function deleteWaStatusTargets(targetIds: string[]) {
+  try {
+    if (targetIds.length === 0) return { success: true };
+    await db.delete(waStatusLogs).where(inArray(waStatusLogs.targetId, targetIds));
+    await db.delete(waStatusTargets).where(inArray(waStatusTargets.id, targetIds));
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to delete status targets", error);
+    return { success: false };
+  }
+}
 
 export async function createWhatsAppNode() {
   try {

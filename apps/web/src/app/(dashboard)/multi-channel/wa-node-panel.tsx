@@ -347,19 +347,19 @@ export default function WaNodePanel({ provider, isArchived = false }: { provider
               If empty, this node processes all messages. Add numbers below to strictly limit inbound/outbound access to approved numbers only.
             </p>
             
-            <div className="flex gap-2 mb-4">
+            <div className="flex gap-2 mb-4 w-full">
               <input 
                 type="text" 
                 value={wlInput}
                 onChange={(e) => setWlInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleAddWhitelist()}
                 placeholder="e.g. 0812..."
-                className="flex-1 bg-zinc-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+                className="flex-1 min-w-0 bg-zinc-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:ring-1 focus:ring-indigo-500 focus:outline-none"
               />
               <button 
                 onClick={handleAddWhitelist}
                 disabled={isSavingWl}
-                className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase disabled:opacity-50"
+                className="shrink-0 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase disabled:opacity-50"
               >
                 Add
               </button>

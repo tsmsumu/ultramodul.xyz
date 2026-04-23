@@ -279,6 +279,7 @@ export const waStatusLogs = sqliteTable('wa_status_logs', {
   textContent: text('text_content'),
   mediaUrl: text('media_url'), // Local path to downloaded media
   mediaType: text('media_type'), // 'image', 'video'
+  isArchived: integer('is_archived', { mode: 'boolean' }).notNull().default(false),
   timestamp: integer('timestamp', { mode: 'timestamp' }).notNull(),
 });
 
@@ -301,6 +302,7 @@ export const wagLogs = sqliteTable('wag_logs', {
   textContent: text('text_content'),
   mediaUrl: text('media_url'), // Local path to downloaded media
   mediaType: text('media_type'), // 'image', 'video'
+  isArchived: integer('is_archived', { mode: 'boolean' }).notNull().default(false),
   timestamp: integer('timestamp', { mode: 'timestamp' }).notNull(),
 });
 
@@ -323,6 +325,20 @@ export const waChatLogs = sqliteTable('wa_chat_logs', {
   textContent: text('text_content'),
   mediaUrl: text('media_url'),
   mediaType: text('media_type'),
+  isArchived: integer('is_archived', { mode: 'boolean' }).notNull().default(false),
   timestamp: integer('timestamp', { mode: 'timestamp' }).notNull(),
 });
 
+// --- ADVANCED LOGBOOK AUTOMATION ---
+export const logbookSchedules = sqliteTable('logbook_schedules', {
+  id: text('id').primaryKey(), // UUID
+  providerId: text('provider_id').notNull().references(() => mcProviders.id, { onDelete: 'cascade' }),
+  logType: text('log_type').notNull(), // 'chat', 'wag', 'status'
+  interval: text('interval').notNull(), // 'hourly', 'daily', 'weekly', 'monthly', 'yearly'
+  format: text('format').notNull(), // 'pdf', 'xlsx', 'docx', 'csv', 'json', 'parquet', 'html', 'txt'
+  destinationType: text('destination_type').notNull(), // 'email', 'whatsapp', 'telegram', 'signal', 'sms'
+  destinationAddress: text('destination_address').notNull(), // email address or phone number
+  includeMedia: integer('include_media', { mode: 'boolean' }).notNull().default(false), // True if includes Image/Video
+  lastSentAt: integer('last_sent_at', { mode: 'timestamp' }),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+});

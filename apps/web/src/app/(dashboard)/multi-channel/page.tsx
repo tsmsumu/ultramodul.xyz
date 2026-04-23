@@ -1,4 +1,4 @@
-import { getProviders, getArchivedProviders, getPhoneMappings, getLiveSessions, getForensicLogs } from "@/app/actions/multi-channel";
+import { getProviders, getArchivedProviders, getPhoneMappings, getLiveSessions, getForensicLogs, getSystemStorage } from "@/app/actions/multi-channel";
 import MultiChannelDashboard from "./client";
 
 export const dynamic = "force-dynamic";
@@ -13,6 +13,7 @@ export default async function MultiChannelPage() {
   const sessions = await getLiveSessions();
   const logs = await getForensicLogs();
   const archivedProviders = await getArchivedProviders();
+  const storage = await getSystemStorage();
 
   return (
     <div className="p-4 sm:p-8 max-w-[1800px] mx-auto min-h-[calc(100vh-6rem)]">
@@ -29,9 +30,9 @@ export default async function MultiChannelPage() {
         initialProviders={providers} 
         initialMappings={mappings} 
         initialSessions={sessions} 
-        initialSessions={sessions} 
         initialLogs={logs} 
         archivedProviders={archivedProviders}
+        systemStorage={storage}
       />
     </div>
   );

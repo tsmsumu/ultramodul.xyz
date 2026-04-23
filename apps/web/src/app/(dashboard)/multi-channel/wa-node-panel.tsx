@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Radio, CheckCircle2, XCircle, Terminal as TerminalIcon, Trash2, Edit2, Check, Shield, ShieldAlert, ShieldCheck, Eye, Building2, LogOut } from "lucide-react";
-import { getWaEngineStatus, getWaEngineQr, sendMessageViaEngine, initWaEngineNode, deleteWhatsAppNode, renameWhatsAppNode, updateWaNodeFirewall, logoutWhatsAppSession } from "@/app/actions/multi-channel";
+import { getWaEngineStatus, getWaEngineQr, sendMessageViaEngine, initWaEngineNode, deleteWhatsAppNode, renameWhatsAppNode, updateWaNodeFirewall, logoutWhatsAppSession, setWaEnginePresence } from "@/app/actions/multi-channel";
 import { useRouter } from "next/navigation";
 import StatusMonitorModal from "./status-monitor-modal";
 import WagMonitorModal from "./wag-monitor-modal";
@@ -14,7 +14,9 @@ export default function WaNodePanel({ provider, isArchived = false }: { provider
   const [simMsg, setSimMsg] = useState("");
   const [simLoading, setSimLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(provider.name);
+  const [isStealthMode, setIsStealthMode] = useState(false);
 
   const [showStatusMonitor, setShowStatusMonitor] = useState(false);
   const [showWagMonitor, setShowWagMonitor] = useState(false);
@@ -113,6 +115,12 @@ export default function WaNodePanel({ provider, isArchived = false }: { provider
     }
   };
 
+  const handleToggleStealth = async () => {
+    const newState = !isStealthMode;
+    setIsStealthMode(newState);
+    await setWaEnginePresence(provider.id, newState ? 'unavailable' : 'available');
+  };
+
   useEffect(() => {
     fetchWaStatus();
   }, [provider.id]);
@@ -182,9 +190,22 @@ export default function WaNodePanel({ provider, isArchived = false }: { provider
                  <img src={qrCode} alt="WhatsApp QR Code" className="w-48 h-48" />
                </div>
             ) : waStatus === 'connected' ? (
+             <div className="flex flex-col items-center gap-4">
                <div className="w-32 h-32 rounded-full border-4 border-emerald-500/30 flex items-center justify-center">
                  <CheckCircle2 className="w-16 h-16 text-emerald-400" />
                </div>
+               <button 
+                 onClick={handleToggleStealth}
+                 className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all ${
+                   isStealthMode 
+                     ? 'bg-purple-500/20 text-purple-400 border border-purple-500/50 shadow-[0_0_15px_rgba(168,85,247,0.3)]' 
+                     : 'bg-zinc-800/50 text-zinc-400 border border-zinc-700 hover:bg-zinc-800'
+                 }`}
+               >
+                 <Eye className={`w-4 h-4 ${isStealthMode ? 'opacity-50' : ''}`} />
+                 {isStealthMode ? 'Stealth Mode (Invisible)' : 'Visible (Online)'}
+               </button>
+             </div>
             ) : (
                <div className="w-32 h-32 rounded-full border-4 border-red-500/30 flex items-center justify-center">
                  <XCircle className="w-16 h-16 text-red-400" />

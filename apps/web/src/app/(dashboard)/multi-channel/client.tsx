@@ -20,6 +20,7 @@ export default function MultiChannelDashboard({
   initialMappings: any[];
   initialSessions: any[];
   initialLogs: any[];
+  systemStorage: any;
 }) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("Command Center");
@@ -41,8 +42,8 @@ export default function MultiChannelDashboard({
     const totalCount = initialProviders.length;
     
     return (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-1 bg-zinc-950/80 border border-white/5 rounded-3xl p-8 relative overflow-hidden shadow-[0_0_50px_-15px_rgba(99,102,241,0.2)]">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="lg:col-span-1 bg-zinc-950/80 border border-white/5 rounded-3xl p-8 relative overflow-hidden shadow-[0_0_50px_-15px_rgba(99,102,241,0.2)]">
           <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 blur-[50px] pointer-events-none" />
           <h2 className="text-xs font-bold text-indigo-400 uppercase tracking-widest flex items-center gap-2 mb-6">
             <Radio className="w-4 h-4" /> Status Gateway
@@ -59,7 +60,27 @@ export default function MultiChannelDashboard({
           </div>
         </div>
 
-        <div className="md:col-span-2 bg-zinc-950/80 border border-white/5 rounded-3xl p-8 overflow-hidden">
+        <div className="lg:col-span-1 bg-zinc-950/80 border border-white/5 rounded-3xl p-8 relative overflow-hidden">
+          <h2 className="text-xs font-bold text-emerald-400 uppercase tracking-widest flex items-center gap-2 mb-6">
+            <Database className="w-4 h-4" /> Server Storage
+          </h2>
+          <div className="flex flex-col items-center justify-center py-6">
+            <div className={`w-40 h-40 rounded-full border-4 flex items-center justify-center relative ${systemStorage?.usePercent > 90 ? 'border-red-500/30' : 'border-white/5'}`}>
+              <div className="text-center">
+                <span className={`text-5xl font-black ${systemStorage?.usePercent > 90 ? 'text-red-500' : 'text-white'}`}>
+                  {systemStorage?.usePercent || 0}%
+                </span>
+                <p className="text-[10px] uppercase tracking-widest text-zinc-500 mt-2">Used Space</p>
+              </div>
+            </div>
+          </div>
+          <div className="flex justify-between text-xs text-zinc-500 font-mono mt-4">
+            <span>{systemStorage?.used} Used</span>
+            <span>{systemStorage?.total} Total</span>
+          </div>
+        </div>
+
+        <div className="lg:col-span-2 bg-zinc-950/80 border border-white/5 rounded-3xl p-8 overflow-hidden">
           <h2 className="text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2 mb-6">
             <Activity className="w-4 h-4" /> Node Telemetry
           </h2>

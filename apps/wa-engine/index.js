@@ -433,6 +433,23 @@ app.post('/logout/:id', async (req, res) => {
   }
 });
 
+app.post('/presence/:id', async (req, res) => {
+  const id = req.params.id;
+  const { presence } = req.body; // 'available' or 'unavailable'
+  
+  if (!sockets.has(id)) {
+    return res.status(404).json({ success: false, message: 'Socket not found' });
+  }
+
+  try {
+    const sock = sockets.get(id);
+    await sock.sendPresenceUpdate(presence);
+    res.json({ success: true, presence });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Omni WA-Engine (Multi-Tenant) listening on port ${PORT}`);
   loadExistingSessions();

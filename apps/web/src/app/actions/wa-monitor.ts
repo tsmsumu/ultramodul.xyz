@@ -1,8 +1,8 @@
 "use server";
 
 import { db } from "@ultra/db";
-import { wagTargets, waStatusTargets, waChatTargets, mcProviders, wagLogs, waStatusLogs, waChatLogs } from "@ultra/db/src/schema";
-import { eq, and, desc } from "drizzle-orm";
+import { wagTargets, waStatusTargets, waChatTargets, mcProviders, wagLogs, waStatusLogs, waChatLogs, logbookSchedules } from "@ultra/db/src/schema";
+import { eq, and, desc, inArray } from "drizzle-orm";
 import { randomUUID } from "crypto";
 
 export async function addWagTarget(providerId: string, groupId: string, groupName: string, isTextOnly: boolean = false) {
@@ -132,6 +132,70 @@ export async function syncMonitorTargetsToEngine(providerId: string) {
     return { success: true };
   } catch (error) {
     console.error("Failed to sync targets to engine", error);
+    return { success: false };
+  }
+}
+
+export async function bulkDeleteLogs(logType: 'chat' | 'wag' | 'status', ids: string[]) {
+  try {
+    if (ids.length === 0) return { success: true };
+    const table = logType === 'chat' ? waChatLogs : logType === 'wag' ? wagLogs : waStatusLogs;
+    await db.delete(table).where(inArray(table.id, ids));
+    return { success: true };
+  } catch (error) {
+    return { success: false };
+  }
+}
+
+export async function bulkArchiveLogs(logType: 'chat' | 'wag' | 'status', ids: string[], archive: boolean = true) {
+  try {
+    if (ids.length === 0) return { success: true };
+    const table = logType === 'chat' ? waChatLogs : logType === 'wag' ? wagLogs : waStatusLogs;
+    // @ts-ignore dynamic table update
+    await db.update(table).set({ isArchived: archive }).where(inArray(table.id, ids));
+    return { success: true };
+  } catch (error) {
+    return { success: false };
+  }
+}
+
+// --- LOGBOOK AUTOMATION SCHEDULER ---
+export async function getLogbookSchedules(providerId: string, logType: string) {
+  return await db.select().from(logbookSchedules).where(and(eq(logbookSchedules.providerId, providerId), eq(logbookSchedules.logType, logType))).orderBy(desc(logbookSchedules.createdAt));
+}
+
+export async function addLogbookSchedule(data: {
+  providerId: string,
+  logType: string,
+  interval: string,
+  format: string,
+  destinationType: string,
+  destinationAddress: string,
+  includeMedia: boolean
+}) {
+  try {
+    await db.insert(logbookSchedules).values({
+      id: randomUUID(),
+      providerId: data.providerId,
+      logType: data.logType,
+      interval: data.interval,
+      format: data.format,
+      destinationType: data.destinationType,
+      destinationAddress: data.destinationAddress,
+      includeMedia: data.includeMedia,
+      createdAt: new Date()
+    });
+    return { success: true };
+  } catch (error) {
+    return { success: false };
+  }
+}
+
+export async function removeLogbookSchedule(id: string) {
+  try {
+    await db.delete(logbookSchedules).where(eq(logbookSchedules.id, id));
+    return { success: true };
+  } catch (error) {
     return { success: false };
   }
 }

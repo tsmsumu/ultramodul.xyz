@@ -1,12 +1,20 @@
 import { useState, useEffect } from "react";
 import { X, Search, Plus, Trash2, Printer, Download, Image as ImageIcon, Video, Building2 } from "lucide-react";
-import { getMonitorTargets, getWagLogs, addWagTarget, removeWagTarget } from "@/app/actions/wa-monitor";
+import { getMonitorTargets, getWagLogs, addWagTarget, removeWagTarget, bulkDeleteLogs, bulkArchiveLogs } from "@/app/actions/wa-monitor";
+import ExportMenu from "@/components/ExportMenu";
+import AutoDeliverySettings from "@/components/AutoDeliverySettings";
 
 export default function WagMonitorModal({ providerId, onClose }: { providerId: string, onClose: () => void }) {
-  const [activeTab, setActiveTab] = useState<'targets' | 'logs'>('logs');
+  const [activeTab, setActiveTab] = useState<'targets' | 'logs' | 'delivery'>('logs');
   const [targets, setTargets] = useState<any[]>([]);
   const [logs, setLogs] = useState<any[]>([]);
+  const [logs, setLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Advanced Logbook States
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  const [timeFilter, setTimeFilter] = useState('all');
+  const [logTab, setLogTab] = useState<'active' | 'archived'>('active');
 
   // Form states
   const [groupId, setGroupId] = useState("");
@@ -51,32 +59,83 @@ export default function WagMonitorModal({ providerId, onClose }: { providerId: s
     fetchData();
   };
 
+  const handleBulkDelete = async () => {
+    if (selectedRows.length === 0) return;
+    if (window.confirm(`Delete ${selectedRows.length} logs permanently?`)) {
+      await bulkDeleteLogs('wag', selectedRows);
+      setSelectedRows([]);
+      fetchData();
+    }
+  };
+
+  const handleBulkArchive = async (archive: boolean) => {
+    if (selectedRows.length === 0) return;
+    await bulkArchiveLogs('wag', selectedRows, archive);
+    setSelectedRows([]);
+    fetchData();
+  };
+
   const handlePrint = () => {
     window.print();
   };
 
-  const handleExport = () => {
-    const csvContent = "data:text/csv;charset=utf-8," 
-      + "Date,Time,Group,Sender,Text,Media\n"
-      + filteredLogs.map(l => {
-          const dt = new Date(l.timestamp);
-          const targetObj = targets.find(t => t.id === l.targetId);
-          return `${dt.toLocaleDateString()},${dt.toLocaleTimeString()},${targetObj?.groupName || 'Unknown Group'},${l.senderName || l.senderNumber},${l.textContent?.replace(/,/g, ' ') || ''},${l.mediaUrl ? 'Yes' : 'No'}`;
-        }).join("\n");
-    
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "wag_logs.csv");
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
+  const exportOptions = {
+    filename: `Omni_WAG_Logbook_${new Date().toISOString().split('T')[0]}`,
+    title: "Omni Intelligence - WAG Logbook",
+    columns: [
+      { header: "Date", key: "date" },
+      { header: "Time", key: "time" },
+      { header: "Group", key: "group" },
+      { header: "Sender", key: "sender" },
+      { header: "Content", key: "content" },
+      { header: "Has Media", key: "hasMedia" },
+    ],
+    data: filteredLogs.map(l => {
+      const dt = new Date(l.timestamp);
+      const targetObj = targets.find(t => t.id === l.targetId);
+      return {
+        date: dt.toLocaleDateString(),
+        time: dt.toLocaleTimeString(),
+        group: targetObj?.groupName || 'Unknown',
+        sender: l.senderName || l.senderNumber,
+        content: l.textContent || '',
+        hasMedia: l.mediaUrl ? 'Yes' : 'No'
+      };
+    })
   };
 
-  const filteredLogs = logs.filter(l => 
-    l.textContent?.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    l.senderName?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredLogs = logs.filter(l => {
+    const isArchivedTarget = logTab === 'archived';
+    if ((l.isArchived ? true : false) !== isArchivedTarget) return false;
+
+    if (timeFilter !== 'all') {
+      const logDate = new Date(l.timestamp);
+      const now = new Date();
+      if (timeFilter === 'today' && logDate.toDateString() !== now.toDateString()) return false;
+      if (timeFilter === 'this_week') {
+        const weekAgo = new Date(); weekAgo.setDate(now.getDate() - 7);
+        if (logDate < weekAgo) return false;
+      }
+      if (timeFilter === 'this_month') {
+        if (logDate.getMonth() !== now.getMonth() || logDate.getFullYear() !== now.getFullYear()) return false;
+      }
+      if (timeFilter === 'this_year') {
+        if (logDate.getFullYear() !== now.getFullYear()) return false;
+      }
+    }
+
+    return l.textContent?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+           l.senderName?.toLowerCase().includes(searchQuery.toLowerCase());
+  });
+
+  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) setSelectedRows(filteredLogs.map(l => l.id));
+    else setSelectedRows([]);
+  };
+
+  const toggleRow = (id: string) => {
+    setSelectedRows(prev => prev.includes(id) ? prev.filter(rId => rId !== id) : [...prev, id]);
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm print:bg-white print:p-0">
@@ -112,6 +171,12 @@ export default function WagMonitorModal({ providerId, onClose }: { providerId: s
           >
             🎯 WAG Targets
           </button>
+          <button 
+            onClick={() => setActiveTab('delivery')}
+            className={`pb-4 text-sm font-bold uppercase tracking-wider border-b-2 transition-colors ${activeTab === 'delivery' ? 'border-emerald-500 text-emerald-400' : 'border-transparent text-zinc-500 hover:text-zinc-300'}`}
+          >
+            ⏱️ Auto-Delivery
+          </button>
         </div>
 
         {/* Content */}
@@ -120,6 +185,11 @@ export default function WagMonitorModal({ providerId, onClose }: { providerId: s
             <div className="h-full flex items-center justify-center text-emerald-400 print:hidden">Loading Intel Data...</div>
           ) : (
             <>
+              {/* DELIVERY TAB */}
+              {activeTab === 'delivery' && (
+                <AutoDeliverySettings providerId={providerId} logType="wag" />
+              )}
+
               {/* TARGETS TAB */}
               {activeTab === 'targets' && (
                 <div className="space-y-6 print:hidden">
@@ -181,9 +251,24 @@ export default function WagMonitorModal({ providerId, onClose }: { providerId: s
 
               {/* LOGS TAB */}
               {activeTab === 'logs' && (
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between print:hidden">
-                    <div className="relative w-64">
+                <div className="space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 print:hidden">
+                    <div className="flex items-center gap-2">
+                      <div className="flex bg-black/40 rounded-lg p-1 border border-white/5">
+                        <button onClick={() => { setLogTab('active'); setSelectedRows([]); }} className={`px-4 py-1.5 rounded-md text-xs font-bold uppercase tracking-widest transition-colors ${logTab === 'active' ? 'bg-emerald-600 text-white' : 'text-zinc-500 hover:text-white'}`}>Active</button>
+                        <button onClick={() => { setLogTab('archived'); setSelectedRows([]); }} className={`px-4 py-1.5 rounded-md text-xs font-bold uppercase tracking-widest transition-colors ${logTab === 'archived' ? 'bg-zinc-800 text-white' : 'text-zinc-500 hover:text-white'}`}>Archived</button>
+                      </div>
+                      
+                      <select value={timeFilter} onChange={e=>setTimeFilter(e.target.value)} className="bg-zinc-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-zinc-300 focus:outline-none">
+                        <option value="all">All Time</option>
+                        <option value="today">Today</option>
+                        <option value="this_week">This Week</option>
+                        <option value="this_month">This Month</option>
+                        <option value="this_year">This Year</option>
+                      </select>
+                    </div>
+                    
+                    <div className="relative w-full sm:w-64">
                       <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
                       <input 
                         type="text" 
@@ -194,14 +279,28 @@ export default function WagMonitorModal({ providerId, onClose }: { providerId: s
                       />
                     </div>
                     <div className="flex gap-2">
-                      <button onClick={handleExport} className="flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors">
-                        <Download className="w-4 h-4" /> Export CSV
-                      </button>
+                      <ExportMenu options={exportOptions} />
                       <button onClick={handlePrint} className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors">
                         <Printer className="w-4 h-4" /> Print Report
                       </button>
                     </div>
                   </div>
+
+                  {selectedRows.length > 0 && (
+                    <div className="flex items-center justify-between bg-emerald-500/10 border border-emerald-500/30 px-4 py-2 rounded-xl print:hidden">
+                      <span className="text-sm font-bold text-emerald-400">{selectedRows.length} logs selected</span>
+                      <div className="flex gap-2">
+                        {logTab === 'active' ? (
+                          <button onClick={() => handleBulkArchive(true)} className="px-3 py-1 bg-zinc-800 hover:bg-zinc-700 text-white rounded text-xs font-bold">Move to Archive</button>
+                        ) : (
+                          <button onClick={() => handleBulkArchive(false)} className="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-xs font-bold">Restore to Active</button>
+                        )}
+                        <button onClick={handleBulkDelete} className="px-3 py-1 bg-red-500/20 hover:bg-red-500/40 text-red-400 rounded text-xs font-bold flex items-center gap-1">
+                          <Trash2 className="w-3 h-3" /> Delete
+                        </button>
+                      </div>
+                    </div>
+                  )}
 
                   <div className="hidden print:block mb-8">
                     <h1 className="text-2xl font-bold text-black border-b border-black pb-2 mb-4">Laporan Pemantauan WhatsApp Group (WAG)</h1>
@@ -212,6 +311,9 @@ export default function WagMonitorModal({ providerId, onClose }: { providerId: s
                     <table className="w-full text-left text-sm text-zinc-300 print:text-black">
                       <thead className="bg-zinc-900/80 text-xs uppercase text-zinc-500 print:bg-gray-100 print:text-black">
                         <tr>
+                          <th className="px-6 py-4 w-10 print:hidden">
+                            <input type="checkbox" checked={filteredLogs.length > 0 && selectedRows.length === filteredLogs.length} onChange={handleSelectAll} className="rounded bg-black/40 border-white/10" />
+                          </th>
                           <th className="px-6 py-4">Date & Time</th>
                           <th className="px-6 py-4">Group & Sender</th>
                           <th className="px-6 py-4">Message Content</th>
@@ -222,7 +324,10 @@ export default function WagMonitorModal({ providerId, onClose }: { providerId: s
                         {filteredLogs.map(l => {
                           const targetObj = targets.find(t => t.id === l.targetId);
                           return (
-                            <tr key={l.id} className="hover:bg-white/[0.02]">
+                            <tr key={l.id} className={`hover:bg-white/[0.02] ${selectedRows.includes(l.id) ? 'bg-white/[0.05]' : ''}`}>
+                              <td className="px-6 py-4 print:hidden">
+                                <input type="checkbox" checked={selectedRows.includes(l.id)} onChange={() => toggleRow(l.id)} className="rounded bg-black/40 border-white/10" />
+                              </td>
                               <td className="px-6 py-4 whitespace-nowrap">
                                 <div className="font-bold text-white print:text-black">{new Date(l.timestamp).toLocaleDateString()}</div>
                                 <div className="text-xs text-zinc-500 print:text-gray-600">{new Date(l.timestamp).toLocaleTimeString()}</div>

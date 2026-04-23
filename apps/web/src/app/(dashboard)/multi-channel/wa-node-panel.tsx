@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Radio, CheckCircle2, XCircle, Terminal as TerminalIcon, Trash2, Edit2, Check, Shield, ShieldAlert, ShieldCheck, Eye, Building2, LogOut } from "lucide-react";
-import { getWaEngineStatus, getWaEngineQr, sendMessageViaEngine, initWaEngineNode, deleteWhatsAppNode, renameWhatsAppNode, updateWaNodeFirewall, logoutWhatsAppSession, setWaEnginePresence, updateWaNodeHistorySync } from "@/app/actions/multi-channel";
+import { getWaEngineStatus, getWaEngineQr, sendMessageViaEngine, initWaEngineNode, deleteWhatsAppNode, destroyWhatsAppNode, renameWhatsAppNode, updateWaNodeFirewall, logoutWhatsAppSession, setWaEnginePresence, updateWaNodeHistorySync } from "@/app/actions/multi-channel";
 import { useRouter } from "next/navigation";
 import StatusMonitorModal from "./status-monitor-modal";
 import WagMonitorModal from "./wag-monitor-modal";
@@ -153,7 +153,7 @@ export default function WaNodePanel({ provider, isArchived = false }: { provider
 
   const handleDeleteNode = async () => {
     if (window.confirm("PERINGATAN KRITIS: Apakah Anda yakin ingin menghancurkan WhatsApp Node ini? Semua sesi akan dihapus secara permanen.")) {
-      const res = await deleteWhatsAppNode(provider.id);
+      const res = isArchived ? await destroyWhatsAppNode(provider.id) : await deleteWhatsAppNode(provider.id);
       if (res.success) {
         router.refresh();
       } else {

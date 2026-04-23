@@ -15,7 +15,8 @@ export default function WagMonitorModal({ providerId, onClose }: { providerId: s
   // Advanced Logbook States
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [selectedTargetRows, setSelectedTargetRows] = useState<string[]>([]);
-  const [timeFilter, setTimeFilter] = useState('all');
+  const [filterDateFrom, setFilterDateFrom] = useState("");
+  const [filterDateTo, setFilterDateTo] = useState("");
   const [logTab, setLogTab] = useState<'active' | 'archived'>('active');
 
   // Form states
@@ -115,21 +116,12 @@ export default function WagMonitorModal({ providerId, onClose }: { providerId: s
     const isArchivedTarget = logTab === 'archived';
     if ((l.isArchived ? true : false) !== isArchivedTarget) return false;
 
-    if (timeFilter !== 'all') {
-      const logDate = new Date(l.timestamp);
-      const now = new Date();
-      if (timeFilter === 'today' && logDate.toDateString() !== now.toDateString()) return false;
-      if (timeFilter === 'this_week') {
-        const weekAgo = new Date(); weekAgo.setDate(now.getDate() - 7);
-        if (logDate < weekAgo) return false;
-      }
-      if (timeFilter === 'this_month') {
-        if (logDate.getMonth() !== now.getMonth() || logDate.getFullYear() !== now.getFullYear()) return false;
-      }
-      if (timeFilter === 'this_year') {
-        if (logDate.getFullYear() !== now.getFullYear()) return false;
-      }
-    }
+    // Time Filter (From/To Date)
+    const logTime = new Date(l.timestamp).getTime();
+    const fromTime = filterDateFrom ? new Date(filterDateFrom).getTime() : 0;
+    const toTime = filterDateTo ? new Date(filterDateTo).getTime() : Infinity;
+    
+    if (logTime < fromTime || logTime > toTime) return false;
 
     return l.textContent?.toLowerCase().includes(searchQuery.toLowerCase()) || 
            l.senderName?.toLowerCase().includes(searchQuery.toLowerCase());
@@ -303,14 +295,11 @@ export default function WagMonitorModal({ providerId, onClose }: { providerId: s
                         <button onClick={() => { setLogTab('active'); setSelectedRows([]); }} className={`px-4 py-1.5 rounded-md text-xs font-bold uppercase tracking-widest transition-colors ${logTab === 'active' ? 'bg-emerald-600 text-white' : 'text-zinc-500 hover:text-white'}`}>Active</button>
                         <button onClick={() => { setLogTab('archived'); setSelectedRows([]); }} className={`px-4 py-1.5 rounded-md text-xs font-bold uppercase tracking-widest transition-colors ${logTab === 'archived' ? 'bg-zinc-800 text-white' : 'text-zinc-500 hover:text-white'}`}>Archived</button>
                       </div>
-                      
-                      <select value={timeFilter} onChange={e=>setTimeFilter(e.target.value)} className="bg-zinc-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-zinc-300 focus:outline-none">
-                        <option value="all">All Time</option>
-                        <option value="today">Today</option>
-                        <option value="this_week">This Week</option>
-                        <option value="this_month">This Month</option>
-                        <option value="this_year">This Year</option>
-                      </select>
+                      <div className="flex items-center gap-2">
+                        <input type="datetime-local" value={filterDateFrom} onChange={e=>setFilterDateFrom(e.target.value)} className="bg-zinc-900 border border-white/10 rounded-lg px-2 py-2 text-xs text-zinc-300 focus:outline-none" title="From Date" />
+                        <span className="text-zinc-600">-</span>
+                        <input type="datetime-local" value={filterDateTo} onChange={e=>setFilterDateTo(e.target.value)} className="bg-zinc-900 border border-white/10 rounded-lg px-2 py-2 text-xs text-zinc-300 focus:outline-none" title="To Date" />
+                      </div>
                     </div>
                     
                     <div className="relative w-full sm:w-64">

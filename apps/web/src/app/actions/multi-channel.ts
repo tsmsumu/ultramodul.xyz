@@ -962,3 +962,179 @@ export async function updateSmsNodeHistorySync(providerId: string, payload: any)
 }
 
 
+
+
+// --- EMAIL NODE ACTIONS ---
+export async function createEmailNode() {
+  try {
+    const newId = randomUUID();
+    await db.insert(mcProviders).values({
+      id: newId,
+      providerType: "email",
+      name: `Email Node - ${newId.split('-')[0]}`,
+      isActive: false,
+      configPayload: "{}",
+      createdAt: new Date(),
+      updatedAt: new Date()
+    });
+    return { success: true, message: "Node Created", id: newId };
+  } catch (error) {
+    console.error("Failed to create TG Node", error);
+    return { success: false, message: "Error creating node" };
+  }
+}
+
+
+export async function deleteEmailNode(providerId: string) {
+  try {
+    try {
+      await fetch(`http://127.0.0.1:3003/logout/${providerId}`, { method: 'POST' });
+    } catch (e) {
+      console.log("TG Engine logout failed", e);
+    }
+    
+    await db.update(mcProviders).set({ isArchived: true, updatedAt: new Date() }).where(eq(mcProviders.id, providerId));
+    return { success: true };
+  } catch (error) {
+    return { success: false, message: "Error deleting node" };
+  }
+}
+
+
+export async function destroyEmailNode(providerId: string) {
+  try {
+    try {
+      await fetch(`http://127.0.0.1:3003/logout/${providerId}`, { method: 'POST' });
+    } catch (e) {
+      console.log("TG Engine logout failed", e);
+    }
+    
+    await db.delete(mcProviders).where(eq(mcProviders.id, providerId));
+    return { success: true };
+  } catch (error) {
+    return { success: false, message: "Error destroying node" };
+  }
+}
+
+
+export async function renameEmailNode(providerId: string, name: string) {
+  try {
+    await db.update(mcProviders).set({ name, updatedAt: new Date() }).where(eq(mcProviders.id, providerId));
+    try {
+      await fetch(`http://127.0.0.1:3003/rename/${providerId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name })
+      });
+    } catch(e) {}
+    return { success: true };
+  } catch (e) {
+    return { success: false };
+  }
+}
+
+
+export async function initEmailEngineNode(providerId: string, name: string) {
+  try {
+    const res = await fetch(`http://127.0.0.1:3003/init/${providerId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name })
+    });
+    return await res.json();
+  } catch (e) {
+    return { success: false, message: 'Engine offline' };
+  }
+}
+
+
+export async function getEmailEngineStatus(providerId: string) {
+  try {
+    const res = await fetch(`http://127.0.0.1:3003/status/${providerId}`);
+    return await res.json();
+  } catch (e) {
+    return { status: 'offline', hasSession: false };
+  }
+}
+
+
+export async function sendEmailCode(providerId: string, phoneNumber: string) {
+  try {
+    const res = await fetch(`http://127.0.0.1:3003/auth/send-code/${providerId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phoneNumber })
+    });
+    return await res.json();
+  } catch (e) {
+    return { success: false, message: 'Engine offline' };
+  }
+}
+
+
+export async function submitEmailCode(providerId: string, code: string) {
+  try {
+    const res = await fetch(`http://127.0.0.1:3003/auth/submit-code/${providerId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code })
+    });
+    return await res.json();
+  } catch (e) {
+    return { success: false, message: 'Engine offline' };
+  }
+}
+
+
+export async function submitEmailPassword(providerId: string, password: string) {
+  try {
+    const res = await fetch(`http://127.0.0.1:3003/auth/submit-password/${providerId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password })
+    });
+    return await res.json();
+  } catch (e) {
+    return { success: false, message: 'Engine offline' };
+  }
+}
+
+
+export async function logoutEmailSession(providerId: string) {
+  try {
+    const res = await fetch(`http://127.0.0.1:3003/logout/${providerId}`, { method: 'POST' });
+    return await res.json();
+  } catch (e) {
+    return { success: false, message: 'Engine offline' };
+  }
+}
+
+
+export async function updateEmailNodeFirewall(providerId: string, whitelist: string[]) {
+  try {
+    await fetch(`http://127.0.0.1:3003/config/${providerId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ whitelist })
+    });
+    return { success: true };
+  } catch (error) {
+    return { success: false, message: "Error updating TG Firewall" };
+  }
+}
+
+
+export async function updateEmailNodeHistorySync(providerId: string, payload: any) {
+  try {
+    await fetch(`http://127.0.0.1:3003/config/${providerId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    return { success: true };
+  } catch (error) {
+    return { success: false, message: "Error updating TG Config" };
+  }
+}
+
+

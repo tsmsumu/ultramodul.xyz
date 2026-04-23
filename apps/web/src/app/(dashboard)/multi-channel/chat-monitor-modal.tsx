@@ -26,6 +26,7 @@ export default function ChatMonitorModal({ providerId, onClose }: { providerId: 
   
   // Search state
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchTargetQuery, setSearchTargetQuery] = useState("");
 
   const fetchData = async () => {
     setLoading(true);
@@ -238,14 +239,26 @@ export default function ChatMonitorModal({ providerId, onClose }: { providerId: 
                   </div>
 
                   <div className="bg-black/40 border border-white/5 rounded-2xl overflow-hidden">
-                    {selectedTargetRows.length > 0 && (
-                      <div className="bg-blue-900/20 px-6 py-3 border-b border-blue-500/20 flex justify-between items-center">
-                        <span className="text-sm font-bold text-blue-400">{selectedTargetRows.length} targets selected</span>
-                        <button onClick={handleBulkDeleteTargets} className="text-xs bg-red-600/20 hover:bg-red-600/40 text-red-400 px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition-colors border border-red-500/20">
-                          <Trash2 className="w-4 h-4" /> Delete Selected Targets & Logs
-                        </button>
+                    <div className="p-4 border-b border-white/5 bg-zinc-900/30 flex flex-col sm:flex-row justify-between items-center gap-4">
+                      <div className="relative w-full sm:w-64">
+                        <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+                        <input 
+                          type="text" 
+                          placeholder="Search targets..." 
+                          value={searchTargetQuery}
+                          onChange={e=>setSearchTargetQuery(e.target.value)}
+                          className="w-full bg-zinc-900 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                        />
                       </div>
-                    )}
+                      {selectedTargetRows.length > 0 && (
+                        <div className="bg-blue-900/20 px-4 py-2 border border-blue-500/20 flex items-center gap-4 rounded-lg">
+                          <span className="text-sm font-bold text-blue-400">{selectedTargetRows.length} targets selected</span>
+                          <button onClick={handleBulkDeleteTargets} className="text-xs bg-red-600/20 hover:bg-red-600/40 text-red-400 px-3 py-1.5 rounded font-bold flex items-center gap-2 transition-colors border border-red-500/20">
+                            <Trash2 className="w-3 h-3" /> Delete Selected
+                          </button>
+                        </div>
+                      )}
+                    </div>
                     <table className="w-full text-left text-sm text-zinc-300">
                       <thead className="bg-zinc-900/80 text-xs uppercase text-zinc-500">
                         <tr>
@@ -259,7 +272,7 @@ export default function ChatMonitorModal({ providerId, onClose }: { providerId: 
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-white/5">
-                        {targets.map(t => (
+                        {targets.filter(t => t.targetName?.toLowerCase().includes(searchTargetQuery.toLowerCase()) || t.phoneNumber?.includes(searchTargetQuery)).map(t => (
                           <tr key={t.id} className={`hover:bg-white/[0.02] ${selectedTargetRows.includes(t.id) ? 'bg-blue-500/5' : ''}`}>
                             <td className="px-6 py-4">
                               <input type="checkbox" checked={selectedTargetRows.includes(t.id)} onChange={() => toggleTargetRow(t.id)} className="w-4 h-4 rounded bg-black/40 border-white/10 text-blue-500 focus:ring-blue-500" />

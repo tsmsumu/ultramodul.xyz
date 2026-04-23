@@ -2,7 +2,7 @@ import { toggleIdentityStatus, setRandomPassword, deleteIdentity } from "@/app/a
 import { triggerEmergencyJit } from "@/app/actions/matrix";
 import { processBulkExport } from "@/app/actions/export";
 import { Lock, Unlock, ShieldAlert, Settings, Siren, Search, CheckSquare, HardDriveDownload, BoxSelect, Key, Trash2, Pen } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { MatrixDrawer } from "./matrix-drawer";
 import { OmniEtlModal } from "./omni-etl-modal";
 import { LanguageModal } from "./language-modal";
@@ -15,6 +15,11 @@ export function DataTable({ initialUsers, currentUserRole }: { initialUsers: any
   const t = useTranslations("iam");
   const [users, setUsers] = useState(initialUsers);
   const [loadingId, setLoadingId] = useState<string | null>(null);
+
+  useEffect(() => {
+    setUsers(initialUsers);
+  }, [initialUsers]);
+
   
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());

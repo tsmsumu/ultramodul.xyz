@@ -70,7 +70,7 @@ export async function addChatTarget(providerId: string, channelId: string, targe
     await db.insert(tgChatTargets).values({
       id: randomUUID(),
       providerId,
-      channelId: clean,
+      phoneNumber: clean,
       targetName,
       isTextOnly,
       createdAt: new Date()
@@ -227,7 +227,7 @@ export async function importLogbookData(providerId: string, logType: 'chat' | 't
 
     if (logType === 'chat') {
       const existingTargets = await db.select().from(tgChatTargets).where(eq(tgChatTargets.providerId, providerId));
-      const targetMap = new Map(existingTargets.map(t => [t.channelId, t.id]));
+      const targetMap = new Map(existingTargets.map(t => [t.phoneNumber, t.id]));
       
       const existingLogs = await db.select().from(tgChatLogs).where(eq(tgChatLogs.providerId, providerId));
       const logSet = new Set(existingLogs.map(l => `${l.targetId}_${l.timestamp.getTime()}_${l.textContent}`));

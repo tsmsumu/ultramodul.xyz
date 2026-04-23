@@ -72,7 +72,7 @@ export default function GroupMonitorModal({ providerId, onClose }: { providerId:
   const handleBulkDelete = async () => {
     if (selectedRows.length === 0) return;
     if (window.confirm(`Delete ${selectedRows.length} logs permanently?`)) {
-      await bulkDeleteLogs('wag', selectedRows);
+      await bulkDeleteLogs('tgGroup', selectedRows);
       setSelectedRows([]);
       fetchData();
     }
@@ -80,7 +80,7 @@ export default function GroupMonitorModal({ providerId, onClose }: { providerId:
 
   const handleBulkArchive = async (archive: boolean) => {
     if (selectedRows.length === 0) return;
-    await bulkArchiveLogs('wag', selectedRows, archive);
+    await bulkArchiveLogs('tgGroup', selectedRows, archive);
     setSelectedRows([]);
     fetchData();
   };
@@ -88,7 +88,7 @@ export default function GroupMonitorModal({ providerId, onClose }: { providerId:
   const handleBulkDeleteTargets = async () => {
     if (selectedTargetRows.length === 0) return;
     if (window.confirm(`Delete ${selectedTargetRows.length} WAG targets and all their associated logs? This action cannot be undone.`)) {
-      await bulkDeleteTargets('wag', selectedTargetRows);
+      await bulkDeleteTargets('tgGroup', selectedTargetRows);
       setSelectedTargetRows([]);
       fetchData();
     }
@@ -101,7 +101,7 @@ export default function GroupMonitorModal({ providerId, onClose }: { providerId:
 
   const handleImportData = async (data: any[]) => {
     setImporting(true);
-    const res = await importLogbookData(providerId, 'wag', data);
+    const res = await importLogbookData(providerId, 'tgGroup', data);
     if (res.success) {
       alert(`Ultra Import Success! Integreated ${res.imported} logs. Duplicates were automatically rejected.`);
       fetchData();
@@ -223,12 +223,12 @@ export default function GroupMonitorModal({ providerId, onClose }: { providerId:
             <>
               {/* DELIVERY TAB */}
               {activeTab === 'delivery' && (
-                <AutoDeliverySettings providerId={providerId} logType="wag" />
+                <AutoDeliverySettings providerId={providerId} logType="tgGroup" />
               )}
 
               {/* ANALYTICS TAB */}
               {activeTab === 'analytics' && (
-                <LogAnalytics logs={filteredLogs} targets={targets} type="wag" />
+                <LogAnalytics logs={filteredLogs} targets={targets} type="tgGroup" />
               )}
 
               {/* TARGETS TAB */}
@@ -346,7 +346,7 @@ export default function GroupMonitorModal({ providerId, onClose }: { providerId:
                       </div>
                       
                       <div className="flex flex-wrap gap-2">
-                        <ImportMenu type="wag" isLoading={importing} onImport={handleImportData} />
+                        <ImportMenu type="tgGroup" isLoading={importing} onImport={handleImportData} />
                         <ExportMenu options={exportOptions} />
                         <button onClick={handlePrint} className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors">
                           <Printer className="w-4 h-4" /> Print Report

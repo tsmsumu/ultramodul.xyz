@@ -262,25 +262,32 @@ export default function StatusMonitorModal({ providerId, onClose }: { providerId
                   </div>
 
                   <div className="bg-black/40 border border-white/5 rounded-2xl overflow-hidden">
-                    <div className="p-4 border-b border-white/5 bg-zinc-900/30 flex flex-col sm:flex-row justify-between items-center gap-4">
-                      <div className="relative w-full sm:w-96">
-                        <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+                    <div className="p-4 border-b border-white/5 bg-zinc-900/30 flex flex-col gap-4">
+                      <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+                        {selectedTargetRows.length > 0 ? (
+                          <div className="bg-indigo-900/20 px-4 py-2 border border-indigo-500/20 flex items-center gap-4 rounded-lg w-full justify-between">
+                            <span className="text-sm font-bold text-indigo-400">{selectedTargetRows.length} targets selected</span>
+                            <button onClick={handleBulkDeleteTargets} className="text-xs bg-red-600/20 hover:bg-red-600/40 text-red-400 px-3 py-1.5 rounded font-bold flex items-center gap-2 transition-colors border border-red-500/20">
+                              <Trash2 className="w-3 h-3" /> Delete Selected
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="text-xs font-bold text-zinc-400 uppercase tracking-widest">
+                            Status WA Targets
+                          </div>
+                        )}
+                      </div>
+                      
+                      <div className="relative w-full">
+                        <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-indigo-500/50" />
                         <input 
                           type="text" 
-                          placeholder="Search targets..." 
+                          placeholder="Cari target Status WA berdasarkan Nama atau Nomor..." 
                           value={searchTargetQuery}
                           onChange={e=>setSearchTargetQuery(e.target.value)}
-                          className="w-full bg-zinc-900 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+                          className="w-full bg-black/60 border border-indigo-500/30 rounded-xl pl-12 pr-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder:text-zinc-600 shadow-inner"
                         />
                       </div>
-                      {selectedTargetRows.length > 0 && (
-                        <div className="bg-indigo-900/20 px-4 py-2 border border-indigo-500/20 flex items-center gap-4 rounded-lg">
-                          <span className="text-sm font-bold text-indigo-400">{selectedTargetRows.length} targets selected</span>
-                          <button onClick={handleBulkDeleteTargets} className="text-xs bg-red-600/20 hover:bg-red-600/40 text-red-400 px-3 py-1.5 rounded font-bold flex items-center gap-2 transition-colors border border-red-500/20">
-                            <Trash2 className="w-3 h-3" /> Delete Selected
-                          </button>
-                        </div>
-                      )}
                     </div>
                     <table className="w-full text-left text-sm text-zinc-300">
                       <thead className="bg-zinc-900/80 text-xs uppercase text-zinc-500">
@@ -325,40 +332,43 @@ export default function StatusMonitorModal({ providerId, onClose }: { providerId
               {/* LOGS TAB */}
               {activeTab === 'logs' && (
                 <div className="space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 print:hidden">
-                    <div className="flex items-center gap-2">
-                      <div className="flex bg-black/40 rounded-lg p-1 border border-white/5">
-                        <button onClick={() => { setLogTab('active'); setSelectedRows([]); }} className={`px-4 py-1.5 rounded-md text-xs font-bold uppercase tracking-widest transition-colors ${logTab === 'active' ? 'bg-indigo-600 text-white' : 'text-zinc-500 hover:text-white'}`}>Active</button>
-                        <button onClick={() => { setLogTab('archived'); setSelectedRows([]); }} className={`px-4 py-1.5 rounded-md text-xs font-bold uppercase tracking-widest transition-colors ${logTab === 'archived' ? 'bg-zinc-800 text-white' : 'text-zinc-500 hover:text-white'}`}>Archived</button>
+                  <div className="flex flex-col gap-4 print:hidden">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <div className="flex bg-black/40 rounded-lg p-1 border border-white/5">
+                          <button onClick={() => { setLogTab('active'); setSelectedRows([]); }} className={`px-4 py-1.5 rounded-md text-xs font-bold uppercase tracking-widest transition-colors ${logTab === 'active' ? 'bg-indigo-600 text-white' : 'text-zinc-500 hover:text-white'}`}>Active</button>
+                          <button onClick={() => { setLogTab('archived'); setSelectedRows([]); }} className={`px-4 py-1.5 rounded-md text-xs font-bold uppercase tracking-widest transition-colors ${logTab === 'archived' ? 'bg-zinc-800 text-white' : 'text-zinc-500 hover:text-white'}`}>Archived</button>
+                        </div>
+                        <div className="flex items-center gap-2 ml-2">
+                          <input type="datetime-local" value={filterDateFrom} onChange={e=>setFilterDateFrom(e.target.value)} className="bg-zinc-900 border border-white/10 rounded-lg px-2 py-2 text-xs text-zinc-300 focus:outline-none" title="From Date" />
+                          <span className="text-zinc-600">-</span>
+                          <input type="datetime-local" value={filterDateTo} onChange={e=>setFilterDateTo(e.target.value)} className="bg-zinc-900 border border-white/10 rounded-lg px-2 py-2 text-xs text-zinc-300 focus:outline-none" title="To Date" />
+                          {(filterDateFrom || filterDateTo) && (
+                            <button onClick={() => { setFilterDateFrom(""); setFilterDateTo(""); }} className="px-3 py-1.5 bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-400 border border-indigo-500/30 rounded-lg text-xs font-bold transition-colors">
+                              All Time
+                            </button>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <input type="datetime-local" value={filterDateFrom} onChange={e=>setFilterDateFrom(e.target.value)} className="bg-zinc-900 border border-white/10 rounded-lg px-2 py-2 text-xs text-zinc-300 focus:outline-none" title="From Date" />
-                        <span className="text-zinc-600">-</span>
-                        <input type="datetime-local" value={filterDateTo} onChange={e=>setFilterDateTo(e.target.value)} className="bg-zinc-900 border border-white/10 rounded-lg px-2 py-2 text-xs text-zinc-300 focus:outline-none" title="To Date" />
-                        {(filterDateFrom || filterDateTo) && (
-                          <button onClick={() => { setFilterDateFrom(""); setFilterDateTo(""); }} className="px-3 py-1.5 bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-400 border border-indigo-500/30 rounded-lg text-xs font-bold transition-colors">
-                            All Time
-                          </button>
-                        )}
+                      
+                      <div className="flex flex-wrap gap-2">
+                        <ImportMenu type="status" isLoading={importing} onImport={handleImportData} />
+                        <ExportMenu options={exportOptions} />
+                        <button onClick={handlePrint} className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors">
+                          <Printer className="w-4 h-4" /> Print Report
+                        </button>
                       </div>
                     </div>
                     
-                    <div className="relative w-full sm:w-96">
-                      <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+                    <div className="relative w-full">
+                      <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-indigo-500/50" />
                       <input 
                         type="text" 
-                        placeholder="Search logs..." 
+                        placeholder="Ketik untuk mencari log Status WA..." 
                         value={searchQuery}
                         onChange={e=>setSearchQuery(e.target.value)}
-                        className="w-full bg-zinc-900 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
+                        className="w-full bg-black/60 border border-indigo-500/30 rounded-xl pl-12 pr-4 py-4 text-sm text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder:text-zinc-600 shadow-inner"
                       />
-                    </div>
-                    <div className="flex gap-2">
-                      <ImportMenu type="status" isLoading={importing} onImport={handleImportData} />
-                      <ExportMenu options={exportOptions} />
-                      <button onClick={handlePrint} className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors">
-                        <Printer className="w-4 h-4" /> Print Report
-                      </button>
                     </div>
                   </div>
 

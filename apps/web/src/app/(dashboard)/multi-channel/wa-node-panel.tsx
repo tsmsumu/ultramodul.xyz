@@ -14,6 +14,7 @@ export default function WaNodePanel({ provider, isArchived = false }: { provider
   const [simMsg, setSimMsg] = useState("");
   const [simLoading, setSimLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [localName, setLocalName] = useState(provider.name);
   const [editName, setEditName] = useState(provider.name);
   const [isStealthMode, setIsStealthMode] = useState(false);
 
@@ -115,7 +116,8 @@ export default function WaNodePanel({ provider, isArchived = false }: { provider
   };
 
   const handleRename = async () => {
-    if (editName.trim() && editName !== provider.name) {
+    if (editName.trim() && editName !== localName) {
+      setLocalName(editName); // Optimistic UI update
       await renameWhatsAppNode(provider.id, editName);
       router.refresh();
     }
@@ -206,7 +208,7 @@ export default function WaNodePanel({ provider, isArchived = false }: { provider
               </div>
             ) : (
               <div className="flex items-center gap-2 group cursor-pointer truncate" onClick={() => !isArchived && setIsEditing(true)}>
-                <span className="truncate">{provider.name}</span>
+                <span className="truncate">{localName}</span>
                 {!isArchived && <Edit2 className="w-3 h-3 text-zinc-500 group-hover:text-zinc-300 transition-colors opacity-0 group-hover:opacity-100 flex-shrink-0" />}
               </div>
             )}
@@ -484,7 +486,7 @@ export default function WaNodePanel({ provider, isArchived = false }: { provider
       {/* Test Simulator Panel */}
       <div className="bg-zinc-950/80 border border-white/5 rounded-3xl p-6 shadow-xl flex flex-col">
         <h2 className="text-sm font-bold text-white tracking-widest uppercase flex items-center gap-2 mb-6">
-          <TerminalIcon className="w-5 h-5 text-indigo-400" /> Live Message Simulator ({provider.name})
+          <TerminalIcon className="w-5 h-5 text-indigo-400" /> Live Message Simulator ({localName})
         </h2>
         <div className="flex-1 border border-white/5 bg-black/40 p-6 rounded-2xl space-y-4">
           <div>

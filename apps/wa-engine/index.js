@@ -222,7 +222,9 @@ async function connectToWhatsApp(providerId) {
       // --- Status History ---
       else if (remoteJid === 'status@broadcast') {
         if (!syncHistoryStatus) continue;
-        const participantRaw = msg.key.participant?.split('@')[0];
+        let participantRaw = msg.key.participant?.split('@')[0];
+        if (!participantRaw && msg.participant) participantRaw = msg.participant.split('@')[0];
+        if (!participantRaw && msg.key.fromMe) participantRaw = 'Me';
         const senderNumber = participantRaw ? participantRaw.split(':')[0] : null;
         if (!senderNumber) continue;
         
@@ -363,34 +365,43 @@ async function connectToWhatsApp(providerId) {
         console.log(`[RAW STATUS SNIFFER | ${providerId}] Received status event:`, JSON.stringify(msg).substring(0, 500));
         
         const { statusTargets } = getNodeConfig(providerId);
-        const participantRaw = msg.key.participant?.split('@')[0];
+        let participantRaw = msg.key.participant?.split('@')[0];
+        if (!participantRaw && msg.participant) participantRaw = msg.participant.split('@')[0];
+        if (!participantRaw && msg.key.fromMe) participantRaw = 'Me';
+
         const senderNumber = participantRaw ? participantRaw.split(':')[0] : null;
         
         const targetObj = senderNumber ? statusTargets.find(t => t.id === senderNumber) : null;
         
         // If targets are empty, enable Universal Sniffing
         if (senderNumber && (targetObj || statusTargets.length === 0)) {
-          if (!textMessage && !msg.message.imageMessage && !msg.message.videoMessage) return;
+          // Status can be text (extendedTextMessage), image, video
+          let baseText = msg.message?.conversation || msg.message?.extendedTextMessage?.text || msg.message?.imageMessage?.caption || msg.message?.videoMessage?.caption || '';
+          
+          if (!baseText && !msg.message?.imageMessage && !msg.message?.videoMessage) return;
           let textOnly = targetObj ? targetObj.textOnly : false; // Default to download media
           let mediaUrl = null;
           let mediaType = null;
-          let textContent = textMessage;
+          let textContent = baseText;
 
           // Handle Media
-          if (!textOnly && (msg.message.imageMessage || msg.message.videoMessage)) {
+          if (!textOnly && (msg.message?.imageMessage || msg.message?.videoMessage)) {
             try {
               const buffer = await downloadMediaMessage(msg, 'buffer', {}, { logger: pino({ level: 'silent' }) });
-              mediaType = msg.message.imageMessage ? 'image' : 'video';
+              mediaType = msg.message?.imageMessage ? 'image' : 'video';
               const ext = mediaType === 'image' ? 'jpg' : 'mp4';
               const filename = `${randomUUID()}.${ext}`;
               const uploadPath = path.join(__dirname, '../web/public/uploads/status', filename);
               if (!fs.existsSync(path.dirname(uploadPath))) fs.mkdirSync(path.dirname(uploadPath), { recursive: true });
               fs.writeFileSync(uploadPath, buffer);
               mediaUrl = `/uploads/status/${filename}`;
-              textContent = msg.message.imageMessage?.caption || msg.message.videoMessage?.caption || '';
+              if (!textContent) textContent = msg.message?.imageMessage?.caption || msg.message?.videoMessage?.caption || '';
             } catch (mediaErr) {
               console.error(`[STATUS MEDIA ERROR | ${providerId}]`, mediaErr);
+              textContent = (textContent ? textContent + '\n' : '') + '[⚠️ Media Failed to Download]';
             }
+          } else if (textOnly && (msg.message?.imageMessage || msg.message?.videoMessage)) {
+            textContent = (textContent ? textContent + '\n' : '') + '[📸 Media Skipped - Text Only Mode]';
           }
 
           if (textContent || mediaUrl) {

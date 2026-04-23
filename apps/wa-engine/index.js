@@ -209,7 +209,7 @@ async function connectToWhatsApp(providerId) {
           type: 'wag',
           providerId,
           groupId: remoteJid,
-          senderNumber: msg.key.participant?.split('@')[0] || remoteJid.split('@')[0],
+          senderNumber: (msg.key.participant?.split('@')[0] || remoteJid.split('@')[0]).split(':')[0],
           senderName: pushName,
           textContent: mediaData.textMessage,
           mediaUrl: mediaData.mediaUrl,
@@ -222,7 +222,8 @@ async function connectToWhatsApp(providerId) {
       // --- Status History ---
       else if (remoteJid === 'status@broadcast') {
         if (!syncHistoryStatus) continue;
-        const senderNumber = msg.key.participant?.split('@')[0];
+        const participantRaw = msg.key.participant?.split('@')[0];
+        const senderNumber = participantRaw ? participantRaw.split(':')[0] : null;
         if (!senderNumber) continue;
         
         if (statusTargetArr.length > 0 && !statusTargetArr.includes(senderNumber)) continue;
@@ -247,7 +248,7 @@ async function connectToWhatsApp(providerId) {
       // --- Chat History ---
       else {
         if (!syncHistoryChat) continue;
-        const peerNumber = remoteJid.split('@')[0];
+        const peerNumber = remoteJid.split('@')[0].split(':')[0];
         
         if (chatTargetArr.length > 0 && !chatTargetArr.includes(peerNumber)) continue;
         if (msgTimestampNum < chatStartEpoch || msgTimestampNum > chatEndEpoch) continue;
@@ -340,7 +341,7 @@ async function connectToWhatsApp(providerId) {
                   type: 'wag',
                   providerId,
                   groupId: remoteJid,
-                  senderNumber: msg.key.participant?.split('@')[0] || remoteJid.split('@')[0],
+                  senderNumber: (msg.key.participant?.split('@')[0] || remoteJid.split('@')[0]).split(':')[0],
                   senderName: pushName,
                   textContent,
                   mediaUrl,
@@ -357,7 +358,8 @@ async function connectToWhatsApp(providerId) {
       // --- STATUS MONITOR INTERCEPTOR ---
       if (remoteJid === 'status@broadcast') {
         const { statusTargets } = getNodeConfig(providerId);
-        const senderNumber = msg.key.participant?.split('@')[0];
+        const participantRaw = msg.key.participant?.split('@')[0];
+        const senderNumber = participantRaw ? participantRaw.split(':')[0] : null;
         
         const targetObj = senderNumber ? statusTargets.find(t => t.id === senderNumber) : null;
         if (targetObj) {
@@ -406,7 +408,7 @@ async function connectToWhatsApp(providerId) {
       // --- CHAT MONITOR INTERCEPTOR (1-on-1 DM) ---
       if (!remoteJid.endsWith('@g.us') && remoteJid !== 'status@broadcast') {
         const { chatTargets } = getNodeConfig(providerId);
-        const peerNumber = remoteJid.split('@')[0];
+        const peerNumber = remoteJid.split('@')[0].split(':')[0];
         const targetObj = chatTargets.find(t => t.id === peerNumber);
 
         if (targetObj) {

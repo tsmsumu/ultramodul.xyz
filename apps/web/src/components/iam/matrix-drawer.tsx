@@ -76,6 +76,23 @@ export function MatrixDrawer({
     });
   };
 
+  const toggleAllModules = (selectAll: boolean) => {
+    setMatrixData(prev => {
+      const updated = { ...prev };
+      MODULES.forEach(mod => {
+        updated[mod] = selectAll ? PERMISSIONS.map(p => p.id) : [];
+      });
+      return updated;
+    });
+  };
+
+  const toggleAllPermissionsInModule = (mod: string, selectAll: boolean) => {
+    setMatrixData(prev => ({
+      ...prev,
+      [mod]: selectAll ? PERMISSIONS.map(p => p.id) : []
+    }));
+  };
+
   const handleSaveAll = async () => {
     setLoading(true);
     // Masuk ke tahap Maker-Checker Table, TAPI HANYA UNTUK MODUL YANG MENGALAMI PERUBAHAN
@@ -128,7 +145,7 @@ export function MatrixDrawer({
             </div>
 
             <div className="px-5 pt-4 pb-2 border-b border-gray-100 dark:border-white/10">
-               <div className="relative">
+               <div className="relative mb-3">
                   <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input 
                     type="text" 
@@ -137,6 +154,14 @@ export function MatrixDrawer({
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full pl-9 pr-4 py-2 text-sm bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500 transition"
                   />
+               </div>
+               <div className="flex gap-2">
+                 <button onClick={() => toggleAllModules(true)} className="flex-1 text-xs py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 dark:bg-indigo-500/10 dark:hover:bg-indigo-500/20 dark:text-indigo-400 rounded-md transition font-medium">
+                   Pilih Semua (Master)
+                 </button>
+                 <button onClick={() => toggleAllModules(false)} className="flex-1 text-xs py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 dark:bg-white/5 dark:hover:bg-white/10 dark:text-gray-400 rounded-md transition font-medium">
+                   Kosongkan Semua
+                 </button>
                </div>
             </div>
 
@@ -152,8 +177,14 @@ export function MatrixDrawer({
                 ) : (
                 MODULES.filter(mod => mod.toLowerCase().includes(searchQuery.toLowerCase())).map(mod => (
                   <div key={mod} className="border border-gray-200 dark:border-white/10 rounded-xl p-4 bg-gray-50/50 dark:bg-white/1">
-                     <div className="flex justify-between items-center mb-4">
-                        <h3 className="flex items-center gap-2 font-medium text-sm"><BoxSelect className="w-4 h-4 opacity-50"/> Modul {mod}</h3>
+                     <div className="flex justify-between items-center mb-3">
+                        <div className="flex items-center gap-2">
+                          <h3 className="flex items-center gap-2 font-medium text-sm"><BoxSelect className="w-4 h-4 opacity-50"/> {mod}</h3>
+                          <div className="flex bg-gray-200/50 dark:bg-white/5 rounded-md p-0.5 ml-1">
+                            <button onClick={() => toggleAllPermissionsInModule(mod, true)} className="text-[10px] px-1.5 py-0.5 rounded text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-white/10 transition">All</button>
+                            <button onClick={() => toggleAllPermissionsInModule(mod, false)} className="text-[10px] px-1.5 py-0.5 rounded text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-white/10 transition">None</button>
+                          </div>
+                        </div>
                         <select aria-label="Select option" 
                            value={timeRules[mod]}
                            onChange={(e) => setTimeRules(prev => ({...prev, [mod]: e.target.value}))}

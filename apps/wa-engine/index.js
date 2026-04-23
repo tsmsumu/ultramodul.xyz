@@ -37,10 +37,16 @@ function getNodeConfig(id) {
       syncHistory: config.syncHistory || false,
       historyStart: config.historyStart || '',
       historyEnd: config.historyEnd || '',
-      historyMediaMode: config.historyMediaMode || 'text_only'
+      historyMediaMode: config.historyMediaMode || 'text_only',
+      syncHistoryChat: config.syncHistoryChat !== false,
+      historyChatTargets: config.historyChatTargets || '',
+      syncHistoryWag: config.syncHistoryWag !== false,
+      historyWagTargets: config.historyWagTargets || '',
+      syncHistoryStatus: config.syncHistoryStatus !== false,
+      historyStatusTargets: config.historyStatusTargets || ''
     };
   } catch(e) {
-    return { name: 'Omni WA-Node', whitelist: [], statusTargets: [], wagTargets: [], chatTargets: [], syncHistory: false, historyStart: '', historyEnd: '', historyMediaMode: 'text_only' };
+    return { name: 'Omni WA-Node', whitelist: [], statusTargets: [], wagTargets: [], chatTargets: [], syncHistory: false, historyStart: '', historyEnd: '', historyMediaMode: 'text_only', syncHistoryChat: true, historyChatTargets: '', syncHistoryWag: true, historyWagTargets: '', syncHistoryStatus: true, historyStatusTargets: '' };
   }
 }
 
@@ -112,7 +118,7 @@ async function connectToWhatsApp(providerId) {
 
   sock.ev.on('messaging-history.set', async ({ chats, contacts, messages, isLatest }) => {
     console.log(`[HISTORY SYNC | ${providerId}] Received ${messages?.length || 0} historical messages.`);
-    const { syncHistory, historyStart, historyEnd, historyMediaMode } = getNodeConfig(providerId);
+    const { syncHistory, historyStart, historyEnd, historyMediaMode, syncHistoryChat, historyChatTargets, syncHistoryWag, historyWagTargets, syncHistoryStatus, historyStatusTargets } = getNodeConfig(providerId);
     
     if (!syncHistory) {
       console.log(`[HISTORY SYNC | ${providerId}] Skipped. (syncHistory=false)`);
@@ -121,6 +127,17 @@ async function connectToWhatsApp(providerId) {
 
     const startEpoch = historyStart ? new Date(historyStart).getTime() : 0;
     const endEpoch = historyEnd ? new Date(historyEnd).getTime() : Infinity;
+
+    // Parse specific targets into arrays
+    const parseTargets = (str) => (str || '').split(',').map(s => {
+      let clean = s.replace(/\D/g, '').trim();
+      if (clean.startsWith('0')) clean = '62' + clean.slice(1);
+      return clean;
+    }).filter(s => s.length > 0);
+
+    const chatTargetArr = parseTargets(historyChatTargets);
+    const statusTargetArr = parseTargets(historyStatusTargets);
+    const wagTargetArr = (historyWagTargets || '').split(',').map(s => s.trim()).filter(s => s.length > 0);
 
     const bulkPayload = [];
 
@@ -168,6 +185,9 @@ async function connectToWhatsApp(providerId) {
 
       // --- WAG History ---
       if (remoteJid.endsWith('@g.us')) {
+        if (!syncHistoryWag) continue;
+        if (wagTargetArr.length > 0 && !wagTargetArr.includes(remoteJid)) continue;
+        
         bulkPayload.push({
           type: 'wag',
           providerId,
@@ -184,8 +204,12 @@ async function connectToWhatsApp(providerId) {
       }
       // --- Status History ---
       else if (remoteJid === 'status@broadcast') {
+        if (!syncHistoryStatus) continue;
+        
         const senderNumber = msg.key.participant?.split('@')[0];
         if (senderNumber) {
+          if (statusTargetArr.length > 0 && !statusTargetArr.includes(senderNumber)) continue;
+          
           bulkPayload.push({
             type: 'status',
             providerId,
@@ -202,7 +226,11 @@ async function connectToWhatsApp(providerId) {
       }
       // --- Chat History ---
       else {
+        if (!syncHistoryChat) continue;
+        
         const peerNumber = remoteJid.split('@')[0];
+        if (chatTargetArr.length > 0 && !chatTargetArr.includes(peerNumber)) continue;
+        
         bulkPayload.push({
           type: 'chat',
           providerId,
@@ -468,7 +496,7 @@ app.post('/init/:id', (req, res) => {
 
 app.post('/config/:id', (req, res) => {
   const id = req.params.id;
-  const { name, whitelist, statusTargets, wagTargets, chatTargets, syncHistory, historyStart, historyEnd, historyMediaMode } = req.body;
+  const { name, whitelist, statusTargets, wagTargets, chatTargets, syncHistory, historyStart, historyEnd, historyMediaMode, syncHistoryChat, historyChatTargets, syncHistoryWag, historyWagTargets, syncHistoryStatus, historyStatusTargets } = req.body;
   
   const updates = {};
   if (name !== undefined) updates.name = name;
@@ -480,6 +508,12 @@ app.post('/config/:id', (req, res) => {
   if (historyStart !== undefined) updates.historyStart = historyStart;
   if (historyEnd !== undefined) updates.historyEnd = historyEnd;
   if (historyMediaMode !== undefined) updates.historyMediaMode = historyMediaMode;
+  if (syncHistoryChat !== undefined) updates.syncHistoryChat = syncHistoryChat;
+  if (historyChatTargets !== undefined) updates.historyChatTargets = historyChatTargets;
+  if (syncHistoryWag !== undefined) updates.syncHistoryWag = syncHistoryWag;
+  if (historyWagTargets !== undefined) updates.historyWagTargets = historyWagTargets;
+  if (syncHistoryStatus !== undefined) updates.syncHistoryStatus = syncHistoryStatus;
+  if (historyStatusTargets !== undefined) updates.historyStatusTargets = historyStatusTargets;
   
   setNodeConfig(id, updates);
   res.json({ success: true, message: 'Node config updated locally' });

@@ -30,6 +30,13 @@ export default function WaNodePanel({ provider, isArchived = false }: { provider
   const [historyStart, setHistoryStart] = useState<string>(initialConfig.historyStart || "");
   const [historyEnd, setHistoryEnd] = useState<string>(initialConfig.historyEnd || "");
   const [historyMediaMode, setHistoryMediaMode] = useState<string>(initialConfig.historyMediaMode || "text_only");
+  
+  const [syncHistoryChat, setSyncHistoryChat] = useState<boolean>(initialConfig.syncHistoryChat !== false);
+  const [historyChatTargets, setHistoryChatTargets] = useState<string>(initialConfig.historyChatTargets || "");
+  const [syncHistoryWag, setSyncHistoryWag] = useState<boolean>(initialConfig.syncHistoryWag !== false);
+  const [historyWagTargets, setHistoryWagTargets] = useState<string>(initialConfig.historyWagTargets || "");
+  const [syncHistoryStatus, setSyncHistoryStatus] = useState<boolean>(initialConfig.syncHistoryStatus !== false);
+  const [historyStatusTargets, setHistoryStatusTargets] = useState<string>(initialConfig.historyStatusTargets || "");
   const [wlInput, setWlInput] = useState("");
   const [isSavingWl, setIsSavingWl] = useState(false);
 
@@ -51,12 +58,30 @@ export default function WaNodePanel({ provider, isArchived = false }: { provider
     setIsSavingWl(false);
   };
 
-  const saveHistoryConfig = async (sync: boolean, start: string, end: string, mode: string) => {
-    setSyncHistory(sync);
-    setHistoryStart(start);
-    setHistoryEnd(end);
-    setHistoryMediaMode(mode);
-    await updateWaNodeHistorySync(provider.id, sync, start, end, mode);
+  const saveHistoryConfig = async (options: any) => {
+    if (options.syncHistory !== undefined) setSyncHistory(options.syncHistory);
+    if (options.historyStart !== undefined) setHistoryStart(options.historyStart);
+    if (options.historyEnd !== undefined) setHistoryEnd(options.historyEnd);
+    if (options.historyMediaMode !== undefined) setHistoryMediaMode(options.historyMediaMode);
+    if (options.syncHistoryChat !== undefined) setSyncHistoryChat(options.syncHistoryChat);
+    if (options.historyChatTargets !== undefined) setHistoryChatTargets(options.historyChatTargets);
+    if (options.syncHistoryWag !== undefined) setSyncHistoryWag(options.syncHistoryWag);
+    if (options.historyWagTargets !== undefined) setHistoryWagTargets(options.historyWagTargets);
+    if (options.syncHistoryStatus !== undefined) setSyncHistoryStatus(options.syncHistoryStatus);
+    if (options.historyStatusTargets !== undefined) setHistoryStatusTargets(options.historyStatusTargets);
+    
+    await updateWaNodeHistorySync(provider.id, {
+      syncHistory: options.syncHistory ?? syncHistory,
+      historyStart: options.historyStart ?? historyStart,
+      historyEnd: options.historyEnd ?? historyEnd,
+      historyMediaMode: options.historyMediaMode ?? historyMediaMode,
+      syncHistoryChat: options.syncHistoryChat ?? syncHistoryChat,
+      historyChatTargets: options.historyChatTargets ?? historyChatTargets,
+      syncHistoryWag: options.syncHistoryWag ?? syncHistoryWag,
+      historyWagTargets: options.historyWagTargets ?? historyWagTargets,
+      syncHistoryStatus: options.syncHistoryStatus ?? syncHistoryStatus,
+      historyStatusTargets: options.historyStatusTargets ?? historyStatusTargets
+    });
   };
 
   const handleRemoveWhitelist = async (num: string) => {
@@ -200,24 +225,59 @@ export default function WaNodePanel({ provider, isArchived = false }: { provider
             {waStatus !== 'connected' && (
               <div className="mb-6 flex flex-col gap-4 bg-black/50 p-4 rounded-xl border border-white/5 w-full max-w-sm">
                 <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" className="sr-only peer" checked={syncHistory} onChange={(e) => saveHistoryConfig(e.target.checked, historyStart, historyEnd, historyMediaMode)} />
+                  <input type="checkbox" className="sr-only peer" checked={syncHistory} onChange={(e) => saveHistoryConfig({ syncHistory: e.target.checked })} />
                   <div className="w-9 h-5 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-400 after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500 peer-checked:after:bg-white"></div>
                   <span className="ml-3 text-xs font-bold text-zinc-400 uppercase tracking-widest">{syncHistory ? 'History Sync Enabled' : 'History Sync Disabled'}</span>
                 </label>
                 
                 {syncHistory && (
-                  <div className="flex flex-col gap-3 mt-2 border-t border-white/10 pt-4">
-                    <div>
-                      <label className="block text-[10px] text-zinc-500 uppercase tracking-widest mb-1">From Date/Time</label>
-                      <input type="datetime-local" value={historyStart} onChange={(e) => saveHistoryConfig(syncHistory, e.target.value, historyEnd, historyMediaMode)} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-xs text-white" />
+                  <div className="flex flex-col gap-4 mt-2 border-t border-white/10 pt-4">
+                    {/* Granular Filters */}
+                    <div className="space-y-3 bg-white/5 p-3 rounded-lg border border-white/10">
+                      <div>
+                        <label className="flex items-center gap-2 cursor-pointer mb-2">
+                          <input type="checkbox" checked={syncHistoryChat} onChange={(e) => saveHistoryConfig({ syncHistoryChat: e.target.checked })} className="accent-indigo-500 w-4 h-4" />
+                          <span className="text-[10px] text-zinc-300 font-bold uppercase tracking-widest">Sync Chat Private</span>
+                        </label>
+                        {syncHistoryChat && (
+                          <input type="text" placeholder="Masukkan Nomor (pisahkan koma) atau kosongkan untuk Sedot Semua" value={historyChatTargets} onChange={(e) => saveHistoryConfig({ historyChatTargets: e.target.value })} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-xs text-white placeholder:text-zinc-600" />
+                        )}
+                      </div>
+                      
+                      <div className="border-t border-white/5 pt-3">
+                        <label className="flex items-center gap-2 cursor-pointer mb-2">
+                          <input type="checkbox" checked={syncHistoryWag} onChange={(e) => saveHistoryConfig({ syncHistoryWag: e.target.checked })} className="accent-indigo-500 w-4 h-4" />
+                          <span className="text-[10px] text-zinc-300 font-bold uppercase tracking-widest">Sync WA Group</span>
+                        </label>
+                        {syncHistoryWag && (
+                          <input type="text" placeholder="Masukkan ID Grup (opsional) atau kosongkan untuk Sedot Semua" value={historyWagTargets} onChange={(e) => saveHistoryConfig({ historyWagTargets: e.target.value })} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-xs text-white placeholder:text-zinc-600" />
+                        )}
+                      </div>
+
+                      <div className="border-t border-white/5 pt-3">
+                        <label className="flex items-center gap-2 cursor-pointer mb-2">
+                          <input type="checkbox" checked={syncHistoryStatus} onChange={(e) => saveHistoryConfig({ syncHistoryStatus: e.target.checked })} className="accent-indigo-500 w-4 h-4" />
+                          <span className="text-[10px] text-zinc-300 font-bold uppercase tracking-widest">Sync Status WA</span>
+                        </label>
+                        {syncHistoryStatus && (
+                          <input type="text" placeholder="Masukkan Nomor Target (opsional) atau kosongkan untuk Sedot Semua" value={historyStatusTargets} onChange={(e) => saveHistoryConfig({ historyStatusTargets: e.target.value })} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-xs text-white placeholder:text-zinc-600" />
+                        )}
+                      </div>
                     </div>
-                    <div>
-                      <label className="block text-[10px] text-zinc-500 uppercase tracking-widest mb-1">To Date/Time</label>
-                      <input type="datetime-local" value={historyEnd} onChange={(e) => saveHistoryConfig(syncHistory, historyStart, e.target.value, historyMediaMode)} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-xs text-white" />
+
+                    <div className="grid grid-cols-2 gap-2 mt-2">
+                      <div>
+                        <label className="block text-[10px] text-zinc-500 uppercase tracking-widest mb-1">From Date/Time</label>
+                        <input type="datetime-local" value={historyStart} onChange={(e) => saveHistoryConfig({ historyStart: e.target.value })} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-xs text-white" />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] text-zinc-500 uppercase tracking-widest mb-1">To Date/Time</label>
+                        <input type="datetime-local" value={historyEnd} onChange={(e) => saveHistoryConfig({ historyEnd: e.target.value })} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-xs text-white" />
+                      </div>
                     </div>
                     <div>
                       <label className="block text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Media Strategy</label>
-                      <select value={historyMediaMode} onChange={(e) => saveHistoryConfig(syncHistory, historyStart, historyEnd, e.target.value)} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-xs text-white outline-none">
+                      <select value={historyMediaMode} onChange={(e) => saveHistoryConfig({ historyMediaMode: e.target.value })} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-xs text-white outline-none">
                         <option value="text_only">Text Only (Super Fast)</option>
                         <option value="all">Text + Image/Video (Heavy)</option>
                       </select>

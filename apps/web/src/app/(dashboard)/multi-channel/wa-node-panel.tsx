@@ -266,18 +266,18 @@ export default function WaNodePanel({ provider, isArchived = false }: { provider
                         {syncHistoryChat && (
                           <div className="space-y-2 mt-2 ml-6">
                             <input type="text" placeholder="Masukkan Nomor (pisahkan koma) atau kosongkan untuk Sedot Semua" value={historyChatTargets} onChange={(e) => saveHistoryConfig({ historyChatTargets: e.target.value })} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-xs text-white placeholder:text-zinc-600" />
-                            <div className="grid grid-cols-2 gap-2">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                               <div>
-                                <label className="block text-[8px] text-zinc-500 uppercase tracking-widest mb-1">From</label>
-                                <input type="datetime-local" value={historyChatStart} onChange={(e) => saveHistoryConfig({ historyChatStart: e.target.value })} className="w-full bg-black/50 border border-white/10 rounded p-1.5 text-xs text-white" />
+                                <label className="block text-[9px] text-zinc-500 uppercase tracking-widest mb-1">From</label>
+                                <input type="datetime-local" value={historyChatStart} onChange={(e) => saveHistoryConfig({ historyChatStart: e.target.value })} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-xs text-white" />
                               </div>
                               <div>
-                                <label className="block text-[8px] text-zinc-500 uppercase tracking-widest mb-1">To</label>
-                                <input type="datetime-local" value={historyChatEnd} onChange={(e) => saveHistoryConfig({ historyChatEnd: e.target.value })} className="w-full bg-black/50 border border-white/10 rounded p-1.5 text-xs text-white" />
+                                <label className="block text-[9px] text-zinc-500 uppercase tracking-widest mb-1">To</label>
+                                <input type="datetime-local" value={historyChatEnd} onChange={(e) => saveHistoryConfig({ historyChatEnd: e.target.value })} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-xs text-white" />
                               </div>
                             </div>
                             <div>
-                              <select value={historyChatMediaMode} onChange={(e) => saveHistoryConfig({ historyChatMediaMode: e.target.value })} className="w-full bg-black/50 border border-white/10 rounded p-1.5 text-xs text-zinc-300 outline-none">
+                              <select value={historyChatMediaMode} onChange={(e) => saveHistoryConfig({ historyChatMediaMode: e.target.value })} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-xs text-zinc-300 outline-none">
                                 <option value="text_only">Media: Text Only (Fast)</option>
                                 <option value="all">Media: Text + Image/Video (Heavy)</option>
                               </select>
@@ -297,18 +297,18 @@ export default function WaNodePanel({ provider, isArchived = false }: { provider
                         {syncHistoryWag && (
                           <div className="space-y-2 mt-2 ml-6">
                             <input type="text" placeholder="Masukkan ID Grup (opsional) atau kosongkan untuk Sedot Semua" value={historyWagTargets} onChange={(e) => saveHistoryConfig({ historyWagTargets: e.target.value })} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-xs text-white placeholder:text-zinc-600" />
-                            <div className="grid grid-cols-2 gap-2">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                               <div>
-                                <label className="block text-[8px] text-zinc-500 uppercase tracking-widest mb-1">From</label>
-                                <input type="datetime-local" value={historyWagStart} onChange={(e) => saveHistoryConfig({ historyWagStart: e.target.value })} className="w-full bg-black/50 border border-white/10 rounded p-1.5 text-xs text-white" />
+                                <label className="block text-[9px] text-zinc-500 uppercase tracking-widest mb-1">From</label>
+                                <input type="datetime-local" value={historyWagStart} onChange={(e) => saveHistoryConfig({ historyWagStart: e.target.value })} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-xs text-white" />
                               </div>
                               <div>
-                                <label className="block text-[8px] text-zinc-500 uppercase tracking-widest mb-1">To</label>
-                                <input type="datetime-local" value={historyWagEnd} onChange={(e) => saveHistoryConfig({ historyWagEnd: e.target.value })} className="w-full bg-black/50 border border-white/10 rounded p-1.5 text-xs text-white" />
+                                <label className="block text-[9px] text-zinc-500 uppercase tracking-widest mb-1">To</label>
+                                <input type="datetime-local" value={historyWagEnd} onChange={(e) => saveHistoryConfig({ historyWagEnd: e.target.value })} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-xs text-white" />
                               </div>
                             </div>
                             <div>
-                              <select value={historyWagMediaMode} onChange={(e) => saveHistoryConfig({ historyWagMediaMode: e.target.value })} className="w-full bg-black/50 border border-white/10 rounded p-1.5 text-xs text-zinc-300 outline-none">
+                              <select value={historyWagMediaMode} onChange={(e) => saveHistoryConfig({ historyWagMediaMode: e.target.value })} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-xs text-zinc-300 outline-none">
                                 <option value="text_only">Media: Text Only (Fast)</option>
                                 <option value="all">Media: Text + Image/Video (Heavy)</option>
                               </select>
@@ -328,18 +328,18 @@ export default function WaNodePanel({ provider, isArchived = false }: { provider
                         {syncHistoryStatus && (
                           <div className="space-y-2 mt-2 ml-6">
                             <input type="text" placeholder="Masukkan Nomor Target (opsional) atau kosongkan untuk Sedot Semua" value={historyStatusTargets} onChange={(e) => saveHistoryConfig({ historyStatusTargets: e.target.value })} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-xs text-white placeholder:text-zinc-600" />
-                            <div className="grid grid-cols-2 gap-2">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                               <div>
-                                <label className="block text-[8px] text-zinc-500 uppercase tracking-widest mb-1">From</label>
-                                <input type="datetime-local" value={historyStatusStart} onChange={(e) => saveHistoryConfig({ historyStatusStart: e.target.value })} className="w-full bg-black/50 border border-white/10 rounded p-1.5 text-xs text-white" />
+                                <label className="block text-[9px] text-zinc-500 uppercase tracking-widest mb-1">From</label>
+                                <input type="datetime-local" value={historyStatusStart} onChange={(e) => saveHistoryConfig({ historyStatusStart: e.target.value })} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-xs text-white" />
                               </div>
                               <div>
-                                <label className="block text-[8px] text-zinc-500 uppercase tracking-widest mb-1">To</label>
-                                <input type="datetime-local" value={historyStatusEnd} onChange={(e) => saveHistoryConfig({ historyStatusEnd: e.target.value })} className="w-full bg-black/50 border border-white/10 rounded p-1.5 text-xs text-white" />
+                                <label className="block text-[9px] text-zinc-500 uppercase tracking-widest mb-1">To</label>
+                                <input type="datetime-local" value={historyStatusEnd} onChange={(e) => saveHistoryConfig({ historyStatusEnd: e.target.value })} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-xs text-white" />
                               </div>
                             </div>
                             <div>
-                              <select value={historyStatusMediaMode} onChange={(e) => saveHistoryConfig({ historyStatusMediaMode: e.target.value })} className="w-full bg-black/50 border border-white/10 rounded p-1.5 text-xs text-zinc-300 outline-none">
+                              <select value={historyStatusMediaMode} onChange={(e) => saveHistoryConfig({ historyStatusMediaMode: e.target.value })} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-xs text-zinc-300 outline-none">
                                 <option value="text_only">Media: Text Only (Fast)</option>
                                 <option value="all">Media: Text + Image/Video (Heavy)</option>
                               </select>

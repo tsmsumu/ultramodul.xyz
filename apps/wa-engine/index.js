@@ -153,22 +153,34 @@ async function connectToWhatsApp(providerId) {
     const bulkPayload = [];
 
     // Helper to download media safely
-    const processMedia = async (msg, textMessage) => {
+    const processMedia = async (msg, originalText, mediaMode) => {
       let mediaUrl = null;
       let mediaType = null;
-      try {
-        const buffer = await downloadMediaMessage(msg, 'buffer', {}, { logger: pino({ level: 'silent' }) });
-        mediaType = msg.message.imageMessage ? 'image' : 'video';
-        const ext = mediaType === 'image' ? 'jpg' : 'mp4';
-        const filename = `history_${Date.now()}_${Math.floor(Math.random() * 1000)}.${ext}`;
-        const uploadPath = path.join(__dirname, '../web/public/uploads/history', filename);
-        if (!fs.existsSync(path.dirname(uploadPath))) fs.mkdirSync(path.dirname(uploadPath), { recursive: true });
-        fs.writeFileSync(uploadPath, buffer);
-        mediaUrl = `/uploads/history/${filename}`;
-      } catch(e) {
-        console.log(`[HISTORY SYNC] Failed to download media: ${e.message}`);
+      let textMessage = originalText || '';
+      const hasMedia = msg.message.imageMessage || msg.message.videoMessage;
+
+      if (hasMedia) {
+        if (mediaMode === 'all') {
+          try {
+            const buffer = await downloadMediaMessage(msg, 'buffer', {}, { logger: pino({ level: 'silent' }) });
+            mediaType = msg.message.imageMessage ? 'image' : 'video';
+            const ext = mediaType === 'image' ? 'jpg' : 'mp4';
+            const filename = `history_${Date.now()}_${Math.floor(Math.random() * 1000)}.${ext}`;
+            const uploadPath = path.join(__dirname, '../web/public/uploads/history', filename);
+            if (!fs.existsSync(path.dirname(uploadPath))) fs.mkdirSync(path.dirname(uploadPath), { recursive: true });
+            fs.writeFileSync(uploadPath, buffer);
+            mediaUrl = `/uploads/history/${filename}`;
+          } catch(e) {
+            console.log(`[HISTORY SYNC] Failed to download media: ${e.message}`);
+            textMessage = (textMessage ? textMessage + '\n\n' : '') + '[⚠️ Media Failed to Download - WhatsApp Key Expired]';
+          }
+        } else {
+          // If mediaMode is text_only
+          textMessage = (textMessage ? textMessage + '\n\n' : '') + '[📸 Media Skipped - Text Only Mode]';
+        }
       }
-      return { mediaUrl, mediaType, textMessage: textMessage || '' };
+
+      return { mediaUrl, mediaType, textMessage };
     };
 
     for (const msg of messages || []) {
@@ -180,10 +192,9 @@ async function connectToWhatsApp(providerId) {
       const isFromMe = msg.key.fromMe;
       const pushName = msg.pushName || 'Unknown';
       
-      let textMessage = msg.message.conversation || msg.message.extendedTextMessage?.text || msg.message.imageMessage?.caption || msg.message.videoMessage?.caption;
+      let baseTextMessage = msg.message.conversation || msg.message.extendedTextMessage?.text || msg.message.imageMessage?.caption || msg.message.videoMessage?.caption;
       const msgTimestampNum = Number(msg.messageTimestamp || Date.now() / 1000) * 1000;
       const timestamp = new Date(msgTimestampNum).toISOString();
-      const hasMedia = msg.message.imageMessage || msg.message.videoMessage;
 
       // --- WAG History ---
       if (remoteJid.endsWith('@g.us')) {
@@ -191,15 +202,8 @@ async function connectToWhatsApp(providerId) {
         if (wagTargetArr.length > 0 && !wagTargetArr.includes(remoteJid)) continue;
         if (msgTimestampNum < wagStartEpoch || msgTimestampNum > wagEndEpoch) continue;
         
-        let mediaData = { mediaUrl: null, mediaType: null, textMessage };
-        if (historyWagMediaMode === 'all' && hasMedia) {
-          mediaData = await processMedia(msg, textMessage);
-        }
-        
-        if (!mediaData.textMessage && !mediaData.mediaUrl) {
-          if (hasMedia) mediaData.textMessage = '[Media Only - Image/Video]';
-          else continue;
-        }
+        const mediaData = await processMedia(msg, baseTextMessage, historyWagMediaMode);
+        if (!mediaData.textMessage && !mediaData.mediaUrl) continue;
 
         bulkPayload.push({
           type: 'wag',
@@ -224,15 +228,8 @@ async function connectToWhatsApp(providerId) {
         if (statusTargetArr.length > 0 && !statusTargetArr.includes(senderNumber)) continue;
         if (msgTimestampNum < statusStartEpoch || msgTimestampNum > statusEndEpoch) continue;
 
-        let mediaData = { mediaUrl: null, mediaType: null, textMessage };
-        if (historyStatusMediaMode === 'all' && hasMedia) {
-          mediaData = await processMedia(msg, textMessage);
-        }
-        
-        if (!mediaData.textMessage && !mediaData.mediaUrl) {
-          if (hasMedia) mediaData.textMessage = '[Status Update - Media Only]';
-          else continue;
-        }
+        const mediaData = await processMedia(msg, baseTextMessage, historyStatusMediaMode);
+        if (!mediaData.textMessage && !mediaData.mediaUrl) continue;
 
         bulkPayload.push({
           type: 'status',
@@ -255,15 +252,8 @@ async function connectToWhatsApp(providerId) {
         if (chatTargetArr.length > 0 && !chatTargetArr.includes(peerNumber)) continue;
         if (msgTimestampNum < chatStartEpoch || msgTimestampNum > chatEndEpoch) continue;
 
-        let mediaData = { mediaUrl: null, mediaType: null, textMessage };
-        if (historyChatMediaMode === 'all' && hasMedia) {
-          mediaData = await processMedia(msg, textMessage);
-        }
-        
-        if (!mediaData.textMessage && !mediaData.mediaUrl) {
-          if (hasMedia) mediaData.textMessage = '[Media Only - Image/Video]';
-          else continue;
-        }
+        const mediaData = await processMedia(msg, baseTextMessage, historyChatMediaMode);
+        if (!mediaData.textMessage && !mediaData.mediaUrl) continue;
 
         bulkPayload.push({
           type: 'chat',

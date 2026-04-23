@@ -8,7 +8,6 @@ export default function StatusMonitorModal({ providerId, onClose }: { providerId
   const [activeTab, setActiveTab] = useState<'targets' | 'logs' | 'delivery'>('logs');
   const [targets, setTargets] = useState<any[]>([]);
   const [logs, setLogs] = useState<any[]>([]);
-  const [logs, setLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Advanced Logbook States

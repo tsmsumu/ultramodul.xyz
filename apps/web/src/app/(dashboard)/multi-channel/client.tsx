@@ -13,7 +13,8 @@ export default function MultiChannelDashboard({
   archivedProviders,
   initialMappings,
   initialSessions,
-  initialLogs
+  initialLogs,
+  systemStorage
 }: {
   initialProviders: any[];
   archivedProviders: any[];

@@ -329,6 +329,11 @@ export default function ChatMonitorModal({ providerId, onClose }: { providerId: 
                         <input type="datetime-local" value={filterDateFrom} onChange={e=>setFilterDateFrom(e.target.value)} className="bg-zinc-900 border border-white/10 rounded-lg px-2 py-2 text-xs text-zinc-300 focus:outline-none" title="From Date" />
                         <span className="text-zinc-600">-</span>
                         <input type="datetime-local" value={filterDateTo} onChange={e=>setFilterDateTo(e.target.value)} className="bg-zinc-900 border border-white/10 rounded-lg px-2 py-2 text-xs text-zinc-300 focus:outline-none" title="To Date" />
+                        {(filterDateFrom || filterDateTo) && (
+                          <button onClick={() => { setFilterDateFrom(""); setFilterDateTo(""); }} className="px-3 py-1.5 bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 border border-blue-500/30 rounded-lg text-xs font-bold transition-colors">
+                            All Time
+                          </button>
+                        )}
                       </div>
                     </div>
                     

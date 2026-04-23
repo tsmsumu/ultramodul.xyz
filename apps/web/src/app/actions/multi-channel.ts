@@ -177,6 +177,16 @@ export async function deleteWhatsAppNode(providerId: string) {
   }
 }
 
+export async function logoutWhatsAppSession(providerId: string) {
+  try {
+    await fetch(`http://127.0.0.1:3001/logout/${providerId}`, { method: 'POST' });
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to logout session", error);
+    return { success: false, message: "Error logging out" };
+  }
+}
+
 export async function initWaEngineNode(providerId: string, name: string = "") {
   try {
     await fetch(`http://127.0.0.1:3001/init/${providerId}`, { 

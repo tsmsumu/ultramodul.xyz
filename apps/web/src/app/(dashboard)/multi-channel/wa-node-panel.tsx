@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { Radio, CheckCircle2, XCircle, Terminal as TerminalIcon, Trash2, Edit2, Check, Shield, ShieldAlert, ShieldCheck, Eye, Building2 } from "lucide-react";
-import { getWaEngineStatus, getWaEngineQr, sendMessageViaEngine, initWaEngineNode, deleteWhatsAppNode, renameWhatsAppNode, updateWaNodeFirewall } from "@/app/actions/multi-channel";
+import { Radio, CheckCircle2, XCircle, Terminal as TerminalIcon, Trash2, Edit2, Check, Shield, ShieldAlert, ShieldCheck, Eye, Building2, LogOut } from "lucide-react";
+import { getWaEngineStatus, getWaEngineQr, sendMessageViaEngine, initWaEngineNode, deleteWhatsAppNode, renameWhatsAppNode, updateWaNodeFirewall, logoutWhatsAppSession } from "@/app/actions/multi-channel";
 import { useRouter } from "next/navigation";
 import StatusMonitorModal from "./status-monitor-modal";
 import WagMonitorModal from "./wag-monitor-modal";
@@ -102,6 +102,17 @@ export default function WaNodePanel({ provider }: { provider: any }) {
     }
   };
 
+  const handleLogoutSession = async () => {
+    if (window.confirm("Apakah Anda yakin ingin Logout? Anda harus melakukan Scan QR ulang untuk menghubungkan WhatsApp.")) {
+      const res = await logoutWhatsAppSession(provider.id);
+      if (res.success) {
+        fetchWaStatus();
+      } else {
+        alert("Failed to logout session.");
+      }
+    }
+  };
+
   useEffect(() => {
     fetchWaStatus();
   }, [provider.id]);
@@ -110,8 +121,8 @@ export default function WaNodePanel({ provider }: { provider: any }) {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 pb-8 border-b border-white/10 last:border-0 last:pb-0">
       {/* Omni WA-Engine Panel */}
       <div className="bg-zinc-950/80 border border-white/5 rounded-3xl p-6 shadow-xl relative">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-sm font-bold text-white tracking-widest uppercase flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <h2 className="text-sm font-bold text-white tracking-widest uppercase flex items-center gap-2 flex-shrink-0">
             <Radio className="w-5 h-5 text-emerald-400" />
             {isEditing ? (
               <div className="flex items-center gap-2">
@@ -134,7 +145,12 @@ export default function WaNodePanel({ provider }: { provider: any }) {
               </div>
             )}
           </h2>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2 justify-start sm:justify-end">
+            {waStatus === 'connected' && (
+              <button onClick={handleLogoutSession} className="text-[10px] px-3 py-1.5 bg-orange-500/10 hover:bg-orange-500/30 rounded-lg text-orange-400 font-bold uppercase transition-all flex items-center gap-1">
+                <LogOut className="w-3 h-3" /> Logout
+              </button>
+            )}
             <button onClick={handleInitNode} className="text-[10px] px-3 py-1.5 bg-indigo-500/20 hover:bg-indigo-500/40 rounded-lg text-indigo-300 font-bold uppercase transition-all">
               Start Node
             </button>

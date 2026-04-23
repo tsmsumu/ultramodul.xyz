@@ -177,12 +177,37 @@ export async function deleteWhatsAppNode(providerId: string) {
   }
 }
 
-export async function initWaEngineNode(providerId: string) {
+export async function initWaEngineNode(providerId: string, name: string = "") {
   try {
-    await fetch(`http://127.0.0.1:3001/init/${providerId}`, { method: 'POST' });
+    await fetch(`http://127.0.0.1:3001/init/${providerId}`, { 
+      method: 'POST',
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name })
+    });
     return { success: true };
   } catch (error) {
     return { success: false };
+  }
+}
+
+export async function renameWhatsAppNode(providerId: string, newName: string) {
+  try {
+    // 1. Update Engine Local Name
+    try {
+      await fetch(`http://127.0.0.1:3001/rename/${providerId}`, {
+        method: 'POST',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: newName })
+      });
+    } catch(e) {
+      console.log("Engine rename failed", e);
+    }
+
+    // 2. Update Database
+    await db.update(mcProviders).set({ name: newName, updatedAt: new Date() }).where(eq(mcProviders.id, providerId));
+    return { success: true };
+  } catch (error) {
+    return { success: false, message: "Error renaming node" };
   }
 }
 

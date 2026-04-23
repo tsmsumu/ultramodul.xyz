@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import { Radio, CheckCircle2, XCircle, Terminal as TerminalIcon, Trash2 } from "lucide-react";
-import { getWaEngineStatus, getWaEngineQr, sendMessageViaEngine, initWaEngineNode, deleteWhatsAppNode } from "@/app/actions/multi-channel";
+import { useState, useEffect, useRef } from "react";
+import { Radio, CheckCircle2, XCircle, Terminal as TerminalIcon, Trash2, Edit2, Check } from "lucide-react";
+import { getWaEngineStatus, getWaEngineQr, sendMessageViaEngine, initWaEngineNode, deleteWhatsAppNode, renameWhatsAppNode } from "@/app/actions/multi-channel";
 import { useRouter } from "next/navigation";
 
 export default function WaNodePanel({ provider }: { provider: any }) {
@@ -10,6 +10,16 @@ export default function WaNodePanel({ provider }: { provider: any }) {
   const [simTo, setSimTo] = useState("");
   const [simMsg, setSimMsg] = useState("");
   const [simLoading, setSimLoading] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editName, setEditName] = useState(provider.name);
+
+  const handleRename = async () => {
+    if (editName.trim() && editName !== provider.name) {
+      await renameWhatsAppNode(provider.id, editName);
+      router.refresh();
+    }
+    setIsEditing(false);
+  };
 
   const fetchWaStatus = async () => {
     try {
@@ -27,7 +37,7 @@ export default function WaNodePanel({ provider }: { provider: any }) {
   };
 
   const handleInitNode = async () => {
-    await initWaEngineNode(provider.id);
+    await initWaEngineNode(provider.id, provider.name);
     fetchWaStatus();
   };
 
@@ -61,7 +71,27 @@ export default function WaNodePanel({ provider }: { provider: any }) {
       <div className="bg-zinc-950/80 border border-white/5 rounded-3xl p-6 shadow-xl relative">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-sm font-bold text-white tracking-widest uppercase flex items-center gap-2">
-            <Radio className="w-5 h-5 text-emerald-400" /> {provider.name}
+            <Radio className="w-5 h-5 text-emerald-400" />
+            {isEditing ? (
+              <div className="flex items-center gap-2">
+                <input 
+                  type="text" 
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  className="bg-black/50 border border-white/10 text-white px-2 py-1 rounded text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 w-32"
+                  autoFocus
+                  onKeyDown={(e) => e.key === 'Enter' && handleRename()}
+                />
+                <button onClick={handleRename} className="text-emerald-400 hover:text-emerald-300">
+                  <Check className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 group cursor-pointer" onClick={() => setIsEditing(true)}>
+                <span>{provider.name}</span>
+                <Edit2 className="w-3 h-3 text-zinc-500 group-hover:text-zinc-300 transition-colors opacity-0 group-hover:opacity-100" />
+              </div>
+            )}
           </h2>
           <div className="flex gap-2">
             <button onClick={handleInitNode} className="text-[10px] px-3 py-1.5 bg-indigo-500/20 hover:bg-indigo-500/40 rounded-lg text-indigo-300 font-bold uppercase transition-all">

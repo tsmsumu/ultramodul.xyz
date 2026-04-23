@@ -24,6 +24,22 @@ const sockets = new Map();
 const qrCodes = new Map();
 const statuses = new Map(); // initializing, qr, connected, disconnected
 
+function getNodeName(id) {
+  try {
+    const config = JSON.parse(fs.readFileSync(path.join(SESSIONS_DIR, id, 'node_config.json')));
+    return config.name || 'Omni WA-Node';
+  } catch(e) {
+    return 'Omni WA-Node';
+  }
+}
+
+function setNodeName(id, name) {
+  if (!fs.existsSync(path.join(SESSIONS_DIR, id))) {
+    fs.mkdirSync(path.join(SESSIONS_DIR, id), { recursive: true });
+  }
+  fs.writeFileSync(path.join(SESSIONS_DIR, id, 'node_config.json'), JSON.stringify({ name }));
+}
+
 function formatPhoneNumber(phone) {
   if (!phone) return '';
   let clean = phone.replace(/\D/g, '');
@@ -38,12 +54,14 @@ async function connectToWhatsApp(providerId) {
   const { state, saveCreds } = await useMultiFileAuthState(sessionPath);
   const { version } = await fetchLatestBaileysVersion();
   
+  const nodeName = getNodeName(providerId);
+
   const sock = makeWASocket({
     version,
     auth: state,
     printQRInTerminal: false,
     logger: pino({ level: 'silent' }),
-    browser: ['Ubuntu', 'Chrome', '20.0.0']
+    browser: [nodeName, 'Desktop', '1.0.0']
   });
 
   sockets.set(providerId, sock);
@@ -128,11 +146,25 @@ function loadExistingSessions() {
 // API Routes
 app.post('/init/:id', (req, res) => {
   const id = req.params.id;
+  const { name } = req.body || {};
+  if (name) {
+    setNodeName(id, name);
+  }
+
   if (!sockets.has(id)) {
     connectToWhatsApp(id);
     return res.json({ success: true, message: 'Node initialized' });
   }
   return res.json({ success: true, message: 'Node already running' });
+});
+
+app.post('/rename/:id', (req, res) => {
+  const id = req.params.id;
+  const { name } = req.body;
+  if (!name) return res.status(400).json({ success: false, message: 'Name is required' });
+  
+  setNodeName(id, name);
+  res.json({ success: true, message: 'Node renamed locally' });
 });
 
 app.get('/status/:id', (req, res) => {

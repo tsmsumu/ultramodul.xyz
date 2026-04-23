@@ -118,7 +118,7 @@ export async function syncMonitorTargetsToEngine(providerId: string) {
     // Map to array of objects with id and textOnly flag
     const tgGroupTargetsList = tgGroup.map(w => ({ id: w.groupId, textOnly: w.isTextOnly }));
     const statusTargetsList = status.map(s => ({ id: s.channelId, textOnly: s.isTextOnly }));
-    const chatTargetsList = chat.map(c => ({ id: c.channelId, textOnly: c.isTextOnly }));
+    const chatTargetsList = chat.map(c => ({ id: c.phoneNumber, textOnly: c.isTextOnly }));
 
     await fetch(`http://127.0.0.1:3001/config/${providerId}`, {
       method: 'POST',
@@ -237,7 +237,7 @@ export async function importLogbookData(providerId: string, logType: 'chat' | 't
         let tId = targetMap.get(row.peerNumber);
         if (!tId) {
           tId = randomUUID();
-          await db.insert(tgChatTargets).values({ id: tId, providerId, channelId: row.peerNumber, targetName: row.peerName || row.peerNumber, isTextOnly: false, createdAt: new Date() });
+          await db.insert(tgChatTargets).values({ id: tId, providerId, phoneNumber: row.peerNumber, targetName: row.peerName || row.peerNumber, isTextOnly: false, createdAt: new Date() });
           targetMap.set(row.peerNumber, tId);
         }
 

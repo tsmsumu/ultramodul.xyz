@@ -11,6 +11,7 @@ export default function WagMonitorModal({ providerId, onClose }: { providerId: s
   // Form states
   const [groupId, setGroupId] = useState("");
   const [groupName, setGroupName] = useState("");
+  const [isTextOnly, setIsTextOnly] = useState(false);
   
   // Search state
   const [searchQuery, setSearchQuery] = useState("");
@@ -38,9 +39,10 @@ export default function WagMonitorModal({ providerId, onClose }: { providerId: s
       cleanId = `${cleanId}@g.us`;
     }
 
-    await addWagTarget(providerId, cleanId, groupName);
+    await addWagTarget(providerId, cleanId, groupName, isTextOnly);
     setGroupId("");
     setGroupName("");
+    setIsTextOnly(false);
     fetchData();
   };
 
@@ -132,6 +134,10 @@ export default function WagMonitorModal({ providerId, onClose }: { providerId: s
                         <label className="text-xs text-zinc-400 uppercase tracking-wider">Group Name</label>
                         <input type="text" value={groupName} onChange={e=>setGroupName(e.target.value)} placeholder="VIP Investor Group" className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-1 focus:ring-emerald-500 focus:outline-none" required />
                       </div>
+                      <div className="flex items-center gap-2 mb-3">
+                        <input type="checkbox" id="textOnly" checked={isTextOnly} onChange={e=>setIsTextOnly(e.target.checked)} className="w-4 h-4 rounded bg-black/40 border-white/10 text-emerald-500 focus:ring-emerald-500" />
+                        <label htmlFor="textOnly" className="text-xs text-zinc-400">Text Only (No Media)</label>
+                      </div>
                       <button type="submit" className="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 h-[46px]">
                         <Plus className="w-4 h-4" /> Add Group
                       </button>
@@ -151,7 +157,10 @@ export default function WagMonitorModal({ providerId, onClose }: { providerId: s
                       <tbody className="divide-y divide-white/5">
                         {targets.map(t => (
                           <tr key={t.id} className="hover:bg-white/[0.02]">
-                            <td className="px-6 py-4 font-bold text-white">{t.groupName}</td>
+                            <td className="px-6 py-4 font-bold text-white">
+                              {t.groupName}
+                              {t.isTextOnly && <span className="ml-2 text-[10px] bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded-full">TEXT ONLY</span>}
+                            </td>
                             <td className="px-6 py-4 font-mono text-xs">{t.groupId}</td>
                             <td className="px-6 py-4">{new Date(t.createdAt).toLocaleDateString()}</td>
                             <td className="px-6 py-4 text-right">

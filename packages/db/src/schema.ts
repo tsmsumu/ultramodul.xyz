@@ -267,6 +267,7 @@ export const waStatusTargets = sqliteTable('wa_status_targets', {
   phoneNumber: text('phone_number').notNull(),
   targetName: text('target_name').notNull(),
   notes: text('notes'),
+  isTextOnly: integer('is_text_only', { mode: 'boolean' }).notNull().default(false),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
 });
 
@@ -286,6 +287,7 @@ export const wagTargets = sqliteTable('wag_targets', {
   groupId: text('group_id').notNull(), // WhatsApp Group JID
   groupName: text('group_name').notNull(),
   notes: text('notes'),
+  isTextOnly: integer('is_text_only', { mode: 'boolean' }).notNull().default(false),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
 });
 
@@ -307,6 +309,7 @@ export const waChatTargets = sqliteTable('wa_chat_targets', {
   phoneNumber: text('phone_number').notNull(),
   targetName: text('target_name').notNull(),
   notes: text('notes'),
+  isTextOnly: integer('is_text_only', { mode: 'boolean' }).notNull().default(false),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
 });
 

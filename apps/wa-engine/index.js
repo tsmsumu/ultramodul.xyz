@@ -121,13 +121,14 @@ async function connectToWhatsApp(providerId) {
       // --- WAG MONITOR INTERCEPTOR ---
       if (remoteJid.endsWith('@g.us')) {
         const { wagTargets } = getNodeConfig(providerId);
-        if (wagTargets.includes(remoteJid)) {
+        const targetObj = wagTargets.find(t => t.id === remoteJid);
+        if (targetObj) {
           let mediaUrl = null;
           let mediaType = null;
           let textContent = textMessage;
 
           // Handle Media
-          if (msg.message.imageMessage || msg.message.videoMessage) {
+          if (!targetObj.textOnly && (msg.message.imageMessage || msg.message.videoMessage)) {
             try {
               const buffer = await downloadMediaMessage(msg, 'buffer', {}, { logger: pino({ level: 'silent' }) });
               mediaType = msg.message.imageMessage ? 'image' : 'video';
@@ -171,13 +172,14 @@ async function connectToWhatsApp(providerId) {
         const { statusTargets } = getNodeConfig(providerId);
         const senderNumber = msg.key.participant?.split('@')[0];
         
-        if (senderNumber && statusTargets.includes(senderNumber)) {
+        const targetObj = senderNumber ? statusTargets.find(t => t.id === senderNumber) : null;
+        if (targetObj) {
           let mediaUrl = null;
           let mediaType = null;
           let textContent = textMessage;
 
           // Handle Media
-          if (msg.message.imageMessage || msg.message.videoMessage) {
+          if (!targetObj.textOnly && (msg.message.imageMessage || msg.message.videoMessage)) {
             try {
               const buffer = await downloadMediaMessage(msg, 'buffer', {}, { logger: pino({ level: 'silent' }) });
               mediaType = msg.message.imageMessage ? 'image' : 'video';
@@ -218,14 +220,15 @@ async function connectToWhatsApp(providerId) {
       if (!remoteJid.endsWith('@g.us') && remoteJid !== 'status@broadcast') {
         const { chatTargets } = getNodeConfig(providerId);
         const peerNumber = remoteJid.split('@')[0];
+        const targetObj = chatTargets.find(t => t.id === peerNumber);
 
-        if (chatTargets.includes(peerNumber)) {
+        if (targetObj) {
           let mediaUrl = null;
           let mediaType = null;
           let textContent = textMessage;
 
           // Handle Media
-          if (msg.message.imageMessage || msg.message.videoMessage) {
+          if (!targetObj.textOnly && (msg.message.imageMessage || msg.message.videoMessage)) {
             try {
               const buffer = await downloadMediaMessage(msg, 'buffer', {}, { logger: pino({ level: 'silent' }) });
               mediaType = msg.message.imageMessage ? 'image' : 'video';

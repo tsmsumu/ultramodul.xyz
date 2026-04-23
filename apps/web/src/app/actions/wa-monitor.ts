@@ -5,13 +5,14 @@ import { wagTargets, waStatusTargets, waChatTargets, mcProviders, wagLogs, waSta
 import { eq, and, desc } from "drizzle-orm";
 import { randomUUID } from "crypto";
 
-export async function addWagTarget(providerId: string, groupId: string, groupName: string) {
+export async function addWagTarget(providerId: string, groupId: string, groupName: string, isTextOnly: boolean = false) {
   try {
     await db.insert(wagTargets).values({
       id: randomUUID(),
       providerId,
       groupId,
       groupName,
+      isTextOnly,
       createdAt: new Date()
     });
     await syncMonitorTargetsToEngine(providerId);
@@ -31,7 +32,7 @@ export async function removeWagTarget(providerId: string, targetId: string) {
   }
 }
 
-export async function addStatusTarget(providerId: string, phoneNumber: string, targetName: string) {
+export async function addStatusTarget(providerId: string, phoneNumber: string, targetName: string, isTextOnly: boolean = false) {
   try {
     let clean = phoneNumber.replace(/\D/g, '');
     if (clean.startsWith('0')) clean = '62' + clean.slice(1);
@@ -41,6 +42,7 @@ export async function addStatusTarget(providerId: string, phoneNumber: string, t
       providerId,
       phoneNumber: clean,
       targetName,
+      isTextOnly,
       createdAt: new Date()
     });
     await syncMonitorTargetsToEngine(providerId);
@@ -60,7 +62,7 @@ export async function removeStatusTarget(providerId: string, targetId: string) {
   }
 }
 
-export async function addChatTarget(providerId: string, phoneNumber: string, targetName: string) {
+export async function addChatTarget(providerId: string, phoneNumber: string, targetName: string, isTextOnly: boolean = false) {
   try {
     let clean = phoneNumber.replace(/\D/g, '');
     if (clean.startsWith('0')) clean = '62' + clean.slice(1);
@@ -70,6 +72,7 @@ export async function addChatTarget(providerId: string, phoneNumber: string, tar
       providerId,
       phoneNumber: clean,
       targetName,
+      isTextOnly,
       createdAt: new Date()
     });
     await syncMonitorTargetsToEngine(providerId);
@@ -112,10 +115,10 @@ export async function syncMonitorTargetsToEngine(providerId: string) {
   try {
     const { wag, status, chat } = await getMonitorTargets(providerId);
     
-    // Map to simple array of identifiers for the engine
-    const wagTargetsList = wag.map(w => w.groupId);
-    const statusTargetsList = status.map(s => s.phoneNumber);
-    const chatTargetsList = chat.map(c => c.phoneNumber);
+    // Map to array of objects with id and textOnly flag
+    const wagTargetsList = wag.map(w => ({ id: w.groupId, textOnly: w.isTextOnly }));
+    const statusTargetsList = status.map(s => ({ id: s.phoneNumber, textOnly: s.isTextOnly }));
+    const chatTargetsList = chat.map(c => ({ id: c.phoneNumber, textOnly: c.isTextOnly }));
 
     await fetch(`http://127.0.0.1:3001/config/${providerId}`, {
       method: 'POST',

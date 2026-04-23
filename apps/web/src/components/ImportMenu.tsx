@@ -4,7 +4,7 @@ import { Upload, FileJson, X, Check, Loader2 } from "lucide-react";
 interface ImportMenuProps {
   onImport: (data: any[]) => Promise<void>;
   isLoading: boolean;
-  type: "chat" | "wag" | "status" | "tgGroup" | "tgChannel" | "tgChat";
+  type: "chat" | "wag" | "status" | "tgGroup" | "tgChannel" | "tgChat" | "sigGroup" | "sigStory" | "sigChat";
 }
 
 export default function ImportMenu({ onImport, isLoading, type }: ImportMenuProps) {
@@ -100,7 +100,7 @@ export default function ImportMenu({ onImport, isLoading, type }: ImportMenuProp
 
   const getAccentColor = () => {
     if (type === 'chat') return 'blue';
-    if (type === 'wag' || type === 'tgGroup') return 'emerald';
+    if (type === 'wag' || type === 'tgGroup' || type === 'sigGroup') return 'emerald';
     return 'indigo';
   };
   const color = getAccentColor();

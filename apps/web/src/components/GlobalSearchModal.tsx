@@ -46,7 +46,7 @@ export default function GlobalSearchModal({ onClose }: { onClose: () => void }) 
   const getIconForType = (type: string) => {
     switch(type) {
       case 'chat': return <MessageSquare className="w-4 h-4 text-blue-400" />;
-      case 'wag': case 'tgGroup': return <Users className="w-4 h-4 text-emerald-400" />;
+      case 'wag': case 'tgGroup': case 'sigGroup': return <Users className="w-4 h-4 text-emerald-400" />;
       case 'status': return <Radio className="w-4 h-4 text-indigo-400" />;
       default: return <Search className="w-4 h-4" />;
     }
@@ -55,7 +55,7 @@ export default function GlobalSearchModal({ onClose }: { onClose: () => void }) 
   const getBadgeColor = (type: string) => {
     switch(type) {
       case 'chat': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
-      case 'wag': case 'tgGroup': return 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+      case 'wag': case 'tgGroup': case 'sigGroup': return 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
       case 'status': return 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30';
       default: return 'bg-zinc-500/20 text-zinc-400 border-zinc-500/30';
     }

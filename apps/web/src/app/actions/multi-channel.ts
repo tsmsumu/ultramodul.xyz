@@ -302,6 +302,38 @@ export async function updateWaNodeFirewall(providerId: string, whitelist: string
   }
 }
 
+export async function updateWaNodeHistorySync(providerId: string, syncHistory: boolean) {
+  try {
+    const provider = await db.select().from(mcProviders).where(eq(mcProviders.id, providerId)).limit(1);
+    let payload = {};
+    if (provider.length > 0 && provider[0].configPayload) {
+      try {
+        payload = JSON.parse(provider[0].configPayload);
+      } catch (e) {}
+    }
+    
+    payload = { ...payload, syncHistory };
+    const newPayloadString = JSON.stringify(payload);
+
+    await db.update(mcProviders).set({ configPayload: newPayloadString, updatedAt: new Date() }).where(eq(mcProviders.id, providerId));
+
+    try {
+      await fetch(`http://127.0.0.1:3001/config/${providerId}`, {
+        method: 'POST',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ syncHistory })
+      });
+    } catch(e) {
+      console.log("Engine config update failed", e);
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to update history sync config", error);
+    return { success: false, message: "Error updating history config" };
+  }
+}
+
 export async function sendMessageViaEngine(providerType: string, providerId: string, to: string, message: string) {
   try {
     if (providerType === "whatsapp") {

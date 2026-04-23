@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Radio, CheckCircle2, XCircle, Terminal as TerminalIcon, Trash2, Edit2, Check, Shield, ShieldAlert, ShieldCheck, Eye, Building2, LogOut } from "lucide-react";
-import { getWaEngineStatus, getWaEngineQr, sendMessageViaEngine, initWaEngineNode, deleteWhatsAppNode, renameWhatsAppNode, updateWaNodeFirewall, logoutWhatsAppSession, setWaEnginePresence } from "@/app/actions/multi-channel";
+import { getWaEngineStatus, getWaEngineQr, sendMessageViaEngine, initWaEngineNode, deleteWhatsAppNode, renameWhatsAppNode, updateWaNodeFirewall, logoutWhatsAppSession, setWaEnginePresence, updateWaNodeHistorySync } from "@/app/actions/multi-channel";
 import { useRouter } from "next/navigation";
 import StatusMonitorModal from "./status-monitor-modal";
 import WagMonitorModal from "./wag-monitor-modal";
@@ -26,6 +26,7 @@ export default function WaNodePanel({ provider, isArchived = false }: { provider
     try { return JSON.parse(provider.configPayload || '{}'); } catch(e) { return {}; }
   })();
   const [whitelist, setWhitelist] = useState<string[]>(initialConfig.whitelist || []);
+  const [syncHistory, setSyncHistory] = useState<boolean>(initialConfig.syncHistory || false);
   const [wlInput, setWlInput] = useState("");
   const [isSavingWl, setIsSavingWl] = useState(false);
 
@@ -45,6 +46,11 @@ export default function WaNodePanel({ provider, isArchived = false }: { provider
     setIsSavingWl(true);
     await updateWaNodeFirewall(provider.id, newList);
     setIsSavingWl(false);
+  };
+
+  const handleToggleSyncHistory = async (val: boolean) => {
+    setSyncHistory(val);
+    await updateWaNodeHistorySync(provider.id, val);
   };
 
   const handleRemoveWhitelist = async (num: string) => {
@@ -183,6 +189,17 @@ export default function WaNodePanel({ provider, isArchived = false }: { provider
                 STATUS: {waStatus}
               </span>
             </div>
+
+            {/* History Sync Toggle */}
+            {waStatus !== 'connected' && (
+              <div className="mb-6 flex items-center gap-2 bg-black/50 p-3 rounded-xl border border-white/5">
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" className="sr-only peer" checked={syncHistory} onChange={(e) => handleToggleSyncHistory(e.target.checked)} />
+                  <div className="w-9 h-5 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-400 after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500 peer-checked:after:bg-white"></div>
+                  <span className="ml-3 text-xs font-bold text-zinc-400 uppercase tracking-widest">{syncHistory ? 'History Sync Enabled' : 'History Sync Disabled'}</span>
+                </label>
+              </div>
+            )}
 
             {waStatus === 'qr' && qrCode ? (
                <div className="bg-white p-4 rounded-xl shadow-[0_0_50px_rgba(255,255,255,0.1)]">

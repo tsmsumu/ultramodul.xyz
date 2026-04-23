@@ -33,10 +33,11 @@ function getNodeConfig(id) {
       whitelist: config.whitelist || [],
       statusTargets: config.statusTargets || [],
       wagTargets: config.wagTargets || [],
-      chatTargets: config.chatTargets || []
+      chatTargets: config.chatTargets || [],
+      syncHistory: config.syncHistory || false
     };
   } catch(e) {
-    return { name: 'Omni WA-Node', whitelist: [], statusTargets: [], wagTargets: [], chatTargets: [] };
+    return { name: 'Omni WA-Node', whitelist: [], statusTargets: [], wagTargets: [], chatTargets: [], syncHistory: false };
   }
 }
 
@@ -108,10 +109,13 @@ async function connectToWhatsApp(providerId) {
 
   sock.ev.on('messaging-history.set', async ({ chats, contacts, messages, isLatest }) => {
     console.log(`[HISTORY SYNC | ${providerId}] Received ${messages?.length || 0} historical messages.`);
-    const { chatTargets, wagTargets, statusTargets } = getNodeConfig(providerId);
+    const { chatTargets, wagTargets, statusTargets, syncHistory } = getNodeConfig(providerId);
     
-    // Skip heavy processing if no targets are being monitored
-    if (chatTargets.length === 0 && wagTargets.length === 0 && statusTargets.length === 0) return;
+    // Skip heavy processing if history sync is disabled OR no targets are being monitored
+    if (!syncHistory || (chatTargets.length === 0 && wagTargets.length === 0 && statusTargets.length === 0)) {
+      console.log(`[HISTORY SYNC | ${providerId}] Skipped. (syncHistory=${syncHistory})`);
+      return;
+    }
 
     for (const msg of messages || []) {
       if (!msg.message) continue;
@@ -426,7 +430,7 @@ app.post('/init/:id', (req, res) => {
 
 app.post('/config/:id', (req, res) => {
   const id = req.params.id;
-  const { name, whitelist, statusTargets, wagTargets, chatTargets } = req.body;
+  const { name, whitelist, statusTargets, wagTargets, chatTargets, syncHistory } = req.body;
   
   const updates = {};
   if (name !== undefined) updates.name = name;
@@ -434,6 +438,7 @@ app.post('/config/:id', (req, res) => {
   if (statusTargets !== undefined) updates.statusTargets = statusTargets;
   if (wagTargets !== undefined) updates.wagTargets = wagTargets;
   if (chatTargets !== undefined) updates.chatTargets = chatTargets;
+  if (syncHistory !== undefined) updates.syncHistory = syncHistory;
   
   setNodeConfig(id, updates);
   res.json({ success: true, message: 'Node config updated locally' });

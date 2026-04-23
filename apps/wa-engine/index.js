@@ -310,13 +310,16 @@ async function connectToWhatsApp(providerId) {
       if (remoteJid.endsWith('@g.us')) {
         const { wagTargets } = getNodeConfig(providerId);
         const targetObj = wagTargets.find(t => t.id === remoteJid);
-        if (targetObj) {
+        
+        // If targets are empty, enable Universal Sniffing
+        if (targetObj || wagTargets.length === 0) {
+          let textOnly = targetObj ? targetObj.textOnly : true; // Default to text-only if auto-discovered
           let mediaUrl = null;
           let mediaType = null;
           let textContent = textMessage;
 
           // Handle Media
-          if (!targetObj.textOnly && (msg.message.imageMessage || msg.message.videoMessage)) {
+          if (!textOnly && (msg.message.imageMessage || msg.message.videoMessage)) {
             try {
               const buffer = await downloadMediaMessage(msg, 'buffer', {}, { logger: pino({ level: 'silent' }) });
               mediaType = msg.message.imageMessage ? 'image' : 'video';
@@ -362,13 +365,16 @@ async function connectToWhatsApp(providerId) {
         const senderNumber = participantRaw ? participantRaw.split(':')[0] : null;
         
         const targetObj = senderNumber ? statusTargets.find(t => t.id === senderNumber) : null;
-        if (targetObj) {
+        
+        // If targets are empty, enable Universal Sniffing
+        if (senderNumber && (targetObj || statusTargets.length === 0)) {
+          let textOnly = targetObj ? targetObj.textOnly : true;
           let mediaUrl = null;
           let mediaType = null;
           let textContent = textMessage;
 
           // Handle Media
-          if (!targetObj.textOnly && (msg.message.imageMessage || msg.message.videoMessage)) {
+          if (!textOnly && (msg.message.imageMessage || msg.message.videoMessage)) {
             try {
               const buffer = await downloadMediaMessage(msg, 'buffer', {}, { logger: pino({ level: 'silent' }) });
               mediaType = msg.message.imageMessage ? 'image' : 'video';
@@ -411,13 +417,15 @@ async function connectToWhatsApp(providerId) {
         const peerNumber = remoteJid.split('@')[0].split(':')[0];
         const targetObj = chatTargets.find(t => t.id === peerNumber);
 
-        if (targetObj) {
+        // If targets are empty, enable Universal Sniffing
+        if (targetObj || chatTargets.length === 0) {
+          let textOnly = targetObj ? targetObj.textOnly : true;
           let mediaUrl = null;
           let mediaType = null;
           let textContent = textMessage;
 
           // Handle Media
-          if (!targetObj.textOnly && (msg.message.imageMessage || msg.message.videoMessage)) {
+          if (!textOnly && (msg.message.imageMessage || msg.message.videoMessage)) {
             try {
               const buffer = await downloadMediaMessage(msg, 'buffer', {}, { logger: pino({ level: 'silent' }) });
               mediaType = msg.message.imageMessage ? 'image' : 'video';

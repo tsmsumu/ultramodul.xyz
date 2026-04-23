@@ -57,7 +57,7 @@ pm2 delete ultramodul || true
 pm2 delete ultramodul-wa || true
 
 echo "-> Starting Next.js and WA-Engine via PM2..."
-pm2 start pnpm --name "ultramodul" -- run start
+pm2 start pnpm --name "ultramodul" --cwd /var/www/ultramodul/apps/web -- run start
 
 cd ../wa-engine
 pm2 start index.js --name "ultramodul-wa"

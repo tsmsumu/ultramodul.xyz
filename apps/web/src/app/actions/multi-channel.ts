@@ -302,17 +302,17 @@ export async function updateWaNodeFirewall(providerId: string, whitelist: string
   }
 }
 
-export async function updateWaNodeHistorySync(providerId: string, syncHistory: boolean) {
+export async function updateWaNodeHistorySync(providerId: string, syncHistory: boolean, historyStart?: string, historyEnd?: string, historyMediaMode?: string) {
   try {
     const provider = await db.select().from(mcProviders).where(eq(mcProviders.id, providerId)).limit(1);
-    let payload = {};
+    let payload: any = {};
     if (provider.length > 0 && provider[0].configPayload) {
       try {
         payload = JSON.parse(provider[0].configPayload);
       } catch (e) {}
     }
     
-    payload = { ...payload, syncHistory };
+    payload = { ...payload, syncHistory, historyStart, historyEnd, historyMediaMode };
     const newPayloadString = JSON.stringify(payload);
 
     await db.update(mcProviders).set({ configPayload: newPayloadString, updatedAt: new Date() }).where(eq(mcProviders.id, providerId));
@@ -321,7 +321,7 @@ export async function updateWaNodeHistorySync(providerId: string, syncHistory: b
       await fetch(`http://127.0.0.1:3001/config/${providerId}`, {
         method: 'POST',
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ syncHistory })
+        body: JSON.stringify({ syncHistory, historyStart, historyEnd, historyMediaMode })
       });
     } catch(e) {
       console.log("Engine config update failed", e);

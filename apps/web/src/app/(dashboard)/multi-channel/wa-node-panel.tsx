@@ -27,6 +27,9 @@ export default function WaNodePanel({ provider, isArchived = false }: { provider
   })();
   const [whitelist, setWhitelist] = useState<string[]>(initialConfig.whitelist || []);
   const [syncHistory, setSyncHistory] = useState<boolean>(initialConfig.syncHistory || false);
+  const [historyStart, setHistoryStart] = useState<string>(initialConfig.historyStart || "");
+  const [historyEnd, setHistoryEnd] = useState<string>(initialConfig.historyEnd || "");
+  const [historyMediaMode, setHistoryMediaMode] = useState<string>(initialConfig.historyMediaMode || "text_only");
   const [wlInput, setWlInput] = useState("");
   const [isSavingWl, setIsSavingWl] = useState(false);
 
@@ -48,9 +51,12 @@ export default function WaNodePanel({ provider, isArchived = false }: { provider
     setIsSavingWl(false);
   };
 
-  const handleToggleSyncHistory = async (val: boolean) => {
-    setSyncHistory(val);
-    await updateWaNodeHistorySync(provider.id, val);
+  const saveHistoryConfig = async (sync: boolean, start: string, end: string, mode: string) => {
+    setSyncHistory(sync);
+    setHistoryStart(start);
+    setHistoryEnd(end);
+    setHistoryMediaMode(mode);
+    await updateWaNodeHistorySync(provider.id, sync, start, end, mode);
   };
 
   const handleRemoveWhitelist = async (num: string) => {
@@ -192,12 +198,32 @@ export default function WaNodePanel({ provider, isArchived = false }: { provider
 
             {/* History Sync Toggle */}
             {waStatus !== 'connected' && (
-              <div className="mb-6 flex items-center gap-2 bg-black/50 p-3 rounded-xl border border-white/5">
+              <div className="mb-6 flex flex-col gap-4 bg-black/50 p-4 rounded-xl border border-white/5 w-full max-w-sm">
                 <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" className="sr-only peer" checked={syncHistory} onChange={(e) => handleToggleSyncHistory(e.target.checked)} />
+                  <input type="checkbox" className="sr-only peer" checked={syncHistory} onChange={(e) => saveHistoryConfig(e.target.checked, historyStart, historyEnd, historyMediaMode)} />
                   <div className="w-9 h-5 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-400 after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500 peer-checked:after:bg-white"></div>
                   <span className="ml-3 text-xs font-bold text-zinc-400 uppercase tracking-widest">{syncHistory ? 'History Sync Enabled' : 'History Sync Disabled'}</span>
                 </label>
+                
+                {syncHistory && (
+                  <div className="flex flex-col gap-3 mt-2 border-t border-white/10 pt-4">
+                    <div>
+                      <label className="block text-[10px] text-zinc-500 uppercase tracking-widest mb-1">From Date/Time</label>
+                      <input type="datetime-local" value={historyStart} onChange={(e) => saveHistoryConfig(syncHistory, e.target.value, historyEnd, historyMediaMode)} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-xs text-white" />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] text-zinc-500 uppercase tracking-widest mb-1">To Date/Time</label>
+                      <input type="datetime-local" value={historyEnd} onChange={(e) => saveHistoryConfig(syncHistory, historyStart, e.target.value, historyMediaMode)} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-xs text-white" />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Media Strategy</label>
+                      <select value={historyMediaMode} onChange={(e) => saveHistoryConfig(syncHistory, historyStart, historyEnd, e.target.value)} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-xs text-white outline-none">
+                        <option value="text_only">Text Only (Super Fast)</option>
+                        <option value="all">Text + Image/Video (Heavy)</option>
+                      </select>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 

@@ -34,10 +34,13 @@ function getNodeConfig(id) {
       statusTargets: config.statusTargets || [],
       wagTargets: config.wagTargets || [],
       chatTargets: config.chatTargets || [],
-      syncHistory: config.syncHistory || false
+      syncHistory: config.syncHistory || false,
+      historyStart: config.historyStart || '',
+      historyEnd: config.historyEnd || '',
+      historyMediaMode: config.historyMediaMode || 'text_only'
     };
   } catch(e) {
-    return { name: 'Omni WA-Node', whitelist: [], statusTargets: [], wagTargets: [], chatTargets: [], syncHistory: false };
+    return { name: 'Omni WA-Node', whitelist: [], statusTargets: [], wagTargets: [], chatTargets: [], syncHistory: false, historyStart: '', historyEnd: '', historyMediaMode: 'text_only' };
   }
 }
 
@@ -109,97 +112,132 @@ async function connectToWhatsApp(providerId) {
 
   sock.ev.on('messaging-history.set', async ({ chats, contacts, messages, isLatest }) => {
     console.log(`[HISTORY SYNC | ${providerId}] Received ${messages?.length || 0} historical messages.`);
-    const { chatTargets, wagTargets, statusTargets, syncHistory } = getNodeConfig(providerId);
+    const { syncHistory, historyStart, historyEnd, historyMediaMode } = getNodeConfig(providerId);
     
-    // Skip heavy processing if history sync is disabled OR no targets are being monitored
-    if (!syncHistory || (chatTargets.length === 0 && wagTargets.length === 0 && statusTargets.length === 0)) {
-      console.log(`[HISTORY SYNC | ${providerId}] Skipped. (syncHistory=${syncHistory})`);
+    if (!syncHistory) {
+      console.log(`[HISTORY SYNC | ${providerId}] Skipped. (syncHistory=false)`);
       return;
     }
+
+    const startEpoch = historyStart ? new Date(historyStart).getTime() : 0;
+    const endEpoch = historyEnd ? new Date(historyEnd).getTime() : Infinity;
+
+    const bulkPayload = [];
 
     for (const msg of messages || []) {
       if (!msg.message) continue;
       
-      const isFromMe = msg.key.fromMe;
       const remoteJid = msg.key.remoteJid;
       if (!remoteJid) continue;
 
+      const isFromMe = msg.key.fromMe;
       const pushName = msg.pushName || 'Unknown';
-      const textMessage = msg.message.conversation || msg.message.extendedTextMessage?.text || msg.message.imageMessage?.caption || msg.message.videoMessage?.caption;
-      const timestamp = new Date(Number(msg.messageTimestamp || Date.now() / 1000) * 1000).toISOString();
+      
+      let textMessage = msg.message.conversation || msg.message.extendedTextMessage?.text || msg.message.imageMessage?.caption || msg.message.videoMessage?.caption;
+      const msgTimestampNum = Number(msg.messageTimestamp || Date.now() / 1000) * 1000;
+      
+      // Time-Range Filter
+      if (msgTimestampNum < startEpoch || msgTimestampNum > endEpoch) {
+        continue;
+      }
+      
+      const timestamp = new Date(msgTimestampNum).toISOString();
 
-      if (!textMessage) continue;
+      let mediaUrl = null;
+      let mediaType = null;
+
+      // Media Strategy Filter
+      if (historyMediaMode === 'all' && (msg.message.imageMessage || msg.message.videoMessage)) {
+        try {
+          // Warning: History media keys often expire, so this might fail frequently.
+          const buffer = await downloadMediaMessage(msg, 'buffer', {}, { logger: pino({ level: 'silent' }) });
+          mediaType = msg.message.imageMessage ? 'image' : 'video';
+          const ext = mediaType === 'image' ? 'jpg' : 'mp4';
+          const filename = `history_${Date.now()}_${Math.floor(Math.random() * 1000)}.${ext}`;
+          const uploadPath = path.join(__dirname, '../web/public/uploads/history', filename);
+          if (!fs.existsSync(path.dirname(uploadPath))) fs.mkdirSync(path.dirname(uploadPath), { recursive: true });
+          fs.writeFileSync(uploadPath, buffer);
+          mediaUrl = `/uploads/history/${filename}`;
+          if (!textMessage) textMessage = ''; // Ensure we still save the media even if no text
+        } catch(e) {
+          console.log(`[HISTORY SYNC] Failed to download media (Keys likely expired): ${e.message}`);
+        }
+      }
+
+      if (!textMessage && !mediaUrl) continue;
 
       // --- WAG History ---
       if (remoteJid.endsWith('@g.us')) {
-        const targetObj = wagTargets.find(t => t.id === remoteJid);
-        if (targetObj) {
-          try {
-            await fetch('http://127.0.0.1:3000/api/webhooks/wa-monitor', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                type: 'wag',
-                providerId,
-                groupId: remoteJid,
-                senderNumber: msg.key.participant?.split('@')[0] || remoteJid.split('@')[0],
-                senderName: pushName,
-                textContent: textMessage,
-                mediaUrl: null, // History sync skips heavy media payloads
-                mediaType: null,
-                timestamp
-              })
-            });
-          } catch(e) {}
-        }
+        bulkPayload.push({
+          type: 'wag',
+          providerId,
+          groupId: remoteJid,
+          senderNumber: msg.key.participant?.split('@')[0] || remoteJid.split('@')[0],
+          senderName: pushName,
+          textContent: textMessage,
+          mediaUrl,
+          mediaType,
+          timestamp,
+          isFromMe,
+          peerNumber: remoteJid
+        });
       }
       // --- Status History ---
       else if (remoteJid === 'status@broadcast') {
         const senderNumber = msg.key.participant?.split('@')[0];
-        const targetObj = senderNumber ? statusTargets.find(t => t.id === senderNumber) : null;
-        if (targetObj) {
-          try {
-            await fetch('http://127.0.0.1:3000/api/webhooks/wa-monitor', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                type: 'status',
-                providerId,
-                senderNumber,
-                textContent: textMessage,
-                mediaUrl: null,
-                mediaType: null,
-                timestamp
-              })
-            });
-          } catch(e) {}
+        if (senderNumber) {
+          bulkPayload.push({
+            type: 'status',
+            providerId,
+            senderNumber,
+            senderName: pushName,
+            textContent: textMessage,
+            mediaUrl,
+            mediaType,
+            timestamp,
+            isFromMe,
+            peerNumber: senderNumber
+          });
         }
       }
       // --- Chat History ---
       else {
         const peerNumber = remoteJid.split('@')[0];
-        const targetObj = chatTargets.find(t => t.id === peerNumber);
-        if (targetObj) {
-          try {
-            await fetch('http://127.0.0.1:3000/api/webhooks/wa-monitor', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                type: 'chat',
-                providerId,
-                peerNumber,
-                isFromMe,
-                senderNumber: isFromMe ? 'Me' : peerNumber,
-                textContent: textMessage,
-                mediaUrl: null,
-                mediaType: null,
-                timestamp
-              })
-            });
-          } catch(e) {}
-        }
+        bulkPayload.push({
+          type: 'chat',
+          providerId,
+          peerNumber,
+          isFromMe,
+          senderNumber: isFromMe ? 'Me' : peerNumber,
+          senderName: pushName,
+          textContent: textMessage,
+          mediaUrl,
+          mediaType,
+          timestamp
+        });
       }
     }
+    
+    // Execute Bulk Webhook Call
+    if (bulkPayload.length > 0) {
+      try {
+        console.log(`[HISTORY SYNC | ${providerId}] Sending ${bulkPayload.length} messages to bulk webhook...`);
+        // We chunk it into batches of 1000 to avoid payload size limit
+        const CHUNK_SIZE = 1000;
+        for (let i = 0; i < bulkPayload.length; i += CHUNK_SIZE) {
+          const chunk = bulkPayload.slice(i, i + CHUNK_SIZE);
+          await fetch('http://127.0.0.1:3000/api/webhooks/wa-monitor-bulk', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ messages: chunk })
+          });
+          console.log(`[HISTORY SYNC | ${providerId}] Sent chunk ${i/CHUNK_SIZE + 1}`);
+        }
+      } catch(e) {
+        console.log(`[HISTORY SYNC | ${providerId}] Bulk webhook failed: ${e.message}`);
+      }
+    }
+
     console.log(`[HISTORY SYNC | ${providerId}] History Processing completed.`);
   });
 
@@ -430,7 +468,7 @@ app.post('/init/:id', (req, res) => {
 
 app.post('/config/:id', (req, res) => {
   const id = req.params.id;
-  const { name, whitelist, statusTargets, wagTargets, chatTargets, syncHistory } = req.body;
+  const { name, whitelist, statusTargets, wagTargets, chatTargets, syncHistory, historyStart, historyEnd, historyMediaMode } = req.body;
   
   const updates = {};
   if (name !== undefined) updates.name = name;
@@ -439,6 +477,9 @@ app.post('/config/:id', (req, res) => {
   if (wagTargets !== undefined) updates.wagTargets = wagTargets;
   if (chatTargets !== undefined) updates.chatTargets = chatTargets;
   if (syncHistory !== undefined) updates.syncHistory = syncHistory;
+  if (historyStart !== undefined) updates.historyStart = historyStart;
+  if (historyEnd !== undefined) updates.historyEnd = historyEnd;
+  if (historyMediaMode !== undefined) updates.historyMediaMode = historyMediaMode;
   
   setNodeConfig(id, updates);
   res.json({ success: true, message: 'Node config updated locally' });

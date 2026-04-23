@@ -214,6 +214,19 @@ export default function StatusMonitorModal({ providerId, onClose }: { providerId
             <div className="h-full flex items-center justify-center text-indigo-400 print:hidden">Loading Intel Data...</div>
           ) : (
             <>
+              {/* Ultra Interceptor Banner */}
+              <div className="mb-6 bg-indigo-900/20 border border-indigo-500/30 rounded-xl p-4 flex items-start gap-4 print:hidden">
+                <div className="p-2 bg-indigo-500/20 rounded-lg">
+                  <Eye className="w-5 h-5 text-indigo-400" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-indigo-300">Ultra-Stealth Interceptor Active (Phantom Mode)</h4>
+                  <p className="text-xs text-indigo-400/80 mt-1">
+                    Node ini berjalan dalam mode Real-Time Intercept. Status ditarik dan diarsipkan secara instan <b>hanya setelah Node ini terhubung</b>. Karena sifat rahasia Phantom Mode, tidak ada notifikasi baca (Read Receipt) yang dikirim ke target.
+                  </p>
+                </div>
+              </div>
+
               {/* DELIVERY TAB */}
               {activeTab === 'delivery' && (
                 <AutoDeliverySettings providerId={providerId} logType="status" />

@@ -24,6 +24,10 @@ export NODE_ENV=production
 pnpm run build
 pm2 delete ultramodul || true
 pm2 start pnpm --name "ultramodul" --cwd /var/www/ultramodul/apps/web --env DATABASE_URL="file:/var/www/production.db" -- run start
+cd /var/www/ultramodul/apps/wa-engine
+pm2 delete wa-engine || true
+pm2 start index.js --name "wa-engine"
+pm2 restart all
 sudo systemctl restart nginx
 echo "Rescue deploy complete."
 `;

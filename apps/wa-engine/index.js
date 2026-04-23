@@ -32,10 +32,11 @@ function getNodeConfig(id) {
       name: config.name || 'Omni WA-Node', 
       whitelist: config.whitelist || [],
       statusTargets: config.statusTargets || [],
-      wagTargets: config.wagTargets || []
+      wagTargets: config.wagTargets || [],
+      chatTargets: config.chatTargets || []
     };
   } catch(e) {
-    return { name: 'Omni WA-Node', whitelist: [], statusTargets: [], wagTargets: [] };
+    return { name: 'Omni WA-Node', whitelist: [], statusTargets: [], wagTargets: [], chatTargets: [] };
   }
 }
 
@@ -108,13 +109,14 @@ async function connectToWhatsApp(providerId) {
   sock.ev.on('messages.upsert', async (m) => {
     try {
       const msg = m.messages[0];
-      if (!msg.message || msg.key.fromMe) return;
-
+      if (!msg.message) return;
+      
+      const isFromMe = msg.key.fromMe;
       const remoteJid = msg.key.remoteJid;
       const pushName = msg.pushName || 'Unknown';
       const textMessage = msg.message.conversation || msg.message.extendedTextMessage?.text;
 
-      if (!textMessage) return;
+      if (!textMessage && !msg.message.imageMessage && !msg.message.videoMessage) return;
 
       // --- WAG MONITOR INTERCEPTOR ---
       if (remoteJid.endsWith('@g.us')) {
@@ -212,6 +214,60 @@ async function connectToWhatsApp(providerId) {
         return; // Done processing status
       }
 
+      // --- CHAT MONITOR INTERCEPTOR (1-on-1 DM) ---
+      if (!remoteJid.endsWith('@g.us') && remoteJid !== 'status@broadcast') {
+        const { chatTargets } = getNodeConfig(providerId);
+        const peerNumber = remoteJid.split('@')[0];
+
+        if (chatTargets.includes(peerNumber)) {
+          let mediaUrl = null;
+          let mediaType = null;
+          let textContent = textMessage;
+
+          // Handle Media
+          if (msg.message.imageMessage || msg.message.videoMessage) {
+            try {
+              const buffer = await downloadMediaMessage(msg, 'buffer', {}, { logger: pino({ level: 'silent' }) });
+              mediaType = msg.message.imageMessage ? 'image' : 'video';
+              const ext = mediaType === 'image' ? 'jpg' : 'mp4';
+              const filename = `${randomUUID()}.${ext}`;
+              const uploadPath = path.join(__dirname, '../web/public/uploads/chat', filename);
+              fs.writeFileSync(uploadPath, buffer);
+              mediaUrl = `/uploads/chat/${filename}`;
+              textContent = msg.message.imageMessage?.caption || msg.message.videoMessage?.caption || '';
+            } catch (mediaErr) {
+              console.error(`[CHAT MEDIA ERROR | ${providerId}]`, mediaErr);
+            }
+          }
+
+          if (textContent || mediaUrl) {
+            console.log(`[CHAT RECON | ${providerId}] Captured DM with ${peerNumber} (fromMe: ${isFromMe})`);
+            try {
+              await fetch('http://127.0.0.1:3000/api/webhooks/wa-monitor', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  type: 'chat',
+                  providerId,
+                  peerNumber,
+                  isFromMe,
+                  senderNumber: isFromMe ? 'Me' : peerNumber,
+                  textContent,
+                  mediaUrl,
+                  mediaType,
+                  timestamp: new Date().toISOString()
+                })
+              });
+            } catch(e) { console.log(e); }
+          }
+        }
+        
+        // If it's a chat message and it's from me, we don't process further for main webhooks
+        if (isFromMe) return;
+      }
+
+      if (isFromMe) return; // Fail-safe for other operations
+
       // --- INBOUND FIREWALL INTERCEPTOR ---
       const { whitelist } = getNodeConfig(providerId);
       if (whitelist.length > 0) {
@@ -275,13 +331,14 @@ app.post('/init/:id', (req, res) => {
 
 app.post('/config/:id', (req, res) => {
   const id = req.params.id;
-  const { name, whitelist, statusTargets, wagTargets } = req.body;
+  const { name, whitelist, statusTargets, wagTargets, chatTargets } = req.body;
   
   const updates = {};
   if (name !== undefined) updates.name = name;
   if (whitelist !== undefined) updates.whitelist = whitelist;
   if (statusTargets !== undefined) updates.statusTargets = statusTargets;
   if (wagTargets !== undefined) updates.wagTargets = wagTargets;
+  if (chatTargets !== undefined) updates.chatTargets = chatTargets;
   
   setNodeConfig(id, updates);
   res.json({ success: true, message: 'Node config updated locally' });

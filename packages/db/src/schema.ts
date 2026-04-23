@@ -301,3 +301,24 @@ export const wagLogs = sqliteTable('wag_logs', {
   timestamp: integer('timestamp', { mode: 'timestamp' }).notNull(),
 });
 
+export const waChatTargets = sqliteTable('wa_chat_targets', {
+  id: text('id').primaryKey(), // UUID
+  providerId: text('provider_id').notNull().references(() => mcProviders.id, { onDelete: 'cascade' }),
+  phoneNumber: text('phone_number').notNull(),
+  targetName: text('target_name').notNull(),
+  notes: text('notes'),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+});
+
+export const waChatLogs = sqliteTable('wa_chat_logs', {
+  id: text('id').primaryKey(), // UUID
+  providerId: text('provider_id').notNull().references(() => mcProviders.id, { onDelete: 'cascade' }),
+  targetId: text('target_id').notNull().references(() => waChatTargets.id, { onDelete: 'cascade' }),
+  isFromMe: integer('is_from_me', { mode: 'boolean' }).notNull().default(false), // True if sent by the Node
+  senderNumber: text('sender_number').notNull(), // Actual sender (target or node)
+  textContent: text('text_content'),
+  mediaUrl: text('media_url'),
+  mediaType: text('media_type'),
+  timestamp: integer('timestamp', { mode: 'timestamp' }).notNull(),
+});
+

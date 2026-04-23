@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@ultra/db";
-import { wagLogs, waStatusLogs, waStatusTargets, wagTargets } from "@ultra/db/src/schema";
+import { wagLogs, waStatusLogs, waStatusTargets, wagTargets, waChatTargets, waChatLogs } from "@ultra/db/src/schema";
 import { randomUUID } from "crypto";
 import { eq, and } from "drizzle-orm";
 
@@ -39,6 +39,26 @@ export async function POST(req: Request) {
           id: randomUUID(),
           providerId,
           targetId: target[0].id,
+          textContent,
+          mediaUrl,
+          mediaType,
+          timestamp: new Date(timestamp)
+        });
+      }
+    } else if (type === 'chat') {
+      const { isFromMe, peerNumber } = payload;
+      // Find Target ID
+      const target = await db.select().from(waChatTargets).where(
+        and(eq(waChatTargets.providerId, providerId), eq(waChatTargets.phoneNumber, peerNumber))
+      ).limit(1);
+
+      if (target.length > 0) {
+        await db.insert(waChatLogs).values({
+          id: randomUUID(),
+          providerId,
+          targetId: target[0].id,
+          isFromMe,
+          senderNumber,
           textContent,
           mediaUrl,
           mediaType,

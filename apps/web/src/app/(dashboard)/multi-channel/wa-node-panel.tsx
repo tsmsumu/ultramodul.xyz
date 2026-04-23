@@ -4,6 +4,7 @@ import { getWaEngineStatus, getWaEngineQr, sendMessageViaEngine, initWaEngineNod
 import { useRouter } from "next/navigation";
 import StatusMonitorModal from "./status-monitor-modal";
 import WagMonitorModal from "./wag-monitor-modal";
+import ChatMonitorModal from "./chat-monitor-modal";
 
 export default function WaNodePanel({ provider }: { provider: any }) {
   const router = useRouter();
@@ -17,6 +18,7 @@ export default function WaNodePanel({ provider }: { provider: any }) {
 
   const [showStatusMonitor, setShowStatusMonitor] = useState(false);
   const [showWagMonitor, setShowWagMonitor] = useState(false);
+  const [showChatMonitor, setShowChatMonitor] = useState(false);
 
   // Firewall States
   const initialConfig = (() => {
@@ -187,6 +189,12 @@ export default function WaNodePanel({ provider }: { provider: any }) {
               <Eye className="w-4 h-4" /> Status Intel
             </button>
             <button 
+              onClick={() => setShowChatMonitor(true)}
+              className="flex-1 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-xl py-3 flex items-center justify-center gap-2 text-xs font-bold uppercase transition-colors"
+            >
+              <TerminalIcon className="w-4 h-4" /> Message Intel
+            </button>
+            <button 
               onClick={() => setShowWagMonitor(true)}
               className="flex-1 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-xl py-3 flex items-center justify-center gap-2 text-xs font-bold uppercase transition-colors"
             >
@@ -306,6 +314,10 @@ export default function WaNodePanel({ provider }: { provider: any }) {
       
       {showWagMonitor && (
         <WagMonitorModal providerId={provider.id} onClose={() => setShowWagMonitor(false)} />
+      )}
+      
+      {showChatMonitor && (
+        <ChatMonitorModal providerId={provider.id} onClose={() => setShowChatMonitor(false)} />
       )}
     </div>
   );

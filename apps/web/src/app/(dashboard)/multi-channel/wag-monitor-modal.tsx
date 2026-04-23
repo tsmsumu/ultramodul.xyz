@@ -4,9 +4,12 @@ import { getMonitorTargets, getWagLogs, addWagTarget, removeWagTarget, bulkDelet
 import ExportMenu from "@/components/ExportMenu";
 import ImportMenu from "@/components/ImportMenu";
 import AutoDeliverySettings from "@/components/AutoDeliverySettings";
+import EntityRenderer from "@/components/EntityRenderer";
+import LogAnalytics from "@/components/LogAnalytics";
+import ThreadView from "@/components/ThreadView";
 
 export default function WagMonitorModal({ providerId, onClose }: { providerId: string, onClose: () => void }) {
-  const [activeTab, setActiveTab] = useState<'targets' | 'logs' | 'delivery'>('logs');
+  const [activeTab, setActiveTab] = useState<'targets' | 'logs' | 'delivery' | 'analytics'>('logs');
   const [targets, setTargets] = useState<any[]>([]);
   const [logs, setLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -27,6 +30,9 @@ export default function WagMonitorModal({ providerId, onClose }: { providerId: s
   // Search state
   const [searchQuery, setSearchQuery] = useState("");
   const [searchTargetQuery, setSearchTargetQuery] = useState("");
+  
+  // Thread State
+  const [activeThread, setActiveThread] = useState<{ targetId: string, targetName: string, highlightLogId?: string } | null>(null);
 
   const fetchData = async () => {
     setLoading(true);
@@ -196,6 +202,12 @@ export default function WagMonitorModal({ providerId, onClose }: { providerId: s
             🎯 WAG Targets
           </button>
           <button 
+            onClick={() => setActiveTab('analytics')}
+            className={`pb-4 text-sm font-bold uppercase tracking-wider border-b-2 transition-colors ${activeTab === 'analytics' ? 'border-emerald-500 text-emerald-400' : 'border-transparent text-zinc-500 hover:text-zinc-300'}`}
+          >
+            📊 Analytics
+          </button>
+          <button 
             onClick={() => setActiveTab('delivery')}
             className={`pb-4 text-sm font-bold uppercase tracking-wider border-b-2 transition-colors ${activeTab === 'delivery' ? 'border-emerald-500 text-emerald-400' : 'border-transparent text-zinc-500 hover:text-zinc-300'}`}
           >
@@ -212,6 +224,11 @@ export default function WagMonitorModal({ providerId, onClose }: { providerId: s
               {/* DELIVERY TAB */}
               {activeTab === 'delivery' && (
                 <AutoDeliverySettings providerId={providerId} logType="wag" />
+              )}
+
+              {/* ANALYTICS TAB */}
+              {activeTab === 'analytics' && (
+                <LogAnalytics logs={filteredLogs} targets={targets} type="wag" />
               )}
 
               {/* TARGETS TAB */}
@@ -355,6 +372,17 @@ export default function WagMonitorModal({ providerId, onClose }: { providerId: s
                     <p className="text-sm text-gray-600">Dicetak pada: {new Date().toLocaleString()}</p>
                   </div>
 
+                  {activeThread ? (
+                    <div className="h-[600px] print:hidden">
+                      <ThreadView 
+                        logs={logs} 
+                        targetId={activeThread.targetId} 
+                        targetName={activeThread.targetName} 
+                        highlightLogId={activeThread.highlightLogId} 
+                        onClose={() => setActiveThread(null)} 
+                      />
+                    </div>
+                  ) : (
                   <div className="bg-black/40 border border-white/5 rounded-2xl overflow-hidden print:border-black print:bg-white">
                     <table className="w-full text-left text-sm text-zinc-300 print:text-black">
                       <thead className="bg-zinc-900/80 text-xs uppercase text-zinc-500 print:bg-gray-100 print:text-black">
@@ -381,12 +409,15 @@ export default function WagMonitorModal({ providerId, onClose }: { providerId: s
                                 <div className="text-xs text-zinc-500 print:text-gray-600">{new Date(l.timestamp).toLocaleTimeString()}</div>
                               </td>
                               <td className="px-6 py-4">
+                                <button onClick={() => setActiveThread({ targetId: l.targetId, targetName: targetObj?.groupName || l.senderName || l.senderNumber, highlightLogId: l.id })} className="text-xs font-bold uppercase tracking-widest text-emerald-400 hover:text-white px-3 py-1 bg-emerald-500/10 hover:bg-emerald-500/30 rounded border border-emerald-500/20 transition-colors mb-2 block">
+                                  Thread
+                                </button>
                                 <div className="text-xs text-emerald-400 font-bold uppercase tracking-wider mb-1">{targetObj?.groupName || 'Unknown Group'}</div>
                                 <div className="text-sm text-white print:text-black">{l.senderName || l.senderNumber}</div>
                                 <div className="text-xs text-zinc-500">{l.senderNumber}</div>
                               </td>
                               <td className="px-6 py-4">
-                                <p className="whitespace-pre-wrap max-w-lg">{l.textContent || <span className="italic text-zinc-600">No text content</span>}</p>
+                                <EntityRenderer content={l.textContent} />
                               </td>
                               <td className="px-6 py-4">
                                 {l.mediaUrl ? (
@@ -415,11 +446,12 @@ export default function WagMonitorModal({ providerId, onClose }: { providerId: s
                           );
                         })}
                         {filteredLogs.length === 0 && (
-                          <tr><td colSpan={4} className="px-6 py-8 text-center text-zinc-500 italic">No WAG logs recorded yet.</td></tr>
+                          <tr><td colSpan={5} className="px-6 py-8 text-center text-zinc-500 italic">No WAG logs recorded yet.</td></tr>
                         )}
                       </tbody>
                     </table>
                   </div>
+                  )}
                 </div>
               )}
             </>

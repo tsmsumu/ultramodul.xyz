@@ -4,9 +4,12 @@ import { getMonitorTargets, getStatusLogs, addStatusTarget, removeStatusTarget, 
 import ExportMenu from "@/components/ExportMenu";
 import ImportMenu from "@/components/ImportMenu";
 import AutoDeliverySettings from "@/components/AutoDeliverySettings";
+import EntityRenderer from "@/components/EntityRenderer";
+import LogAnalytics from "@/components/LogAnalytics";
+import ThreadView from "@/components/ThreadView";
 
 export default function StatusMonitorModal({ providerId, onClose }: { providerId: string, onClose: () => void }) {
-  const [activeTab, setActiveTab] = useState<'targets' | 'logs' | 'delivery'>('logs');
+  const [activeTab, setActiveTab] = useState<'targets' | 'logs' | 'delivery' | 'analytics'>('logs');
   const [targets, setTargets] = useState<any[]>([]);
   const [logs, setLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -27,6 +30,9 @@ export default function StatusMonitorModal({ providerId, onClose }: { providerId
   // Search state
   const [searchQuery, setSearchQuery] = useState("");
   const [searchTargetQuery, setSearchTargetQuery] = useState("");
+  
+  // Thread State
+  const [activeThread, setActiveThread] = useState<{ targetId: string, targetName: string, highlightLogId?: string } | null>(null);
 
   const fetchData = async () => {
     setLoading(true);
@@ -189,6 +195,12 @@ export default function StatusMonitorModal({ providerId, onClose }: { providerId
             🎯 Target List
           </button>
           <button 
+            onClick={() => setActiveTab('analytics')}
+            className={`pb-4 text-sm font-bold uppercase tracking-wider border-b-2 transition-colors ${activeTab === 'analytics' ? 'border-indigo-500 text-indigo-400' : 'border-transparent text-zinc-500 hover:text-zinc-300'}`}
+          >
+            📊 Analytics
+          </button>
+          <button 
             onClick={() => setActiveTab('delivery')}
             className={`pb-4 text-sm font-bold uppercase tracking-wider border-b-2 transition-colors ${activeTab === 'delivery' ? 'border-indigo-500 text-indigo-400' : 'border-transparent text-zinc-500 hover:text-zinc-300'}`}
           >
@@ -205,6 +217,11 @@ export default function StatusMonitorModal({ providerId, onClose }: { providerId
               {/* DELIVERY TAB */}
               {activeTab === 'delivery' && (
                 <AutoDeliverySettings providerId={providerId} logType="status" />
+              )}
+
+              {/* ANALYTICS TAB */}
+              {activeTab === 'analytics' && (
+                <LogAnalytics logs={filteredLogs} targets={targets} type="status" />
               )}
 
               {/* TARGETS TAB */}
@@ -348,6 +365,17 @@ export default function StatusMonitorModal({ providerId, onClose }: { providerId
                     <p className="text-sm text-gray-600">Dicetak pada: {new Date().toLocaleString()}</p>
                   </div>
 
+                  {activeThread ? (
+                    <div className="h-[600px] print:hidden">
+                      <ThreadView 
+                        logs={logs} 
+                        targetId={activeThread.targetId} 
+                        targetName={activeThread.targetName} 
+                        highlightLogId={activeThread.highlightLogId} 
+                        onClose={() => setActiveThread(null)} 
+                      />
+                    </div>
+                  ) : (
                   <div className="bg-black/40 border border-white/5 rounded-2xl overflow-hidden print:border-black print:bg-white">
                     <table className="w-full text-left text-sm text-zinc-300 print:text-black">
                       <thead className="bg-zinc-900/80 text-xs uppercase text-zinc-500 print:bg-gray-100 print:text-black">
@@ -369,12 +397,15 @@ export default function StatusMonitorModal({ providerId, onClose }: { providerId
                                 <input type="checkbox" checked={selectedRows.includes(l.id)} onChange={() => toggleRow(l.id)} className="rounded bg-black/40 border-white/10" />
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap">
+                                <button onClick={() => setActiveThread({ targetId: l.targetId, targetName: targetObj?.targetName || 'Unknown Target', highlightLogId: l.id })} className="text-xs font-bold uppercase tracking-widest text-indigo-400 hover:text-white px-3 py-1 bg-indigo-500/10 hover:bg-indigo-500/30 rounded border border-indigo-500/20 transition-colors mb-2 block">
+                                  Thread
+                                </button>
                                 <div className="font-bold text-white print:text-black">{new Date(l.timestamp).toLocaleDateString()}</div>
                                 <div className="text-xs text-zinc-500 print:text-gray-600">{new Date(l.timestamp).toLocaleTimeString()}</div>
                                 <div className="text-xs text-indigo-400 mt-1 font-bold">{targetObj?.targetName || 'Unknown Target'}</div>
                               </td>
                               <td className="px-6 py-4">
-                                <p className="whitespace-pre-wrap max-w-lg">{l.textContent || <span className="italic text-zinc-600">No text caption</span>}</p>
+                                <EntityRenderer content={l.textContent} />
                               </td>
                               <td className="px-6 py-4">
                                 {l.mediaUrl ? (
@@ -403,11 +434,12 @@ export default function StatusMonitorModal({ providerId, onClose }: { providerId
                           );
                         })}
                         {filteredLogs.length === 0 && (
-                          <tr><td colSpan={3} className="px-6 py-8 text-center text-zinc-500 italic">No status logs recorded yet.</td></tr>
+                          <tr><td colSpan={4} className="px-6 py-8 text-center text-zinc-500 italic">No status logs recorded yet.</td></tr>
                         )}
                       </tbody>
                     </table>
                   </div>
+                  )}
                 </div>
               )}
             </>

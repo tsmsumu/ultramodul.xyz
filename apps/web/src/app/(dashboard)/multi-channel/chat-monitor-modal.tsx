@@ -4,9 +4,13 @@ import { getMonitorTargets, getChatLogs, addChatTarget, removeChatTarget, bulkDe
 import ExportMenu from "@/components/ExportMenu";
 import ImportMenu from "@/components/ImportMenu";
 import AutoDeliverySettings from "@/components/AutoDeliverySettings";
+import EntityRenderer from "@/components/EntityRenderer";
+import EntityRenderer from "@/components/EntityRenderer";
+import LogAnalytics from "@/components/LogAnalytics";
+import ThreadView from "@/components/ThreadView";
 
 export default function ChatMonitorModal({ providerId, onClose }: { providerId: string, onClose: () => void }) {
-  const [activeTab, setActiveTab] = useState<'targets' | 'logs' | 'delivery'>('logs');
+  const [activeTab, setActiveTab] = useState<'targets' | 'logs' | 'delivery' | 'analytics'>('logs');
   const [targets, setTargets] = useState<any[]>([]);
   const [logs, setLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -27,6 +31,9 @@ export default function ChatMonitorModal({ providerId, onClose }: { providerId: 
   // Search state
   const [searchQuery, setSearchQuery] = useState("");
   const [searchTargetQuery, setSearchTargetQuery] = useState("");
+  
+  // Thread State
+  const [activeThread, setActiveThread] = useState<{ targetId: string, targetName: string, highlightLogId?: string } | null>(null);
 
   const fetchData = async () => {
     setLoading(true);
@@ -196,6 +203,12 @@ export default function ChatMonitorModal({ providerId, onClose }: { providerId: 
             🎯 Chat Targets
           </button>
           <button 
+            onClick={() => setActiveTab('analytics')}
+            className={`pb-4 text-sm font-bold uppercase tracking-wider border-b-2 transition-colors ${activeTab === 'analytics' ? 'border-blue-500 text-blue-400' : 'border-transparent text-zinc-500 hover:text-zinc-300'}`}
+          >
+            📊 Analytics
+          </button>
+          <button 
             onClick={() => setActiveTab('delivery')}
             className={`pb-4 text-sm font-bold uppercase tracking-wider border-b-2 transition-colors ${activeTab === 'delivery' ? 'border-blue-500 text-blue-400' : 'border-transparent text-zinc-500 hover:text-zinc-300'}`}
           >
@@ -212,6 +225,11 @@ export default function ChatMonitorModal({ providerId, onClose }: { providerId: 
               {/* DELIVERY TAB */}
               {activeTab === 'delivery' && (
                 <AutoDeliverySettings providerId={providerId} logType="chat" />
+              )}
+
+              {/* ANALYTICS TAB */}
+              {activeTab === 'analytics' && (
+                <LogAnalytics logs={filteredLogs} targets={targets} type="chat" />
               )}
 
               {/* TARGETS TAB */}
@@ -355,6 +373,17 @@ export default function ChatMonitorModal({ providerId, onClose }: { providerId: 
                     <p className="text-sm text-gray-600">Dicetak pada: {new Date().toLocaleString()}</p>
                   </div>
 
+                  {activeThread ? (
+                    <div className="h-[600px] print:hidden">
+                      <ThreadView 
+                        logs={logs} 
+                        targetId={activeThread.targetId} 
+                        targetName={activeThread.targetName} 
+                        highlightLogId={activeThread.highlightLogId} 
+                        onClose={() => setActiveThread(null)} 
+                      />
+                    </div>
+                  ) : (
                   <div className="bg-black/40 border border-white/5 rounded-2xl overflow-hidden print:border-black print:bg-white">
                     <table className="w-full text-left text-sm text-zinc-300 print:text-black">
                       <thead className="bg-zinc-900/80 text-xs uppercase text-zinc-500 print:bg-gray-100 print:text-black">
@@ -385,10 +414,13 @@ export default function ChatMonitorModal({ providerId, onClose }: { providerId: 
                                 <div className="text-xs font-mono text-zinc-500">{targetObj?.phoneNumber || ''}</div>
                               </td>
                               <td className="px-6 py-4">
-                                <div className={`text-[10px] font-bold px-2 py-0.5 rounded-sm inline-block mb-2 uppercase ${l.isFromMe ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30' : 'bg-zinc-700 text-zinc-300'}`}>
+                                <button onClick={() => setActiveThread({ targetId: l.targetId, targetName: targetObj?.targetName || l.peerNumber, highlightLogId: l.id })} className="text-xs font-bold uppercase tracking-widest text-indigo-400 hover:text-white px-3 py-1 bg-indigo-500/10 hover:bg-indigo-500/30 rounded border border-indigo-500/20 transition-colors">
+                                  Thread
+                                </button>
+                                <div className="mt-2 text-[10px] font-bold px-2 py-0.5 rounded-sm inline-block mb-2 uppercase ${l.isFromMe ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30' : 'bg-zinc-700 text-zinc-300'}">
                                   {l.isFromMe ? 'From Omni Bot' : `From ${targetObj?.targetName || 'Target'}`}
                                 </div>
-                                <p className="whitespace-pre-wrap max-w-lg leading-relaxed">{l.textContent || <span className="italic text-zinc-600">No text content</span>}</p>
+                                <EntityRenderer content={l.textContent} />
                               </td>
                               <td className="px-6 py-4">
                                 {l.mediaUrl ? (
@@ -422,6 +454,7 @@ export default function ChatMonitorModal({ providerId, onClose }: { providerId: 
                       </tbody>
                     </table>
                   </div>
+                  )}
                 </div>
               )}
             </>

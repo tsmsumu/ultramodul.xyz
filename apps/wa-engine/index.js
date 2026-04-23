@@ -16,7 +16,19 @@ let sock;
 let currentQr = null;
 let connectionStatus = 'initializing'; // initializing, qr, connected, disconnected
 
+function formatPhoneNumber(phone) {
+  if (!phone) return '';
+  // Remove all non-numeric characters
+  let clean = phone.replace(/\D/g, '');
+  // If starts with 0, replace with 62
+  if (clean.startsWith('0')) {
+    clean = '62' + clean.slice(1);
+  }
+  return clean;
+}
+
 async function connectToWhatsApp() {
+  connectionStatus = 'initializing';
   const { state, saveCreds } = await useMultiFileAuthState(SESSION_DIR);
   const { version, isLatest } = await fetchLatestBaileysVersion();
   console.log(`Using WA v${version.join('.')}, isLatest: ${isLatest}`);
@@ -129,7 +141,8 @@ app.post('/send', async (req, res) => {
   }
 
   try {
-    const jid = to.includes('@s.whatsapp.net') ? to : `${to}@s.whatsapp.net`;
+    const formattedNumber = formatPhoneNumber(to);
+    const jid = formattedNumber.includes('@s.whatsapp.net') ? formattedNumber : `${formattedNumber}@s.whatsapp.net`;
     const result = await sock.sendMessage(jid, { text: message });
     res.json({ success: true, result });
   } catch (err) {

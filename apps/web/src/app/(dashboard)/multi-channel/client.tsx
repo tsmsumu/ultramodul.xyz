@@ -271,9 +271,9 @@ export default function MultiChannelDashboard({
           )}
           
           <p className="mt-6 text-xs text-zinc-500 text-center max-w-xs">
-            {waStatus === 'qr' ? "Scan Barcode ini menggunakan aplikasi WhatsApp di HP Anda untuk menghubungkan nomor sistem." : 
-             waStatus === 'connected' ? "Mesin WhatsApp terhubung sempurna dan siap memproses tembakan data." :
-             "Microservice wa-engine sedang tidak dapat dihubungi. Pastikan PM2 berjalan di Port 3001."}
+            {waStatus === 'qr' ? "Scan this QR Code using the WhatsApp app on your mobile device to link the system." : 
+             waStatus === 'connected' ? "WhatsApp Engine is fully connected and ready to transmit payloads." :
+             "Omni WA-Engine microservice is unreachable. Ensure PM2 is running on Port 3001."}
           </p>
         </div>
       </div>
@@ -285,12 +285,12 @@ export default function MultiChannelDashboard({
         </h2>
         <div className="flex-1 border border-white/5 bg-black/40 p-6 rounded-2xl space-y-4">
           <div>
-            <label className="text-[10px] text-zinc-500 uppercase tracking-widest block mb-1">Target Number (628...)</label>
+            <label className="text-[10px] text-zinc-500 uppercase tracking-widest block mb-1">Target Number</label>
             <input 
               type="text" 
               value={simTo}
               onChange={(e) => setSimTo(e.target.value)}
-              placeholder="e.g. 628123456789"
+              placeholder="e.g. 0812..., +628..., or 628..."
               className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
             />
           </div>

@@ -190,7 +190,7 @@ export default function WaNodePanel({ provider, isArchived = false }: { provider
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Omni WA-Engine Panel */}
       <div className="bg-zinc-950/80 border border-white/5 rounded-3xl p-6 shadow-xl relative">
-        <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
+        <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 mb-6">
           <h2 className="text-sm font-bold text-white tracking-widest uppercase flex items-center gap-2 w-full sm:w-auto">
             <Radio className="w-5 h-5 text-emerald-400 flex-shrink-0" />
             {isEditing ? (
@@ -214,7 +214,7 @@ export default function WaNodePanel({ provider, isArchived = false }: { provider
               </div>
             )}
           </h2>
-          <div className="flex flex-wrap gap-2 justify-start">
+          <div className="flex flex-wrap items-center gap-2">
             {!isArchived && (
               <>
                 {waStatus === 'connected' && (
@@ -228,7 +228,7 @@ export default function WaNodePanel({ provider, isArchived = false }: { provider
                 <button onClick={fetchWaStatus} className="text-[10px] px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-zinc-300 font-bold uppercase transition-all">
                   Refresh
                 </button>
-                <button onClick={handleDeleteNode} className="text-[10px] px-3 py-1.5 bg-red-500/10 hover:bg-red-500/30 rounded-lg text-red-400 font-bold uppercase transition-all flex items-center gap-1 ml-auto">
+                <button onClick={handleDeleteNode} className="text-[10px] px-3 py-1.5 bg-red-500/10 hover:bg-red-500/30 rounded-lg text-red-400 font-bold uppercase transition-all flex items-center gap-1">
                   <Trash2 className="w-3 h-3" /> Delete
                 </button>
               </>

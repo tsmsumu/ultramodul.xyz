@@ -249,6 +249,7 @@ export async function importLogbookData(providerId: string, logType: 'chat' | 'w
             providerId,
             targetId: tId,
             isFromMe: row.direction === 'Outbound',
+            senderNumber: row.sender || (row.direction === 'Outbound' ? 'me' : row.peerNumber),
             textContent: row.content || '',
             timestamp,
             isArchived: false

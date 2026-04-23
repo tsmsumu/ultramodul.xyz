@@ -3,9 +3,10 @@
 import { useState } from "react";
 import { Activity, MessageSquare, PhoneCall, Shield, Terminal as TerminalIcon, Users, Settings, Lock, Radio, Database, CheckCircle2, XCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { toggleProviderActive, updateProviderConfig, sendMessageViaEngine, getWaEngineStatus, getWaEngineQr } from "@/app/actions/multi-channel";
+import { toggleProviderActive, updateProviderConfig, createWhatsAppNode } from "@/app/actions/multi-channel";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import WaNodePanel from "./wa-node-panel";
 
 export default function MultiChannelDashboard({
   initialProviders,
@@ -22,12 +23,7 @@ export default function MultiChannelDashboard({
   const [activeTab, setActiveTab] = useState("Command Center");
   const [loadingId, setLoadingId] = useState<string | null>(null);
   
-  // Live Explorer States
-  const [qrCode, setQrCode] = useState<string | null>(null);
-  const [waStatus, setWaStatus] = useState<string>("initializing");
-  const [simTo, setSimTo] = useState("");
-  const [simMsg, setSimMsg] = useState("");
-  const [simLoading, setSimLoading] = useState(false);
+  // State cleanups (Moved to WaNodePanel)
 
   const TABS = ["Command Center", "Platform Config", "Phone Mapping", "Ultra-PIN", "Live Sessions", "Forensik Log", "Live Explorer"];
 
@@ -206,122 +202,42 @@ export default function MultiChannelDashboard({
     </div>
   );
 
-  const fetchWaStatus = async () => {
-    try {
-      const data = await getWaEngineStatus();
-      setWaStatus(data.status);
-      if (data.status === 'qr') {
-        const qrData = await getWaEngineQr();
-        if (qrData.success) setQrCode(qrData.qr);
-      } else {
-        setQrCode(null);
-      }
-    } catch (err) {
-      setWaStatus('offline');
+  const handleAddWaNode = async () => {
+    const res = await createWhatsAppNode();
+    if (res.success) {
+      router.refresh();
+    } else {
+      alert("Failed to create WA Node");
     }
   };
 
-  const handleTestSend = async () => {
-    if (!simTo || !simMsg) return;
-    setSimLoading(true);
-    const res = await sendMessageViaEngine("whatsapp", simTo, simMsg);
-    alert(res.message || (res.success ? "Sent!" : "Failed"));
-    setSimLoading(false);
-    setSimMsg("");
+  const renderLiveExplorer = () => {
+    const waProviders = initialProviders.filter(p => p.providerType === 'whatsapp');
+
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center bg-zinc-950/80 p-6 rounded-3xl border border-white/5">
+          <div>
+            <h2 className="text-sm font-bold text-white tracking-widest uppercase flex items-center gap-2">
+              <Database className="w-5 h-5 text-indigo-400" /> WhatsApp Cluster Manager
+            </h2>
+            <p className="text-xs text-zinc-500 mt-1">Manage multiple WhatsApp sending nodes concurrently.</p>
+          </div>
+          <button onClick={handleAddWaNode} className="text-xs px-4 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-white font-bold tracking-widest uppercase transition-all shadow-[0_0_20px_rgba(79,70,229,0.3)]">
+            + Deploy New Node
+          </button>
+        </div>
+
+        {waProviders.length === 0 ? (
+          <div className="text-center py-20 text-zinc-500 border border-white/5 border-dashed rounded-3xl">
+            No WhatsApp Nodes active. Click deploy to start.
+          </div>
+        ) : (
+          waProviders.map(p => <WaNodePanel key={p.id} provider={p} />)
+        )}
+      </div>
+    );
   };
-
-  const renderLiveExplorer = () => (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {/* Omni WA-Engine Panel */}
-      <div className="bg-zinc-950/80 border border-white/5 rounded-3xl p-6 shadow-xl">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-sm font-bold text-white tracking-widest uppercase flex items-center gap-2">
-            <Radio className="w-5 h-5 text-emerald-400" /> Omni WA-Engine
-          </h2>
-          <button onClick={fetchWaStatus} className="text-xs px-3 py-1 bg-white/5 hover:bg-white/10 rounded-lg text-zinc-300">
-            Refresh Status
-          </button>
-        </div>
-
-        <div className="flex flex-col items-center justify-center p-8 border border-white/5 border-dashed rounded-2xl bg-black/40">
-          <div className="text-center mb-6">
-            <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
-              waStatus === 'connected' ? 'bg-emerald-900/30 text-emerald-400 border-emerald-500/30' : 
-              waStatus === 'qr' ? 'bg-amber-900/30 text-amber-400 border-amber-500/30' : 
-              'bg-red-900/30 text-red-400 border-red-500/30'
-            }`}>
-              STATUS: {waStatus}
-            </span>
-          </div>
-
-          {waStatus === 'qr' && qrCode ? (
-             <div className="bg-white p-4 rounded-xl shadow-[0_0_50px_rgba(255,255,255,0.1)]">
-               <img src={qrCode} alt="WhatsApp QR Code" className="w-48 h-48" />
-             </div>
-          ) : waStatus === 'connected' ? (
-             <div className="w-32 h-32 rounded-full border-4 border-emerald-500/30 flex items-center justify-center">
-               <CheckCircle2 className="w-16 h-16 text-emerald-400" />
-             </div>
-          ) : (
-             <div className="w-32 h-32 rounded-full border-4 border-red-500/30 flex items-center justify-center">
-               <XCircle className="w-16 h-16 text-red-400" />
-             </div>
-          )}
-          
-          <p className="mt-6 text-xs text-zinc-500 text-center max-w-xs">
-            {waStatus === 'qr' ? "Scan this QR Code using the WhatsApp app on your mobile device to link the system." : 
-             waStatus === 'connected' ? "WhatsApp Engine is fully connected and ready to transmit payloads." :
-             "Omni WA-Engine microservice is unreachable. Ensure PM2 is running on Port 3001."}
-          </p>
-        </div>
-      </div>
-
-      {/* Test Simulator Panel */}
-      <div className="bg-zinc-950/80 border border-white/5 rounded-3xl p-6 shadow-xl flex flex-col">
-        <h2 className="text-sm font-bold text-white tracking-widest uppercase flex items-center gap-2 mb-6">
-          <TerminalIcon className="w-5 h-5 text-indigo-400" /> Live Message Simulator
-        </h2>
-        <div className="flex-1 border border-white/5 bg-black/40 p-6 rounded-2xl space-y-4">
-          <div>
-            <label className="text-[10px] text-zinc-500 uppercase tracking-widest block mb-1">Target Number</label>
-            <input 
-              type="text" 
-              value={simTo}
-              onChange={(e) => setSimTo(e.target.value)}
-              placeholder="e.g. 0812..., +628..., or 628..."
-              className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-            />
-          </div>
-          <div>
-            <label className="text-[10px] text-zinc-500 uppercase tracking-widest block mb-1">Payload Message</label>
-            <textarea 
-              value={simMsg}
-              onChange={(e) => setSimMsg(e.target.value)}
-              placeholder="Hello from Omni Command Center..."
-              className="w-full h-32 bg-zinc-900 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none resize-none"
-            />
-          </div>
-          <button 
-            disabled={simLoading}
-            onClick={() => {
-              if (waStatus !== 'connected') {
-                alert("Mesin belum terhubung! Silakan pastikan Barcode sudah di-scan, lalu klik tombol 'Refresh Status' di atas terlebih dahulu.");
-                return;
-              }
-              handleTestSend();
-            }}
-            className={`w-full py-3 text-white text-xs font-bold uppercase tracking-widest rounded-xl transition-all ${
-              waStatus !== 'connected' 
-                ? 'bg-zinc-700 hover:bg-zinc-600 cursor-not-allowed opacity-80' 
-                : 'bg-indigo-600 hover:bg-indigo-500'
-            } ${simLoading ? 'opacity-50 cursor-wait' : ''}`}
-          >
-            {simLoading ? "Firing Payload..." : (waStatus !== 'connected' ? "Engine Not Ready (LOCKED)" : "Fire Payload")}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
 
   const renderLiveSessions = () => (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

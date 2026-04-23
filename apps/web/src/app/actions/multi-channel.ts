@@ -140,28 +140,51 @@ export async function simulateForensicLog(providerId: string, action: string, me
 }
 
 
-export async function sendMessageViaEngine(providerType: string, to: string, message: string) {
+export async function createWhatsAppNode() {
+  try {
+    const newId = randomUUID();
+    await db.insert(mcProviders).values({
+      id: newId,
+      providerType: "whatsapp",
+      name: `WhatsApp Node - ${newId.split('-')[0]}`,
+      isActive: false,
+      configPayload: "{}",
+      createdAt: new Date(),
+      updatedAt: new Date()
+    });
+    return { success: true, message: "Node Created", id: newId };
+  } catch (error) {
+    console.error("Failed to create WA Node", error);
+    return { success: false, message: "Error creating node" };
+  }
+}
+
+export async function initWaEngineNode(providerId: string) {
+  try {
+    await fetch(`http://127.0.0.1:3001/init/${providerId}`, { method: 'POST' });
+    return { success: true };
+  } catch (error) {
+    return { success: false };
+  }
+}
+
+export async function sendMessageViaEngine(providerType: string, providerId: string, to: string, message: string) {
   try {
     if (providerType === "whatsapp") {
-      // Connect to the wa-engine microservice on port 3001
-      const response = await fetch("http://127.0.0.1:3001/send", {
+      const response = await fetch(`http://127.0.0.1:3001/send/${providerId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ to, message })
       });
       const data = await response.json();
       
-      // Log to Forensik
-      const waProvider = await db.select().from(mcProviders).where(eq(mcProviders.providerType, "whatsapp")).limit(1);
-      if (waProvider.length > 0) {
-        await db.insert(mcLogs).values({
-          id: randomUUID(),
-          providerId: waProvider[0].id,
-          action: data.success ? "MESSAGE_SENT" : "ERROR_SENDING",
-          metadata: `To: ${to} | Msg: ${message} | Result: ${JSON.stringify(data)}`,
-          timestamp: new Date()
-        });
-      }
+      await db.insert(mcLogs).values({
+        id: randomUUID(),
+        providerId: providerId,
+        action: data.success ? "MESSAGE_SENT" : "ERROR_SENDING",
+        metadata: `To: ${to} | Msg: ${message} | Result: ${JSON.stringify(data)}`,
+        timestamp: new Date()
+      });
       return data;
     }
     return { success: false, message: "Provider not fully integrated yet" };
@@ -171,9 +194,9 @@ export async function sendMessageViaEngine(providerType: string, to: string, mes
   }
 }
 
-export async function getWaEngineStatus() {
+export async function getWaEngineStatus(providerId: string) {
   try {
-    const res = await fetch('http://127.0.0.1:3001/status', { cache: 'no-store' });
+    const res = await fetch(`http://127.0.0.1:3001/status/${providerId}`, { cache: 'no-store' });
     const data = await res.json();
     return data;
   } catch (error) {
@@ -181,9 +204,9 @@ export async function getWaEngineStatus() {
   }
 }
 
-export async function getWaEngineQr() {
+export async function getWaEngineQr(providerId: string) {
   try {
-    const res = await fetch('http://127.0.0.1:3001/qr', { cache: 'no-store' });
+    const res = await fetch(`http://127.0.0.1:3001/qr/${providerId}`, { cache: 'no-store' });
     const data = await res.json();
     return data;
   } catch (error) {

@@ -36,8 +36,8 @@ export default function GroupMonitorModal({ providerId, onClose }: { providerId:
 
   const fetchData = async () => {
     setLoading(true);
-    const { wag } = await getMonitorTargets(providerId);
-    setTargets(wag);
+    const { tgGroup } = await getMonitorTargets(providerId);
+    setTargets(tgGroup);
     const logData = await getGroupLogs(providerId);
     setLogs(logData);
     setLoading(false);

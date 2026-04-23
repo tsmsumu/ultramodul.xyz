@@ -219,3 +219,44 @@ export const systemSettings = sqliteTable('system_settings', {
   value: text('value').notNull(),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
 });
+
+// --- MULTI-CHANNEL GATEWAY ---
+export const mcProviders = sqliteTable('mc_providers', {
+  id: text('id').primaryKey(), // UUID
+  providerType: text('provider_type').notNull(), // 'whatsapp', 'telegram', 'signal', 'sms', 'email'
+  name: text('name').notNull(), // e.g. "WhatsApp Official Gateway"
+  isActive: integer('is_active', { mode: 'boolean' }).notNull().default(false),
+  configPayload: text('config_payload').notNull().default('{}'), // JSON for webhook, api key
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
+});
+
+export const mcMappings = sqliteTable('mc_mappings', {
+  id: text('id').primaryKey(), // UUID
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  providerId: text('provider_id').notNull().references(() => mcProviders.id, { onDelete: 'cascade' }),
+  channelIdentifier: text('channel_identifier').notNull(), // e.g. Phone Number, Chat ID, Email
+  ultraPin: text('ultra_pin').notNull(), // Security PIN for specific channel actions
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+});
+
+export const mcSessions = sqliteTable('mc_sessions', {
+  id: text('id').primaryKey(), // UUID
+  mappingId: text('mapping_id').notNull().references(() => mcMappings.id, { onDelete: 'cascade' }),
+  sessionToken: text('session_token').notNull().unique(), // Secure token for the live session
+  ipAddress: text('ip_address'),
+  userAgent: text('user_agent'),
+  status: text('status').notNull().default('active'), // 'active', 'terminated'
+  startedAt: integer('started_at', { mode: 'timestamp' }).notNull(),
+  lastActive: integer('last_active', { mode: 'timestamp' }).notNull(),
+});
+
+export const mcLogs = sqliteTable('mc_logs', {
+  id: text('id').primaryKey(), // UUID
+  sessionId: text('session_id').references(() => mcSessions.id, { onDelete: 'set null' }),
+  providerId: text('provider_id').notNull().references(() => mcProviders.id, { onDelete: 'cascade' }),
+  action: text('action').notNull(), // 'MESSAGE_SENT', 'MESSAGE_RECEIVED', 'AUTH_CHALLENGE'
+  metadata: text('metadata').notNull().default('{}'), // Message payload or result
+  timestamp: integer('timestamp', { mode: 'timestamp' }).notNull(),
+});
+

@@ -302,11 +302,21 @@ export default function MultiChannelDashboard({
             />
           </div>
           <button 
-            disabled={simLoading || waStatus !== 'connected'}
-            onClick={handleTestSend}
-            className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-bold uppercase tracking-widest rounded-xl transition-all"
+            disabled={simLoading}
+            onClick={() => {
+              if (waStatus !== 'connected') {
+                alert("Mesin belum terhubung! Silakan pastikan Barcode sudah di-scan, lalu klik tombol 'Refresh Status' di atas terlebih dahulu.");
+                return;
+              }
+              handleTestSend();
+            }}
+            className={`w-full py-3 text-white text-xs font-bold uppercase tracking-widest rounded-xl transition-all ${
+              waStatus !== 'connected' 
+                ? 'bg-zinc-700 hover:bg-zinc-600 cursor-not-allowed opacity-80' 
+                : 'bg-indigo-600 hover:bg-indigo-500'
+            } ${simLoading ? 'opacity-50 cursor-wait' : ''}`}
           >
-            {simLoading ? "Firing Payload..." : "Fire Payload"}
+            {simLoading ? "Firing Payload..." : (waStatus !== 'connected' ? "Engine Not Ready (LOCKED)" : "Fire Payload")}
           </button>
         </div>
       </div>

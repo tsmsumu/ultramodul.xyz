@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@ultra/db";
-import { waChatLogs, waWagLogs, waStatusLogs, waChatTargets, waWagTargets, waStatusTargets } from "@ultra/db/schema";
+import { waChatLogs, wagLogs, waStatusLogs, waChatTargets, wagTargets, waStatusTargets } from "@ultra/db/src/schema";
 import { like, or, desc, eq } from "drizzle-orm";
 
 export async function globalSearchLogs(query: string) {
@@ -17,7 +17,7 @@ export async function globalSearchLogs(query: string) {
     mediaUrl: waChatLogs.mediaUrl,
     type: waChatLogs.id, // placeholder
     targetId: waChatLogs.targetId,
-    senderName: waChatLogs.peerNumber, // using peerNumber as fallback
+    senderName: waChatLogs.senderNumber, // using senderNumber as fallback
   })
   .from(waChatLogs)
   .where(like(waChatLogs.textContent, searchPattern))
@@ -32,21 +32,21 @@ export async function globalSearchLogs(query: string) {
 
   // 2. Search WAG Logs
   const wags = await db.select({
-    id: waWagLogs.id,
-    timestamp: waWagLogs.timestamp,
-    textContent: waWagLogs.textContent,
-    mediaUrl: waWagLogs.mediaUrl,
-    type: waWagLogs.id,
-    targetId: waWagLogs.targetId,
-    senderName: waWagLogs.senderName,
+    id: wagLogs.id,
+    timestamp: wagLogs.timestamp,
+    textContent: wagLogs.textContent,
+    mediaUrl: wagLogs.mediaUrl,
+    type: wagLogs.id,
+    targetId: wagLogs.targetId,
+    senderName: wagLogs.senderName,
   })
-  .from(waWagLogs)
-  .where(like(waWagLogs.textContent, searchPattern))
-  .orderBy(desc(waWagLogs.timestamp))
+  .from(wagLogs)
+  .where(like(wagLogs.textContent, searchPattern))
+  .orderBy(desc(wagLogs.timestamp))
   .limit(20);
 
   const wagResults = await Promise.all(wags.map(async (w) => {
-    const t = await db.query.waWagTargets.findFirst({ where: eq(waWagTargets.id, w.targetId) });
+    const t = await db.query.wagTargets.findFirst({ where: eq(wagTargets.id, w.targetId) });
     return { ...w, type: 'wag', sourceName: t?.groupName || t?.groupId || 'Unknown Group' };
   }));
 

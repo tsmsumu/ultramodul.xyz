@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@ultra/db";
-import { logbookSchedules, waChatLogs, waWagLogs, waStatusLogs, waChatTargets, waWagTargets, waStatusTargets } from "@ultra/db/schema";
+import { logbookSchedules, waChatLogs, wagLogs, waStatusLogs, waChatTargets, wagTargets, waStatusTargets } from "@ultra/db/src/schema";
 import { desc, eq, gte } from "drizzle-orm";
 import * as xlsx from "xlsx";
 
@@ -39,7 +39,7 @@ export async function GET(req: Request) {
         logs = await db.select().from(waChatLogs).where(gte(waChatLogs.timestamp, fromDate)).orderBy(desc(waChatLogs.timestamp));
         sheetName = "Chat Intel";
       } else if (schedule.logType === 'wag') {
-        logs = await db.select().from(waWagLogs).where(gte(waWagLogs.timestamp, fromDate)).orderBy(desc(waWagLogs.timestamp));
+        logs = await db.select().from(wagLogs).where(gte(wagLogs.timestamp, fromDate)).orderBy(desc(wagLogs.timestamp));
         sheetName = "WAG Intel";
       } else if (schedule.logType === 'status') {
         logs = await db.select().from(waStatusLogs).where(gte(waStatusLogs.timestamp, fromDate)).orderBy(desc(waStatusLogs.timestamp));
@@ -55,7 +55,7 @@ export async function GET(req: Request) {
       const exportData = logs.map(l => ({
         Timestamp: new Date(l.timestamp).toLocaleString(),
         'Target ID': l.targetId,
-        'Sender': l.senderName || l.peerNumber || 'Unknown',
+        'Sender': l.senderName || l.senderNumber || 'Unknown',
         'Content': l.textContent || '',
         'Media': l.mediaUrl ? 'Yes' : 'No',
         'Media Link': schedule.includeMedia ? (l.mediaUrl || '') : 'Restricted'

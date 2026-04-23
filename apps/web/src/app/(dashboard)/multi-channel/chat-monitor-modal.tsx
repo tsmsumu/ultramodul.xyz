@@ -5,7 +5,6 @@ import ExportMenu from "@/components/ExportMenu";
 import ImportMenu from "@/components/ImportMenu";
 import AutoDeliverySettings from "@/components/AutoDeliverySettings";
 import EntityRenderer from "@/components/EntityRenderer";
-import EntityRenderer from "@/components/EntityRenderer";
 import LogAnalytics from "@/components/LogAnalytics";
 import ThreadView from "@/components/ThreadView";
 

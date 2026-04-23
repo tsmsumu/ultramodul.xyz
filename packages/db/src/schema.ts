@@ -203,12 +203,19 @@ export const apiTrafficLogs = sqliteTable('api_traffic_logs', {
 
 // --- AUTH / MFA GATEWAY MATRIX ---
 export const authGatewayMatrix = sqliteTable('auth_gateway_matrix', {
-  id: text('id').primaryKey(),
-  type: text('type').notNull(), // 'SSO', 'MESSAGING', 'E_SIGNATURE', 'MFA'
-  provider: text('provider').notNull().unique(), // 'google', 'whatsapp', 'telegram', 'signal', 'sms', 'email', 'docusign'
-  name: text('name').notNull(), // 'Google Workspace', 'Twilio WhatsApp API'
+  id: text('id').primaryKey(), // UUID
+  type: text('type').notNull(), // 'SSO', 'MESSAGING', 'E_SIGNATURE'
+  provider: text('provider').notNull().unique(), // 'google', 'whatsapp', 'docusign'
+  name: text('name').notNull(), // 'Google Workspace SSO'
   isActive: integer('is_active', { mode: 'boolean' }).notNull().default(false),
-  configPayload: text('config_payload'), // JSON string containing API keys, webhooks, client IDs
+  configPayload: text('config_payload').notNull().default('{}'), // JSON Encrypted/Secret Payload
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
-  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull()
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
+});
+
+// Table for Global Dynamic System Settings
+export const systemSettings = sqliteTable('system_settings', {
+  key: text('key').primaryKey(),
+  value: text('value').notNull(),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
 });

@@ -1,11 +1,19 @@
 import appVersion from "../../../core/version.json";
 import { ShieldCheck, Cpu, Terminal, Fingerprint, Database, GitBranch, Zap } from "lucide-react";
+import { getPlatformName } from "@/app/actions/settings";
+import { getCurrentUserRole } from "@/app/actions/iam";
+import { RenamePlatform } from "./rename-platform";
 
 export const metadata = {
   title: "Aegis System Core | PUM Enterprise",
 };
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const customPlatformName = await getPlatformName();
+  const displayPlatformName = customPlatformName || appVersion.platform;
+  const role = await getCurrentUserRole();
+  const isSupreme = role === "owner";
+
   return (
     <div className="max-w-[1200px] mx-auto min-h-[calc(100vh-6rem)] flex flex-col font-sans py-10">
       
@@ -47,7 +55,7 @@ export default function AboutPage() {
             <div className="space-y-6 font-mono text-sm">
               <div className="flex flex-col border-b border-white/5 pb-4">
                 <span className="text-zinc-500 mb-1">PLATFORM_NAME</span>
-                <span className="text-xl font-bold text-white tracking-widest">{appVersion.platform}</span>
+                <RenamePlatform currentName={displayPlatformName} isSupreme={isSupreme} />
               </div>
               
               <div className="flex flex-col border-b border-white/5 pb-4">

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { Radio, CheckCircle2, XCircle, Terminal as TerminalIcon, Trash2, Edit2, Check } from "lucide-react";
-import { getWaEngineStatus, getWaEngineQr, sendMessageViaEngine, initWaEngineNode, deleteWhatsAppNode, renameWhatsAppNode } from "@/app/actions/multi-channel";
+import { Radio, CheckCircle2, XCircle, Terminal as TerminalIcon, Trash2, Edit2, Check, Shield, ShieldAlert, ShieldCheck } from "lucide-react";
+import { getWaEngineStatus, getWaEngineQr, sendMessageViaEngine, initWaEngineNode, deleteWhatsAppNode, renameWhatsAppNode, updateWaNodeFirewall } from "@/app/actions/multi-channel";
 import { useRouter } from "next/navigation";
 
 export default function WaNodePanel({ provider }: { provider: any }) {
@@ -12,6 +12,40 @@ export default function WaNodePanel({ provider }: { provider: any }) {
   const [simLoading, setSimLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(provider.name);
+
+  // Firewall States
+  const initialConfig = (() => {
+    try { return JSON.parse(provider.configPayload || '{}'); } catch(e) { return {}; }
+  })();
+  const [whitelist, setWhitelist] = useState<string[]>(initialConfig.whitelist || []);
+  const [wlInput, setWlInput] = useState("");
+  const [isSavingWl, setIsSavingWl] = useState(false);
+
+  const handleAddWhitelist = async () => {
+    if (!wlInput.trim()) return;
+    let clean = wlInput.replace(/\D/g, '');
+    if (clean.startsWith('0')) clean = '62' + clean.slice(1);
+    
+    if (!clean) return;
+    if (whitelist.includes(clean)) {
+      setWlInput(""); return;
+    }
+
+    const newList = [...whitelist, clean];
+    setWhitelist(newList);
+    setWlInput("");
+    setIsSavingWl(true);
+    await updateWaNodeFirewall(provider.id, newList);
+    setIsSavingWl(false);
+  };
+
+  const handleRemoveWhitelist = async (num: string) => {
+    const newList = whitelist.filter(n => n !== num);
+    setWhitelist(newList);
+    setIsSavingWl(true);
+    await updateWaNodeFirewall(provider.id, newList);
+    setIsSavingWl(false);
+  };
 
   const handleRename = async () => {
     if (editName.trim() && editName !== provider.name) {
@@ -66,7 +100,7 @@ export default function WaNodePanel({ provider }: { provider: any }) {
   }, [provider.id]);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 pb-8 border-b border-white/10 last:border-0 last:pb-0">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 pb-8 border-b border-white/10 last:border-0 last:pb-0">
       {/* Omni WA-Engine Panel */}
       <div className="bg-zinc-950/80 border border-white/5 rounded-3xl p-6 shadow-xl relative">
         <div className="flex justify-between items-center mb-6">
@@ -136,6 +170,65 @@ export default function WaNodePanel({ provider }: { provider: any }) {
              waStatus === 'connected' ? "WhatsApp Node is fully connected and ready to transmit payloads." :
              "Node is currently unreachable or offline. Click 'Start Node' to boot it up."}
           </p>
+        </div>
+      </div>
+
+      {/* Security Firewall Panel */}
+      <div className="bg-zinc-950/80 border border-white/5 rounded-3xl p-6 shadow-xl flex flex-col relative overflow-hidden">
+        {isSavingWl && <div className="absolute top-0 left-0 w-full h-1 bg-indigo-500 animate-pulse" />}
+        <h2 className="text-sm font-bold text-white tracking-widest uppercase flex items-center justify-between gap-2 mb-6">
+          <div className="flex items-center gap-2">
+            <Shield className="w-5 h-5 text-indigo-400" /> Security Firewall
+          </div>
+          {whitelist.length > 0 ? (
+            <span className="flex items-center gap-1 text-[10px] bg-red-500/20 text-red-400 px-2 py-1 rounded-full border border-red-500/30">
+              <ShieldAlert className="w-3 h-3" /> STRICT MODE
+            </span>
+          ) : (
+            <span className="flex items-center gap-1 text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded-full border border-emerald-500/30">
+              <ShieldCheck className="w-3 h-3" /> ALLOW ALL
+            </span>
+          )}
+        </h2>
+        
+        <div className="flex-1 flex flex-col space-y-4">
+          <div className="bg-black/40 border border-white/5 rounded-2xl p-4">
+            <p className="text-xs text-zinc-400 mb-4 leading-relaxed">
+              If empty, this node processes all messages. Add numbers below to strictly limit inbound/outbound access to approved numbers only.
+            </p>
+            
+            <div className="flex gap-2 mb-4">
+              <input 
+                type="text" 
+                value={wlInput}
+                onChange={(e) => setWlInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleAddWhitelist()}
+                placeholder="e.g. 0812..."
+                className="flex-1 bg-zinc-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+              />
+              <button 
+                onClick={handleAddWhitelist}
+                disabled={isSavingWl}
+                className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase disabled:opacity-50"
+              >
+                Add
+              </button>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {whitelist.map(num => (
+                <div key={num} className="flex items-center gap-1 bg-zinc-800 border border-zinc-700 px-2 py-1 rounded-lg">
+                  <span className="text-xs text-zinc-300 font-mono">{num}</span>
+                  <button onClick={() => handleRemoveWhitelist(num)} className="text-zinc-500 hover:text-red-400">
+                    <XCircle className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
+              {whitelist.length === 0 && (
+                <span className="text-xs text-zinc-600 italic">No numbers whitelisted.</span>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 

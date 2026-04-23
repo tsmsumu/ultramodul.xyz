@@ -24,20 +24,22 @@ const sockets = new Map();
 const qrCodes = new Map();
 const statuses = new Map(); // initializing, qr, connected, disconnected
 
-function getNodeName(id) {
+function getNodeConfig(id) {
   try {
     const config = JSON.parse(fs.readFileSync(path.join(SESSIONS_DIR, id, 'node_config.json')));
-    return config.name || 'Omni WA-Node';
+    return { name: config.name || 'Omni WA-Node', whitelist: config.whitelist || [] };
   } catch(e) {
-    return 'Omni WA-Node';
+    return { name: 'Omni WA-Node', whitelist: [] };
   }
 }
 
-function setNodeName(id, name) {
+function setNodeConfig(id, configData) {
   if (!fs.existsSync(path.join(SESSIONS_DIR, id))) {
     fs.mkdirSync(path.join(SESSIONS_DIR, id), { recursive: true });
   }
-  fs.writeFileSync(path.join(SESSIONS_DIR, id, 'node_config.json'), JSON.stringify({ name }));
+  const currentConfig = getNodeConfig(id);
+  const newConfig = { ...currentConfig, ...configData };
+  fs.writeFileSync(path.join(SESSIONS_DIR, id, 'node_config.json'), JSON.stringify(newConfig));
 }
 
 function formatPhoneNumber(phone) {
@@ -54,7 +56,7 @@ async function connectToWhatsApp(providerId) {
   const { state, saveCreds } = await useMultiFileAuthState(sessionPath);
   const { version } = await fetchLatestBaileysVersion();
   
-  const nodeName = getNodeName(providerId);
+  const { name: nodeName } = getNodeConfig(providerId);
 
   const sock = makeWASocket({
     version,
@@ -108,6 +110,17 @@ async function connectToWhatsApp(providerId) {
 
       if (!textMessage) return;
 
+      // --- INBOUND FIREWALL INTERCEPTOR ---
+      const { whitelist } = getNodeConfig(providerId);
+      if (whitelist.length > 0) {
+        // Extract just the numeric part of the remoteJid for comparison
+        const senderNumber = remoteJid.split('@')[0];
+        if (!whitelist.includes(senderNumber)) {
+          console.log(`[FIREWALL DROP | ${providerId}] Ignored message from unlisted sender: ${senderNumber}`);
+          return; // Drop message silently
+        }
+      }
+
       console.log(`[INBOUND | ${providerId}] ${pushName} (${remoteJid}): ${textMessage}`);
 
       try {
@@ -146,9 +159,9 @@ function loadExistingSessions() {
 // API Routes
 app.post('/init/:id', (req, res) => {
   const id = req.params.id;
-  const { name } = req.body || {};
-  if (name) {
-    setNodeName(id, name);
+  const { name, whitelist } = req.body || {};
+  if (name || whitelist !== undefined) {
+    setNodeConfig(id, { name, whitelist });
   }
 
   if (!sockets.has(id)) {
@@ -158,12 +171,24 @@ app.post('/init/:id', (req, res) => {
   return res.json({ success: true, message: 'Node already running' });
 });
 
+app.post('/config/:id', (req, res) => {
+  const id = req.params.id;
+  const { name, whitelist } = req.body;
+  
+  const updates = {};
+  if (name !== undefined) updates.name = name;
+  if (whitelist !== undefined) updates.whitelist = whitelist;
+  
+  setNodeConfig(id, updates);
+  res.json({ success: true, message: 'Node config updated locally' });
+});
+
 app.post('/rename/:id', (req, res) => {
   const id = req.params.id;
   const { name } = req.body;
   if (!name) return res.status(400).json({ success: false, message: 'Name is required' });
   
-  setNodeName(id, name);
+  setNodeConfig(id, { name });
   res.json({ success: true, message: 'Node renamed locally' });
 });
 
@@ -211,6 +236,14 @@ app.post('/send/:id', async (req, res) => {
 
   try {
     const formattedNumber = formatPhoneNumber(to);
+    
+    // --- OUTBOUND FIREWALL INTERCEPTOR ---
+    const { whitelist } = getNodeConfig(id);
+    if (whitelist.length > 0 && !whitelist.includes(formattedNumber)) {
+      console.log(`[FIREWALL BLOCK | ${id}] Blocked attempt to send to unlisted target: ${formattedNumber}`);
+      return res.status(403).json({ success: false, message: 'FIREWALL BLOCKED: Target number is not in the whitelist.' });
+    }
+
     const jid = formattedNumber.includes('@s.whatsapp.net') ? formattedNumber : `${formattedNumber}@s.whatsapp.net`;
     const result = await sock.sendMessage(jid, { text: message });
     res.json({ success: true, result });

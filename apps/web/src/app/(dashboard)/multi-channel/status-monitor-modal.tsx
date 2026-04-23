@@ -263,7 +263,7 @@ export default function StatusMonitorModal({ providerId, onClose }: { providerId
 
                   <div className="bg-black/40 border border-white/5 rounded-2xl overflow-hidden">
                     <div className="p-4 border-b border-white/5 bg-zinc-900/30 flex flex-col sm:flex-row justify-between items-center gap-4">
-                      <div className="relative w-full sm:w-64">
+                      <div className="relative w-full sm:w-96">
                         <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
                         <input 
                           type="text" 
@@ -343,7 +343,7 @@ export default function StatusMonitorModal({ providerId, onClose }: { providerId
                       </div>
                     </div>
                     
-                    <div className="relative w-full sm:w-64">
+                    <div className="relative w-full sm:w-96">
                       <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
                       <input 
                         type="text" 

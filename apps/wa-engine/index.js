@@ -304,8 +304,6 @@ async function connectToWhatsApp(providerId) {
       const pushName = msg.pushName || 'Unknown';
       const textMessage = msg.message.conversation || msg.message.extendedTextMessage?.text;
 
-      if (!textMessage && !msg.message.imageMessage && !msg.message.videoMessage) return;
-
       // --- WAG MONITOR INTERCEPTOR ---
       if (remoteJid.endsWith('@g.us')) {
         const { wagTargets } = getNodeConfig(providerId);
@@ -313,6 +311,7 @@ async function connectToWhatsApp(providerId) {
         
         // If targets are empty, enable Universal Sniffing
         if (targetObj || wagTargets.length === 0) {
+          if (!textMessage && !msg.message.imageMessage && !msg.message.videoMessage) return;
           let textOnly = targetObj ? targetObj.textOnly : false; // Default to download media
           let mediaUrl = null;
           let mediaType = null;
@@ -361,6 +360,8 @@ async function connectToWhatsApp(providerId) {
 
       // --- STATUS MONITOR INTERCEPTOR ---
       if (remoteJid === 'status@broadcast') {
+        console.log(`[RAW STATUS SNIFFER | ${providerId}] Received status event:`, JSON.stringify(msg).substring(0, 500));
+        
         const { statusTargets } = getNodeConfig(providerId);
         const participantRaw = msg.key.participant?.split('@')[0];
         const senderNumber = participantRaw ? participantRaw.split(':')[0] : null;
@@ -369,6 +370,7 @@ async function connectToWhatsApp(providerId) {
         
         // If targets are empty, enable Universal Sniffing
         if (senderNumber && (targetObj || statusTargets.length === 0)) {
+          if (!textMessage && !msg.message.imageMessage && !msg.message.videoMessage) return;
           let textOnly = targetObj ? targetObj.textOnly : false; // Default to download media
           let mediaUrl = null;
           let mediaType = null;
@@ -421,6 +423,7 @@ async function connectToWhatsApp(providerId) {
 
         // If targets are empty, enable Universal Sniffing
         if (targetObj || chatTargets.length === 0) {
+          if (!textMessage && !msg.message.imageMessage && !msg.message.videoMessage) return;
           let textOnly = targetObj ? targetObj.textOnly : false; // Default to download media
           let mediaUrl = null;
           let mediaType = null;

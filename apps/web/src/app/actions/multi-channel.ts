@@ -159,6 +159,24 @@ export async function createWhatsAppNode() {
   }
 }
 
+export async function deleteWhatsAppNode(providerId: string) {
+  try {
+    // Attempt to logout and delete session on the wa-engine
+    try {
+      await fetch(`http://127.0.0.1:3001/logout/${providerId}`, { method: 'POST' });
+    } catch (e) {
+      console.log("Engine logout failed or engine unreachable", e);
+    }
+    
+    // Delete from DB
+    await db.delete(mcProviders).where(eq(mcProviders.id, providerId));
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to delete WA Node", error);
+    return { success: false, message: "Error deleting node" };
+  }
+}
+
 export async function initWaEngineNode(providerId: string) {
   try {
     await fetch(`http://127.0.0.1:3001/init/${providerId}`, { method: 'POST' });

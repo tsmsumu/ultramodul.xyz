@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
-import { Radio, CheckCircle2, XCircle, Terminal as TerminalIcon } from "lucide-react";
-import { getWaEngineStatus, getWaEngineQr, sendMessageViaEngine, initWaEngineNode } from "@/app/actions/multi-channel";
+import { Radio, CheckCircle2, XCircle, Terminal as TerminalIcon, Trash2 } from "lucide-react";
+import { getWaEngineStatus, getWaEngineQr, sendMessageViaEngine, initWaEngineNode, deleteWhatsAppNode } from "@/app/actions/multi-channel";
+import { useRouter } from "next/navigation";
 
 export default function WaNodePanel({ provider }: { provider: any }) {
+  const router = useRouter();
   const [waStatus, setWaStatus] = useState<string>("initializing");
   const [qrCode, setQrCode] = useState<string | null>(null);
   const [simTo, setSimTo] = useState("");
@@ -38,6 +40,17 @@ export default function WaNodePanel({ provider }: { provider: any }) {
     setSimMsg("");
   };
 
+  const handleDeleteNode = async () => {
+    if (window.confirm("PERINGATAN KRITIS: Apakah Anda yakin ingin menghancurkan WhatsApp Node ini? Semua sesi akan dihapus secara permanen.")) {
+      const res = await deleteWhatsAppNode(provider.id);
+      if (res.success) {
+        router.refresh();
+      } else {
+        alert("Failed to delete node.");
+      }
+    }
+  };
+
   useEffect(() => {
     fetchWaStatus();
   }, [provider.id]);
@@ -45,17 +58,20 @@ export default function WaNodePanel({ provider }: { provider: any }) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 pb-8 border-b border-white/10 last:border-0 last:pb-0">
       {/* Omni WA-Engine Panel */}
-      <div className="bg-zinc-950/80 border border-white/5 rounded-3xl p-6 shadow-xl">
+      <div className="bg-zinc-950/80 border border-white/5 rounded-3xl p-6 shadow-xl relative">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-sm font-bold text-white tracking-widest uppercase flex items-center gap-2">
             <Radio className="w-5 h-5 text-emerald-400" /> {provider.name}
           </h2>
           <div className="flex gap-2">
-            <button onClick={handleInitNode} className="text-xs px-3 py-1 bg-indigo-500/20 hover:bg-indigo-500/40 rounded-lg text-indigo-300 font-bold uppercase">
+            <button onClick={handleInitNode} className="text-[10px] px-3 py-1.5 bg-indigo-500/20 hover:bg-indigo-500/40 rounded-lg text-indigo-300 font-bold uppercase transition-all">
               Start Node
             </button>
-            <button onClick={fetchWaStatus} className="text-xs px-3 py-1 bg-white/5 hover:bg-white/10 rounded-lg text-zinc-300">
-              Refresh Status
+            <button onClick={fetchWaStatus} className="text-[10px] px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-zinc-300 font-bold uppercase transition-all">
+              Refresh
+            </button>
+            <button onClick={handleDeleteNode} className="text-[10px] px-3 py-1.5 bg-red-500/10 hover:bg-red-500/30 rounded-lg text-red-400 font-bold uppercase transition-all flex items-center gap-1">
+              <Trash2 className="w-3 h-3" /> Delete
             </button>
           </div>
         </div>

@@ -225,13 +225,19 @@ export default function WaNodePanel({ provider, isArchived = false }: { provider
                 <button onClick={fetchWaStatus} className="text-[10px] px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-zinc-300 font-bold uppercase transition-all">
                   Refresh
                 </button>
+                <button onClick={handleDeleteNode} className="text-[10px] px-3 py-1.5 bg-red-500/10 hover:bg-red-500/30 rounded-lg text-red-400 font-bold uppercase transition-all flex items-center gap-1 ml-auto">
+                  <Trash2 className="w-3 h-3" /> Delete
+                </button>
               </>
             )}
-            <button onClick={handleDeleteNode} className="text-[10px] px-3 py-1.5 bg-red-500/10 hover:bg-red-500/30 rounded-lg text-red-400 font-bold uppercase transition-all flex items-center gap-1 ml-auto">
-              <Trash2 className="w-3 h-3" /> Delete {isArchived ? 'Archived Node' : ''}
-            </button>
           </div>
         </div>
+
+        {isArchived && (
+          <button onClick={handleDeleteNode} className="w-full mb-6 py-4 bg-red-600/80 hover:bg-red-500 rounded-xl text-white font-bold tracking-widest uppercase transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(239,68,68,0.4)] border border-red-500">
+            <Trash2 className="w-5 h-5" /> Delete & Destroy Archived Node
+          </button>
+        )}
 
         {!isArchived && (
           <div className="flex flex-col items-center justify-center p-8 border border-white/5 border-dashed rounded-2xl bg-black/40 min-h-[300px]">

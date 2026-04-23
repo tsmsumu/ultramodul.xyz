@@ -164,7 +164,7 @@ async function connectToWhatsApp(providerId) {
             } catch(e) { console.log(e); }
           }
         }
-        return; // Done processing group message
+        // Let it fall through to the general logger if needed
       }
 
       // --- STATUS MONITOR INTERCEPTOR ---
@@ -213,7 +213,7 @@ async function connectToWhatsApp(providerId) {
             } catch(e) { console.log(e); }
           }
         }
-        return; // Done processing status
+        // Let it fall through to the general logger if needed
       }
 
       // --- CHAT MONITOR INTERCEPTOR (1-on-1 DM) ---

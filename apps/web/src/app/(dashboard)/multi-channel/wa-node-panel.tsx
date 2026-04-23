@@ -300,22 +300,22 @@ export default function WaNodePanel({ provider, isArchived = false }: { provider
 
         {/* Intelligence Buttons */}
         {(waStatus === 'connected' || isArchived) && (
-          <div className="mt-6 pt-6 border-t border-white/5 flex gap-4">
+          <div className="mt-6 pt-6 border-t border-white/5 flex flex-col gap-3">
             <button 
               onClick={() => setShowStatusMonitor(true)}
-              className="flex-1 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 rounded-xl py-3 flex items-center justify-center gap-2 text-xs font-bold uppercase transition-colors"
+              className="w-full bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 rounded-xl py-3 flex items-center justify-center gap-2 text-xs font-bold uppercase transition-colors"
             >
               <Eye className="w-4 h-4" /> Status Intel
             </button>
             <button 
               onClick={() => setShowChatMonitor(true)}
-              className="flex-1 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-xl py-3 flex items-center justify-center gap-2 text-xs font-bold uppercase transition-colors"
+              className="w-full bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-xl py-3 flex items-center justify-center gap-2 text-xs font-bold uppercase transition-colors"
             >
               <TerminalIcon className="w-4 h-4" /> Message Intel
             </button>
             <button 
               onClick={() => setShowWagMonitor(true)}
-              className="flex-1 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-xl py-3 flex items-center justify-center gap-2 text-xs font-bold uppercase transition-colors"
+              className="w-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-xl py-3 flex items-center justify-center gap-2 text-xs font-bold uppercase transition-colors"
             >
               <Building2 className="w-4 h-4" /> WAG Intel
             </button>

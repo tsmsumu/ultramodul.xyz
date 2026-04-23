@@ -130,7 +130,7 @@ export default function SigStoryMonitorModal({ providerId, onClose }: { provider
 
   const exportOptions = {
     filename: `Omni_Status_Logbook_${new Date().toISOString().split('T')[0]}`,
-    title: "Omni Intelligence - Status WA Monitor",
+    title: "Omni Intelligence - Signal Story Monitor",
     columns: [
       { header: "Date", key: "date" },
       { header: "Time", key: "time" },
@@ -171,7 +171,7 @@ export default function SigStoryMonitorModal({ providerId, onClose }: { provider
               <Eye className="w-5 h-5 text-indigo-400" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white">Status WA Monitor</h2>
+              <h2 className="text-xl font-bold text-white">Signal Story Monitor</h2>
               <p className="text-xs text-zinc-400">Ultra-Recon Intelligence Logbook</p>
             </div>
           </div>
@@ -273,7 +273,7 @@ export default function SigStoryMonitorModal({ providerId, onClose }: { provider
                           </div>
                         ) : (
                           <div className="text-xs font-bold text-zinc-400 uppercase tracking-widest">
-                            Status WA Targets
+                            Signal Story Targets
                           </div>
                         )}
                       </div>
@@ -282,7 +282,7 @@ export default function SigStoryMonitorModal({ providerId, onClose }: { provider
                         <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-indigo-500/50" />
                         <input 
                           type="text" 
-                          placeholder="Cari target Status WA berdasarkan Nama atau Nomor..." 
+                          placeholder="Cari target Signal Story berdasarkan Nama atau Nomor..." 
                           value={searchTargetQuery}
                           onChange={e=>setSearchTargetQuery(e.target.value)}
                           className="w-full bg-black/60 border border-indigo-500/30 rounded-xl pl-12 pr-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder:text-zinc-600 shadow-inner"
@@ -364,7 +364,7 @@ export default function SigStoryMonitorModal({ providerId, onClose }: { provider
                       <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-indigo-500/50" />
                       <input 
                         type="text" 
-                        placeholder="Ketik untuk mencari log Status WA..." 
+                        placeholder="Ketik untuk mencari log Signal Story..." 
                         value={searchQuery}
                         onChange={e=>setSearchQuery(e.target.value)}
                         className="w-full bg-black/60 border border-indigo-500/30 rounded-xl pl-12 pr-4 py-4 text-sm text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder:text-zinc-600 shadow-inner"

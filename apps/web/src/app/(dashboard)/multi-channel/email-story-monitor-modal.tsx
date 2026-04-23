@@ -130,7 +130,7 @@ export default function EmailStoryMonitorModal({ providerId, onClose }: { provid
 
   const exportOptions = {
     filename: `Omni_Status_Logbook_${new Date().toISOString().split('T')[0]}`,
-    title: "Omni Intelligence - Status WA Monitor",
+    title: "Omni Intelligence - Email Newsletter Monitor",
     columns: [
       { header: "Date", key: "date" },
       { header: "Time", key: "time" },
@@ -171,7 +171,7 @@ export default function EmailStoryMonitorModal({ providerId, onClose }: { provid
               <Eye className="w-5 h-5 text-indigo-400" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white">Status WA Monitor</h2>
+              <h2 className="text-xl font-bold text-white">Email Newsletter Monitor</h2>
               <p className="text-xs text-zinc-400">Ultra-Recon Intelligence Logbook</p>
             </div>
           </div>
@@ -244,7 +244,7 @@ export default function EmailStoryMonitorModal({ providerId, onClose }: { provid
                     <h3 className="text-sm font-bold text-white mb-4 uppercase tracking-widest">Add New Target</h3>
                     <form onSubmit={handleAddTarget} className="flex gap-4 items-end">
                       <div className="flex-1 space-y-2">
-                        <label className="text-xs text-zinc-400 uppercase tracking-wider">Phone Number</label>
+                        <label className="text-xs text-zinc-400 uppercase tracking-wider">Email / IMAP Host</label>
                         <input type="text" value={phone} onChange={e=>setPhone(e.target.value)} placeholder="0812..." className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-1 focus:ring-indigo-500 focus:outline-none" required />
                       </div>
                       <div className="flex-1 space-y-2">
@@ -273,7 +273,7 @@ export default function EmailStoryMonitorModal({ providerId, onClose }: { provid
                           </div>
                         ) : (
                           <div className="text-xs font-bold text-zinc-400 uppercase tracking-widest">
-                            Status WA Targets
+                            Email Newsletter Targets
                           </div>
                         )}
                       </div>
@@ -282,7 +282,7 @@ export default function EmailStoryMonitorModal({ providerId, onClose }: { provid
                         <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-indigo-500/50" />
                         <input 
                           type="text" 
-                          placeholder="Cari target Status WA berdasarkan Nama atau Nomor..." 
+                          placeholder="Cari target Email Newsletter berdasarkan Nama atau Nomor..." 
                           value={searchTargetQuery}
                           onChange={e=>setSearchTargetQuery(e.target.value)}
                           className="w-full bg-black/60 border border-indigo-500/30 rounded-xl pl-12 pr-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder:text-zinc-600 shadow-inner"
@@ -296,7 +296,7 @@ export default function EmailStoryMonitorModal({ providerId, onClose }: { provid
                             <input type="checkbox" onChange={handleSelectAllTargets} checked={targets.length > 0 && selectedTargetRows.length === targets.length} className="w-4 h-4 rounded bg-black/40 border-white/10 text-indigo-500 focus:ring-indigo-500" />
                           </th>
                           <th className="px-6 py-4">Name</th>
-                          <th className="px-6 py-4">Phone Number</th>
+                          <th className="px-6 py-4">Email / IMAP Host</th>
                           <th className="px-6 py-4">Added On</th>
                           <th className="px-6 py-4 text-right">Actions</th>
                         </tr>
@@ -364,7 +364,7 @@ export default function EmailStoryMonitorModal({ providerId, onClose }: { provid
                       <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-indigo-500/50" />
                       <input 
                         type="text" 
-                        placeholder="Ketik untuk mencari log Status WA..." 
+                        placeholder="Ketik untuk mencari log Email Newsletter..." 
                         value={searchQuery}
                         onChange={e=>setSearchQuery(e.target.value)}
                         className="w-full bg-black/60 border border-indigo-500/30 rounded-xl pl-12 pr-4 py-4 text-sm text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder:text-zinc-600 shadow-inner"

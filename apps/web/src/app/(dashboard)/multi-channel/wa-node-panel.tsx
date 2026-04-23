@@ -300,7 +300,7 @@ export default function WaNodePanel({ provider, isArchived = false }: { provider
 
         {/* Intelligence Buttons */}
         {(waStatus === 'connected' || isArchived) && (
-          <div className="mt-6 pt-6 border-t border-white/5 flex flex-col gap-3">
+          <div className="mt-6 pt-6 border-t border-white/5 grid grid-cols-1 sm:grid-cols-3 gap-3">
             <button 
               onClick={() => setShowStatusMonitor(true)}
               className="w-full bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 rounded-xl py-3 flex items-center justify-center gap-2 text-xs font-bold uppercase transition-colors"

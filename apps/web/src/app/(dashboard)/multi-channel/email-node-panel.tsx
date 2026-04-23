@@ -261,21 +261,21 @@ export default function EmailNodePanel({ provider, isArchived = false }: { provi
 
             {emailStatus === 'waiting_code' ? (
               <div className="bg-white/5 p-4 rounded-xl flex flex-col gap-3 w-full max-w-sm">
-                <label className="text-xs text-indigo-300 font-bold uppercase tracking-widest">Enter IMAP/SMTP Code</label>
+                <label className="text-xs text-indigo-300 font-bold uppercase tracking-widest">Enter Authentication Code</label>
                 <input type="text" value={otpCode} onChange={e=>setOtpCode(e.target.value)} className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-white text-center tracking-[0.5em]" placeholder="12345" />
                 <button onClick={async () => { await submitEmailCode(provider.id, otpCode); fetchEmailStatus(); }} className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-bold text-xs uppercase text-white">Verify Code</button>
               </div>
             ) : emailStatus === 'waiting_password' ? (
               <div className="bg-white/5 p-4 rounded-xl flex flex-col gap-3 w-full max-w-sm">
-                <label className="text-xs text-indigo-300 font-bold uppercase tracking-widest">Enter 2FA Password</label>
+                <label className="text-xs text-indigo-300 font-bold uppercase tracking-widest">Enter App Password / SMTP Pass</label>
                 <input type="password" value={twoFaPassword} onChange={e=>setTwoFaPassword(e.target.value)} className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-white text-center" placeholder="********" />
                 <button onClick={async () => { await submitEmailPassword(provider.id, twoFaPassword); fetchEmailStatus(); }} className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-bold text-xs uppercase text-white">Verify Password</button>
               </div>
             ) : emailStatus === 'offline' || emailStatus === 'initializing' ? (
               <div className="bg-white/5 p-4 rounded-xl flex flex-col gap-3 w-full max-w-sm">
-                <label className="text-xs text-indigo-300 font-bold uppercase tracking-widest">Phone Number</label>
-                <input type="text" value={phoneNumber} onChange={e=>setPhoneNumber(e.target.value)} className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-white" placeholder="+62812..." />
-                <button onClick={async () => { await sendEmailCode(provider.id, phoneNumber); fetchEmailStatus(); }} className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-bold text-xs uppercase text-white">Send IMAP/SMTP</button>
+                <label className="text-xs text-indigo-300 font-bold uppercase tracking-widest">Email / IMAP Host</label>
+                <input type="text" value={phoneNumber} onChange={e=>setPhoneNumber(e.target.value)} className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-white" placeholder="imap.example.com" />
+                <button onClick={async () => { await sendEmailCode(provider.id, phoneNumber); fetchEmailStatus(); }} className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-bold text-xs uppercase text-white">Connect IMAP/SMTP</button>
               </div>
             ) : emailStatus === 'connected' ? (
              <div className="flex flex-col items-center gap-4">
@@ -303,14 +303,14 @@ export default function EmailNodePanel({ provider, isArchived = false }: { provi
             <p className="mt-6 text-xs text-zinc-500 text-center max-w-xs">
               {emailStatus === 'waiting_code' ? "Please check your Email app or Email for the login code." : 
                emailStatus === 'connected' ? "Email Node is fully connected and ready to transmit payloads." :
-               "Enter your phone number to login to Email MTProto API."}
+               "Enter your IMAP Host or Email to initialize the Mail Gateway."}
             </p>
           </div>
         )}
 
         {/* Intelligence Buttons */}
         {(emailStatus === 'connected' || isArchived) && (
-          <div className="mt-6 pt-6 border-t border-white/5 flex flex-col gap-3">
+          <div className="mt-6 pt-6 border-t border-white/5 grid grid-cols-1 sm:grid-cols-3 gap-3">
             <button 
               onClick={() => setShowChannelMonitor(true)}
               className="w-full bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 rounded-xl py-3 flex items-center justify-center gap-2 text-xs font-bold uppercase transition-colors"
@@ -399,12 +399,12 @@ export default function EmailNodePanel({ provider, isArchived = false }: { provi
         </h2>
         <div className="flex-1 border border-white/5 bg-black/40 p-6 rounded-2xl space-y-4">
           <div>
-            <label className="text-[10px] text-zinc-500 uppercase tracking-widest block mb-1">Target Number</label>
+            <label className="text-[10px] text-zinc-500 uppercase tracking-widest block mb-1">Target Email Address</label>
             <input 
               type="text" 
               value={simTo}
               onChange={(e) => setSimTo(e.target.value)}
-              placeholder="e.g. 0812..., +628..., or 628..."
+              placeholder="e.g. user@example.com"
               className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
             />
           </div>
@@ -472,7 +472,7 @@ export default function EmailNodePanel({ provider, isArchived = false }: { provi
                   {syncHistoryChat && (
                     <div className="p-4 space-y-4">
                       <div>
-                        <label className="block text-[10px] text-zinc-500 uppercase tracking-widest mb-2">Target Numbers</label>
+                        <label className="block text-[10px] text-zinc-500 uppercase tracking-widest mb-2">Target Email Addresss</label>
                         <input type="text" placeholder="Kosongkan untuk sedot semua..." value={historyChatTargets} onChange={(e) => saveHistoryConfig({ historyChatTargets: e.target.value })} className="w-full bg-black/60 border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-blue-500/50" />
                       </div>
                       <div className="grid grid-cols-2 gap-3">
@@ -500,7 +500,7 @@ export default function EmailNodePanel({ provider, isArchived = false }: { provi
                 <div className="flex flex-col bg-zinc-900/50 border border-white/5 rounded-2xl overflow-hidden transition-all hover:border-emerald-500/30">
                   <div className="p-4 border-b border-white/5 bg-black/30 flex justify-between items-center">
                     <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest flex items-center gap-2">
-                      <Building2 className="w-4 h-4" /> WA Group
+                      <Building2 className="w-4 h-4" /> Mailing List
                     </span>
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input type="checkbox" className="sr-only peer" checked={syncHistoryWag} onChange={(e) => saveHistoryConfig({ syncHistoryWag: e.target.checked })} />
@@ -538,7 +538,7 @@ export default function EmailNodePanel({ provider, isArchived = false }: { provi
                 <div className="flex flex-col bg-zinc-900/50 border border-white/5 rounded-2xl overflow-hidden transition-all hover:border-indigo-500/30">
                   <div className="p-4 border-b border-white/5 bg-black/30 flex justify-between items-center">
                     <span className="text-xs font-bold text-indigo-400 uppercase tracking-widest flex items-center gap-2">
-                      <Eye className="w-4 h-4" /> Status WA
+                      <Eye className="w-4 h-4" /> Email Newsletter
                     </span>
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input type="checkbox" className="sr-only peer" checked={syncHistoryStatus} onChange={(e) => saveHistoryConfig({ syncHistoryStatus: e.target.checked })} />
@@ -548,7 +548,7 @@ export default function EmailNodePanel({ provider, isArchived = false }: { provi
                   {syncHistoryStatus && (
                     <div className="p-4 space-y-4">
                       <div>
-                        <label className="block text-[10px] text-zinc-500 uppercase tracking-widest mb-2">Target Numbers</label>
+                        <label className="block text-[10px] text-zinc-500 uppercase tracking-widest mb-2">Target Email Addresss</label>
                         <input type="text" placeholder="Kosongkan untuk sedot semua..." value={historyStatusTargets} onChange={(e) => saveHistoryConfig({ historyStatusTargets: e.target.value })} className="w-full bg-black/60 border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50" />
                       </div>
                       <div className="grid grid-cols-2 gap-3">

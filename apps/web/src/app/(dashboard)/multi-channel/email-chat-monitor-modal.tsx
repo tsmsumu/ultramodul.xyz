@@ -238,7 +238,7 @@ export default function EmailChatMonitorModal({ providerId, onClose }: { provide
                     <h3 className="text-sm font-bold text-white mb-4 uppercase tracking-widest">Add New Chat Target</h3>
                     <form onSubmit={handleAddTarget} className="flex gap-4 items-end">
                       <div className="flex-1 space-y-2">
-                        <label className="text-xs text-zinc-400 uppercase tracking-wider">Phone Number</label>
+                        <label className="text-xs text-zinc-400 uppercase tracking-wider">Email / IMAP Host</label>
                         <input type="text" value={phone} onChange={e=>setPhone(e.target.value)} placeholder="0812..." className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-1 focus:ring-blue-500 focus:outline-none" required />
                       </div>
                       <div className="flex-1 space-y-2">
@@ -290,7 +290,7 @@ export default function EmailChatMonitorModal({ providerId, onClose }: { provide
                             <input type="checkbox" onChange={handleSelectAllTargets} checked={targets.length > 0 && selectedTargetRows.length === targets.length} className="w-4 h-4 rounded bg-black/40 border-white/10 text-blue-500 focus:ring-blue-500" />
                           </th>
                           <th className="px-6 py-4">Name</th>
-                          <th className="px-6 py-4">Phone Number</th>
+                          <th className="px-6 py-4">Email / IMAP Host</th>
                           <th className="px-6 py-4">Added On</th>
                           <th className="px-6 py-4 text-right">Actions</th>
                         </tr>

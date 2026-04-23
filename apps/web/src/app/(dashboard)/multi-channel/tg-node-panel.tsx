@@ -310,7 +310,7 @@ export default function TgNodePanel({ provider, isArchived = false }: { provider
 
         {/* Intelligence Buttons */}
         {(tgStatus === 'connected' || isArchived) && (
-          <div className="mt-6 pt-6 border-t border-white/5 flex flex-col gap-3">
+          <div className="mt-6 pt-6 border-t border-white/5 grid grid-cols-1 sm:grid-cols-3 gap-3">
             <button 
               onClick={() => setShowChannelMonitor(true)}
               className="w-full bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 rounded-xl py-3 flex items-center justify-center gap-2 text-xs font-bold uppercase transition-colors"
@@ -500,7 +500,7 @@ export default function TgNodePanel({ provider, isArchived = false }: { provider
                 <div className="flex flex-col bg-zinc-900/50 border border-white/5 rounded-2xl overflow-hidden transition-all hover:border-emerald-500/30">
                   <div className="p-4 border-b border-white/5 bg-black/30 flex justify-between items-center">
                     <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest flex items-center gap-2">
-                      <Building2 className="w-4 h-4" /> WA Group
+                      <Building2 className="w-4 h-4" /> Telegram Group
                     </span>
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input type="checkbox" className="sr-only peer" checked={syncHistoryWag} onChange={(e) => saveHistoryConfig({ syncHistoryWag: e.target.checked })} />
@@ -538,7 +538,7 @@ export default function TgNodePanel({ provider, isArchived = false }: { provider
                 <div className="flex flex-col bg-zinc-900/50 border border-white/5 rounded-2xl overflow-hidden transition-all hover:border-indigo-500/30">
                   <div className="p-4 border-b border-white/5 bg-black/30 flex justify-between items-center">
                     <span className="text-xs font-bold text-indigo-400 uppercase tracking-widest flex items-center gap-2">
-                      <Eye className="w-4 h-4" /> Status WA
+                      <Eye className="w-4 h-4" /> Telegram Channel
                     </span>
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input type="checkbox" className="sr-only peer" checked={syncHistoryStatus} onChange={(e) => saveHistoryConfig({ syncHistoryStatus: e.target.checked })} />

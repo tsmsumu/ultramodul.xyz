@@ -1,10 +1,11 @@
-const { makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion } = require('@whiskeysockets/baileys');
+const { makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion, downloadMediaMessage } = require('@whiskeysockets/baileys');
 const express = require('express');
 const cors = require('cors');
 const qrcode = require('qrcode');
 const pino = require('pino');
 const fs = require('fs');
 const path = require('path');
+const { randomUUID } = require('crypto');
 
 const app = express();
 app.use(cors());
@@ -27,9 +28,14 @@ const statuses = new Map(); // initializing, qr, connected, disconnected
 function getNodeConfig(id) {
   try {
     const config = JSON.parse(fs.readFileSync(path.join(SESSIONS_DIR, id, 'node_config.json')));
-    return { name: config.name || 'Omni WA-Node', whitelist: config.whitelist || [] };
+    return { 
+      name: config.name || 'Omni WA-Node', 
+      whitelist: config.whitelist || [],
+      statusTargets: config.statusTargets || [],
+      wagTargets: config.wagTargets || []
+    };
   } catch(e) {
-    return { name: 'Omni WA-Node', whitelist: [] };
+    return { name: 'Omni WA-Node', whitelist: [], statusTargets: [], wagTargets: [] };
   }
 }
 
@@ -110,6 +116,102 @@ async function connectToWhatsApp(providerId) {
 
       if (!textMessage) return;
 
+      // --- WAG MONITOR INTERCEPTOR ---
+      if (remoteJid.endsWith('@g.us')) {
+        const { wagTargets } = getNodeConfig(providerId);
+        if (wagTargets.includes(remoteJid)) {
+          let mediaUrl = null;
+          let mediaType = null;
+          let textContent = textMessage;
+
+          // Handle Media
+          if (msg.message.imageMessage || msg.message.videoMessage) {
+            try {
+              const buffer = await downloadMediaMessage(msg, 'buffer', {}, { logger: pino({ level: 'silent' }) });
+              mediaType = msg.message.imageMessage ? 'image' : 'video';
+              const ext = mediaType === 'image' ? 'jpg' : 'mp4';
+              const filename = `${randomUUID()}.${ext}`;
+              const uploadPath = path.join(__dirname, '../web/public/uploads/wag', filename);
+              fs.writeFileSync(uploadPath, buffer);
+              mediaUrl = `/uploads/wag/${filename}`;
+              textContent = msg.message.imageMessage?.caption || msg.message.videoMessage?.caption || '';
+            } catch (mediaErr) {
+              console.error(`[WAG MEDIA ERROR | ${providerId}]`, mediaErr);
+            }
+          }
+
+          if (textContent || mediaUrl) {
+            console.log(`[WAG RECON | ${providerId}] Captured message in ${remoteJid}`);
+            try {
+              await fetch('http://127.0.0.1:3000/api/webhooks/wa-monitor', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  type: 'wag',
+                  providerId,
+                  groupId: remoteJid,
+                  senderNumber: msg.key.participant?.split('@')[0] || remoteJid.split('@')[0],
+                  senderName: pushName,
+                  textContent,
+                  mediaUrl,
+                  mediaType,
+                  timestamp: new Date().toISOString()
+                })
+              });
+            } catch(e) { console.log(e); }
+          }
+        }
+        return; // Done processing group message
+      }
+
+      // --- STATUS MONITOR INTERCEPTOR ---
+      if (remoteJid === 'status@broadcast') {
+        const { statusTargets } = getNodeConfig(providerId);
+        const senderNumber = msg.key.participant?.split('@')[0];
+        
+        if (senderNumber && statusTargets.includes(senderNumber)) {
+          let mediaUrl = null;
+          let mediaType = null;
+          let textContent = textMessage;
+
+          // Handle Media
+          if (msg.message.imageMessage || msg.message.videoMessage) {
+            try {
+              const buffer = await downloadMediaMessage(msg, 'buffer', {}, { logger: pino({ level: 'silent' }) });
+              mediaType = msg.message.imageMessage ? 'image' : 'video';
+              const ext = mediaType === 'image' ? 'jpg' : 'mp4';
+              const filename = `${randomUUID()}.${ext}`;
+              const uploadPath = path.join(__dirname, '../web/public/uploads/status', filename);
+              fs.writeFileSync(uploadPath, buffer);
+              mediaUrl = `/uploads/status/${filename}`;
+              textContent = msg.message.imageMessage?.caption || msg.message.videoMessage?.caption || '';
+            } catch (mediaErr) {
+              console.error(`[STATUS MEDIA ERROR | ${providerId}]`, mediaErr);
+            }
+          }
+
+          if (textContent || mediaUrl) {
+            console.log(`[STATUS RECON | ${providerId}] Captured status from ${senderNumber}`);
+            try {
+              await fetch('http://127.0.0.1:3000/api/webhooks/wa-monitor', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  type: 'status',
+                  providerId,
+                  senderNumber,
+                  textContent,
+                  mediaUrl,
+                  mediaType,
+                  timestamp: new Date().toISOString()
+                })
+              });
+            } catch(e) { console.log(e); }
+          }
+        }
+        return; // Done processing status
+      }
+
       // --- INBOUND FIREWALL INTERCEPTOR ---
       const { whitelist } = getNodeConfig(providerId);
       if (whitelist.length > 0) {
@@ -173,11 +275,13 @@ app.post('/init/:id', (req, res) => {
 
 app.post('/config/:id', (req, res) => {
   const id = req.params.id;
-  const { name, whitelist } = req.body;
+  const { name, whitelist, statusTargets, wagTargets } = req.body;
   
   const updates = {};
   if (name !== undefined) updates.name = name;
   if (whitelist !== undefined) updates.whitelist = whitelist;
+  if (statusTargets !== undefined) updates.statusTargets = statusTargets;
+  if (wagTargets !== undefined) updates.wagTargets = wagTargets;
   
   setNodeConfig(id, updates);
   res.json({ success: true, message: 'Node config updated locally' });

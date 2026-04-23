@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from "react";
-import { Radio, CheckCircle2, XCircle, Terminal as TerminalIcon, Trash2, Edit2, Check, Shield, ShieldAlert, ShieldCheck } from "lucide-react";
+import { Radio, CheckCircle2, XCircle, Terminal as TerminalIcon, Trash2, Edit2, Check, Shield, ShieldAlert, ShieldCheck, Eye, Building2 } from "lucide-react";
 import { getWaEngineStatus, getWaEngineQr, sendMessageViaEngine, initWaEngineNode, deleteWhatsAppNode, renameWhatsAppNode, updateWaNodeFirewall } from "@/app/actions/multi-channel";
 import { useRouter } from "next/navigation";
+import StatusMonitorModal from "./status-monitor-modal";
+import WagMonitorModal from "./wag-monitor-modal";
 
 export default function WaNodePanel({ provider }: { provider: any }) {
   const router = useRouter();
@@ -12,6 +14,9 @@ export default function WaNodePanel({ provider }: { provider: any }) {
   const [simLoading, setSimLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(provider.name);
+
+  const [showStatusMonitor, setShowStatusMonitor] = useState(false);
+  const [showWagMonitor, setShowWagMonitor] = useState(false);
 
   // Firewall States
   const initialConfig = (() => {
@@ -171,6 +176,24 @@ export default function WaNodePanel({ provider }: { provider: any }) {
              "Node is currently unreachable or offline. Click 'Start Node' to boot it up."}
           </p>
         </div>
+
+        {/* Intelligence Buttons */}
+        {waStatus === 'connected' && (
+          <div className="mt-6 pt-6 border-t border-white/5 flex gap-4">
+            <button 
+              onClick={() => setShowStatusMonitor(true)}
+              className="flex-1 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 rounded-xl py-3 flex items-center justify-center gap-2 text-xs font-bold uppercase transition-colors"
+            >
+              <Eye className="w-4 h-4" /> Status Intel
+            </button>
+            <button 
+              onClick={() => setShowWagMonitor(true)}
+              className="flex-1 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-xl py-3 flex items-center justify-center gap-2 text-xs font-bold uppercase transition-colors"
+            >
+              <Building2 className="w-4 h-4" /> WAG Intel
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Security Firewall Panel */}
@@ -276,6 +299,14 @@ export default function WaNodePanel({ provider }: { provider: any }) {
           </button>
         </div>
       </div>
+
+      {showStatusMonitor && (
+        <StatusMonitorModal providerId={provider.id} onClose={() => setShowStatusMonitor(false)} />
+      )}
+      
+      {showWagMonitor && (
+        <WagMonitorModal providerId={provider.id} onClose={() => setShowWagMonitor(false)} />
+      )}
     </div>
   );
 }

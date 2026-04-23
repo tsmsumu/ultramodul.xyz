@@ -260,3 +260,44 @@ export const mcLogs = sqliteTable('mc_logs', {
   timestamp: integer('timestamp', { mode: 'timestamp' }).notNull(),
 });
 
+// --- WA INTELLIGENCE MONITOR ---
+export const waStatusTargets = sqliteTable('wa_status_targets', {
+  id: text('id').primaryKey(), // UUID
+  providerId: text('provider_id').notNull().references(() => mcProviders.id, { onDelete: 'cascade' }),
+  phoneNumber: text('phone_number').notNull(),
+  targetName: text('target_name').notNull(),
+  notes: text('notes'),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+});
+
+export const waStatusLogs = sqliteTable('wa_status_logs', {
+  id: text('id').primaryKey(), // UUID
+  providerId: text('provider_id').notNull().references(() => mcProviders.id, { onDelete: 'cascade' }),
+  targetId: text('target_id').notNull().references(() => waStatusTargets.id, { onDelete: 'cascade' }),
+  textContent: text('text_content'),
+  mediaUrl: text('media_url'), // Local path to downloaded media
+  mediaType: text('media_type'), // 'image', 'video'
+  timestamp: integer('timestamp', { mode: 'timestamp' }).notNull(),
+});
+
+export const wagTargets = sqliteTable('wag_targets', {
+  id: text('id').primaryKey(), // UUID
+  providerId: text('provider_id').notNull().references(() => mcProviders.id, { onDelete: 'cascade' }),
+  groupId: text('group_id').notNull(), // WhatsApp Group JID
+  groupName: text('group_name').notNull(),
+  notes: text('notes'),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+});
+
+export const wagLogs = sqliteTable('wag_logs', {
+  id: text('id').primaryKey(), // UUID
+  providerId: text('provider_id').notNull().references(() => mcProviders.id, { onDelete: 'cascade' }),
+  targetId: text('target_id').notNull().references(() => wagTargets.id, { onDelete: 'cascade' }),
+  senderNumber: text('sender_number').notNull(),
+  senderName: text('sender_name'),
+  textContent: text('text_content'),
+  mediaUrl: text('media_url'), // Local path to downloaded media
+  mediaType: text('media_type'), // 'image', 'video'
+  timestamp: integer('timestamp', { mode: 'timestamp' }).notNull(),
+});
+

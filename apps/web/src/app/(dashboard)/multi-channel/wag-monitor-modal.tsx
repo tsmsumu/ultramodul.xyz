@@ -1,0 +1,269 @@
+import { useState, useEffect } from "react";
+import { X, Search, Plus, Trash2, Printer, Download, Image as ImageIcon, Video, Building2 } from "lucide-react";
+import { getMonitorTargets, getWagLogs, addWagTarget, removeWagTarget } from "@/app/actions/wa-monitor";
+
+export default function WagMonitorModal({ providerId, onClose }: { providerId: string, onClose: () => void }) {
+  const [activeTab, setActiveTab] = useState<'targets' | 'logs'>('logs');
+  const [targets, setTargets] = useState<any[]>([]);
+  const [logs, setLogs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Form states
+  const [groupId, setGroupId] = useState("");
+  const [groupName, setGroupName] = useState("");
+  
+  // Search state
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const fetchData = async () => {
+    setLoading(true);
+    const { wag } = await getMonitorTargets(providerId);
+    setTargets(wag);
+    const logData = await getWagLogs(providerId);
+    setLogs(logData);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [providerId]);
+
+  const handleAddTarget = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!groupId || !groupName) return;
+    
+    // Group IDs usually end in @g.us
+    let cleanId = groupId;
+    if (!cleanId.includes('@g.us')) {
+      cleanId = `${cleanId}@g.us`;
+    }
+
+    await addWagTarget(providerId, cleanId, groupName);
+    setGroupId("");
+    setGroupName("");
+    fetchData();
+  };
+
+  const handleRemoveTarget = async (id: string) => {
+    await removeWagTarget(providerId, id);
+    fetchData();
+  };
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleExport = () => {
+    const csvContent = "data:text/csv;charset=utf-8," 
+      + "Date,Time,Group,Sender,Text,Media\n"
+      + filteredLogs.map(l => {
+          const dt = new Date(l.timestamp);
+          const targetObj = targets.find(t => t.id === l.targetId);
+          return `${dt.toLocaleDateString()},${dt.toLocaleTimeString()},${targetObj?.groupName || 'Unknown Group'},${l.senderName || l.senderNumber},${l.textContent?.replace(/,/g, ' ') || ''},${l.mediaUrl ? 'Yes' : 'No'}`;
+        }).join("\n");
+    
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "wag_logs.csv");
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  };
+
+  const filteredLogs = logs.filter(l => 
+    l.textContent?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    l.senderName?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm print:bg-white print:p-0">
+      <div className="bg-zinc-950 border border-white/10 rounded-3xl w-full max-w-5xl h-[85vh] flex flex-col overflow-hidden shadow-2xl print:h-auto print:border-none print:shadow-none">
+        
+        {/* Header */}
+        <div className="p-6 border-b border-white/10 flex justify-between items-center bg-zinc-900/50 print:hidden">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
+              <Building2 className="w-5 h-5 text-emerald-400" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-white">WAG Monitor</h2>
+              <p className="text-xs text-zinc-400">WhatsApp Group Intelligence Logbook</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full text-zinc-400 hover:text-white transition-colors">
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+
+        {/* Tabs */}
+        <div className="flex px-6 pt-4 border-b border-white/10 gap-6 print:hidden">
+          <button 
+            onClick={() => setActiveTab('logs')}
+            className={`pb-4 text-sm font-bold uppercase tracking-wider border-b-2 transition-colors ${activeTab === 'logs' ? 'border-emerald-500 text-emerald-400' : 'border-transparent text-zinc-500 hover:text-zinc-300'}`}
+          >
+            📖 Logbook
+          </button>
+          <button 
+            onClick={() => setActiveTab('targets')}
+            className={`pb-4 text-sm font-bold uppercase tracking-wider border-b-2 transition-colors ${activeTab === 'targets' ? 'border-emerald-500 text-emerald-400' : 'border-transparent text-zinc-500 hover:text-zinc-300'}`}
+          >
+            🎯 WAG Targets
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-6 custom-scrollbar print:p-0 print:overflow-visible">
+          {loading ? (
+            <div className="h-full flex items-center justify-center text-emerald-400 print:hidden">Loading Intel Data...</div>
+          ) : (
+            <>
+              {/* TARGETS TAB */}
+              {activeTab === 'targets' && (
+                <div className="space-y-6 print:hidden">
+                  <div className="bg-zinc-900/50 border border-white/5 rounded-2xl p-6">
+                    <h3 className="text-sm font-bold text-white mb-4 uppercase tracking-widest">Add New Group Target</h3>
+                    <form onSubmit={handleAddTarget} className="flex gap-4 items-end">
+                      <div className="flex-1 space-y-2">
+                        <label className="text-xs text-zinc-400 uppercase tracking-wider">Group JID (ID Grup)</label>
+                        <input type="text" value={groupId} onChange={e=>setGroupId(e.target.value)} placeholder="1234567890@g.us" className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-1 focus:ring-emerald-500 focus:outline-none" required />
+                      </div>
+                      <div className="flex-1 space-y-2">
+                        <label className="text-xs text-zinc-400 uppercase tracking-wider">Group Name</label>
+                        <input type="text" value={groupName} onChange={e=>setGroupName(e.target.value)} placeholder="VIP Investor Group" className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-1 focus:ring-emerald-500 focus:outline-none" required />
+                      </div>
+                      <button type="submit" className="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 h-[46px]">
+                        <Plus className="w-4 h-4" /> Add Group
+                      </button>
+                    </form>
+                  </div>
+
+                  <div className="bg-black/40 border border-white/5 rounded-2xl overflow-hidden">
+                    <table className="w-full text-left text-sm text-zinc-300">
+                      <thead className="bg-zinc-900/80 text-xs uppercase text-zinc-500">
+                        <tr>
+                          <th className="px-6 py-4">Group Name</th>
+                          <th className="px-6 py-4">Group JID</th>
+                          <th className="px-6 py-4">Added On</th>
+                          <th className="px-6 py-4 text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5">
+                        {targets.map(t => (
+                          <tr key={t.id} className="hover:bg-white/[0.02]">
+                            <td className="px-6 py-4 font-bold text-white">{t.groupName}</td>
+                            <td className="px-6 py-4 font-mono text-xs">{t.groupId}</td>
+                            <td className="px-6 py-4">{new Date(t.createdAt).toLocaleDateString()}</td>
+                            <td className="px-6 py-4 text-right">
+                              <button onClick={() => handleRemoveTarget(t.id)} className="text-zinc-500 hover:text-red-400">
+                                <Trash2 className="w-4 h-4 inline" />
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                        {targets.length === 0 && (
+                          <tr><td colSpan={4} className="px-6 py-8 text-center text-zinc-500 italic">No WAG targets monitored.</td></tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* LOGS TAB */}
+              {activeTab === 'logs' && (
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between print:hidden">
+                    <div className="relative w-64">
+                      <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+                      <input 
+                        type="text" 
+                        placeholder="Search messages..." 
+                        value={searchQuery}
+                        onChange={e=>setSearchQuery(e.target.value)}
+                        className="w-full bg-zinc-900 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <button onClick={handleExport} className="flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors">
+                        <Download className="w-4 h-4" /> Export CSV
+                      </button>
+                      <button onClick={handlePrint} className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors">
+                        <Printer className="w-4 h-4" /> Print Report
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="hidden print:block mb-8">
+                    <h1 className="text-2xl font-bold text-black border-b border-black pb-2 mb-4">Laporan Pemantauan WhatsApp Group (WAG)</h1>
+                    <p className="text-sm text-gray-600">Dicetak pada: {new Date().toLocaleString()}</p>
+                  </div>
+
+                  <div className="bg-black/40 border border-white/5 rounded-2xl overflow-hidden print:border-black print:bg-white">
+                    <table className="w-full text-left text-sm text-zinc-300 print:text-black">
+                      <thead className="bg-zinc-900/80 text-xs uppercase text-zinc-500 print:bg-gray-100 print:text-black">
+                        <tr>
+                          <th className="px-6 py-4">Date & Time</th>
+                          <th className="px-6 py-4">Group & Sender</th>
+                          <th className="px-6 py-4">Message Content</th>
+                          <th className="px-6 py-4">Media</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5 print:divide-gray-300">
+                        {filteredLogs.map(l => {
+                          const targetObj = targets.find(t => t.id === l.targetId);
+                          return (
+                            <tr key={l.id} className="hover:bg-white/[0.02]">
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="font-bold text-white print:text-black">{new Date(l.timestamp).toLocaleDateString()}</div>
+                                <div className="text-xs text-zinc-500 print:text-gray-600">{new Date(l.timestamp).toLocaleTimeString()}</div>
+                              </td>
+                              <td className="px-6 py-4">
+                                <div className="text-xs text-emerald-400 font-bold uppercase tracking-wider mb-1">{targetObj?.groupName || 'Unknown Group'}</div>
+                                <div className="text-sm text-white print:text-black">{l.senderName || l.senderNumber}</div>
+                                <div className="text-xs text-zinc-500">{l.senderNumber}</div>
+                              </td>
+                              <td className="px-6 py-4">
+                                <p className="whitespace-pre-wrap max-w-lg">{l.textContent || <span className="italic text-zinc-600">No text content</span>}</p>
+                              </td>
+                              <td className="px-6 py-4">
+                                {l.mediaUrl ? (
+                                  <div className="flex flex-col gap-2 print:hidden">
+                                    {l.mediaType === 'image' ? (
+                                      <div className="relative group">
+                                        <img src={l.mediaUrl} alt="WAG Media" className="w-24 h-24 object-cover rounded-lg border border-white/10" />
+                                        <a href={l.mediaUrl} target="_blank" className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-lg">
+                                          <ImageIcon className="w-6 h-6 text-white" />
+                                        </a>
+                                      </div>
+                                    ) : (
+                                      <div className="relative group">
+                                        <video src={l.mediaUrl} className="w-24 h-24 object-cover rounded-lg border border-white/10" muted />
+                                        <a href={l.mediaUrl} target="_blank" className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-lg">
+                                          <Video className="w-6 h-6 text-white" />
+                                        </a>
+                                      </div>
+                                    )}
+                                  </div>
+                                ) : (
+                                  <span className="text-xs text-zinc-500 italic">Text Only</span>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                        {filteredLogs.length === 0 && (
+                          <tr><td colSpan={4} className="px-6 py-8 text-center text-zinc-500 italic">No WAG logs recorded yet.</td></tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

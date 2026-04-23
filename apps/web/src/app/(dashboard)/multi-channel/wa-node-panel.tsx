@@ -6,7 +6,7 @@ import StatusMonitorModal from "./status-monitor-modal";
 import WagMonitorModal from "./wag-monitor-modal";
 import ChatMonitorModal from "./chat-monitor-modal";
 
-export default function WaNodePanel({ provider }: { provider: any }) {
+export default function WaNodePanel({ provider, isArchived = false }: { provider: any, isArchived?: boolean }) {
   const router = useRouter();
   const [waStatus, setWaStatus] = useState<string>("initializing");
   const [qrCode, setQrCode] = useState<string | null>(null);
@@ -139,64 +139,68 @@ export default function WaNodePanel({ provider }: { provider: any }) {
                 </button>
               </div>
             ) : (
-              <div className="flex items-center gap-2 group cursor-pointer truncate" onClick={() => setIsEditing(true)}>
+              <div className="flex items-center gap-2 group cursor-pointer truncate" onClick={() => !isArchived && setIsEditing(true)}>
                 <span className="truncate">{provider.name}</span>
-                <Edit2 className="w-3 h-3 text-zinc-500 group-hover:text-zinc-300 transition-colors opacity-0 group-hover:opacity-100 flex-shrink-0" />
+                {!isArchived && <Edit2 className="w-3 h-3 text-zinc-500 group-hover:text-zinc-300 transition-colors opacity-0 group-hover:opacity-100 flex-shrink-0" />}
               </div>
             )}
           </h2>
-          <div className="flex flex-wrap gap-2 justify-start">
-            {waStatus === 'connected' && (
-              <button onClick={handleLogoutSession} className="text-[10px] px-3 py-1.5 bg-orange-500/10 hover:bg-orange-500/30 rounded-lg text-orange-400 font-bold uppercase transition-all flex items-center gap-1">
-                <LogOut className="w-3 h-3" /> Logout
+          {!isArchived && (
+            <div className="flex flex-wrap gap-2 justify-start">
+              {waStatus === 'connected' && (
+                <button onClick={handleLogoutSession} className="text-[10px] px-3 py-1.5 bg-orange-500/10 hover:bg-orange-500/30 rounded-lg text-orange-400 font-bold uppercase transition-all flex items-center gap-1">
+                  <LogOut className="w-3 h-3" /> Logout
+                </button>
+              )}
+              <button onClick={handleInitNode} className="text-[10px] px-3 py-1.5 bg-indigo-500/20 hover:bg-indigo-500/40 rounded-lg text-indigo-300 font-bold uppercase transition-all">
+                Start Node
               </button>
-            )}
-            <button onClick={handleInitNode} className="text-[10px] px-3 py-1.5 bg-indigo-500/20 hover:bg-indigo-500/40 rounded-lg text-indigo-300 font-bold uppercase transition-all">
-              Start Node
-            </button>
-            <button onClick={fetchWaStatus} className="text-[10px] px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-zinc-300 font-bold uppercase transition-all">
-              Refresh
-            </button>
-            <button onClick={handleDeleteNode} className="text-[10px] px-3 py-1.5 bg-red-500/10 hover:bg-red-500/30 rounded-lg text-red-400 font-bold uppercase transition-all flex items-center gap-1">
-              <Trash2 className="w-3 h-3" /> Delete
-            </button>
-          </div>
-        </div>
-
-        <div className="flex flex-col items-center justify-center p-8 border border-white/5 border-dashed rounded-2xl bg-black/40 min-h-[300px]">
-          <div className="text-center mb-6">
-            <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
-              waStatus === 'connected' ? 'bg-emerald-900/30 text-emerald-400 border-emerald-500/30' : 
-              waStatus === 'qr' ? 'bg-amber-900/30 text-amber-400 border-amber-500/30' : 
-              'bg-red-900/30 text-red-400 border-red-500/30'
-            }`}>
-              STATUS: {waStatus}
-            </span>
-          </div>
-
-          {waStatus === 'qr' && qrCode ? (
-             <div className="bg-white p-4 rounded-xl shadow-[0_0_50px_rgba(255,255,255,0.1)]">
-               <img src={qrCode} alt="WhatsApp QR Code" className="w-48 h-48" />
-             </div>
-          ) : waStatus === 'connected' ? (
-             <div className="w-32 h-32 rounded-full border-4 border-emerald-500/30 flex items-center justify-center">
-               <CheckCircle2 className="w-16 h-16 text-emerald-400" />
-             </div>
-          ) : (
-             <div className="w-32 h-32 rounded-full border-4 border-red-500/30 flex items-center justify-center">
-               <XCircle className="w-16 h-16 text-red-400" />
-             </div>
+              <button onClick={fetchWaStatus} className="text-[10px] px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-zinc-300 font-bold uppercase transition-all">
+                Refresh
+              </button>
+              <button onClick={handleDeleteNode} className="text-[10px] px-3 py-1.5 bg-red-500/10 hover:bg-red-500/30 rounded-lg text-red-400 font-bold uppercase transition-all flex items-center gap-1">
+                <Trash2 className="w-3 h-3" /> Delete
+              </button>
+            </div>
           )}
-          
-          <p className="mt-6 text-xs text-zinc-500 text-center max-w-xs">
-            {waStatus === 'qr' ? "Scan this QR Code using the WhatsApp app on your mobile device to link the system." : 
-             waStatus === 'connected' ? "WhatsApp Node is fully connected and ready to transmit payloads." :
-             "Node is currently unreachable or offline. Click 'Start Node' to boot it up."}
-          </p>
         </div>
+
+        {!isArchived && (
+          <div className="flex flex-col items-center justify-center p-8 border border-white/5 border-dashed rounded-2xl bg-black/40 min-h-[300px]">
+            <div className="text-center mb-6">
+              <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
+                waStatus === 'connected' ? 'bg-emerald-900/30 text-emerald-400 border-emerald-500/30' : 
+                waStatus === 'qr' ? 'bg-amber-900/30 text-amber-400 border-amber-500/30' : 
+                'bg-red-900/30 text-red-400 border-red-500/30'
+              }`}>
+                STATUS: {waStatus}
+              </span>
+            </div>
+
+            {waStatus === 'qr' && qrCode ? (
+               <div className="bg-white p-4 rounded-xl shadow-[0_0_50px_rgba(255,255,255,0.1)]">
+                 <img src={qrCode} alt="WhatsApp QR Code" className="w-48 h-48" />
+               </div>
+            ) : waStatus === 'connected' ? (
+               <div className="w-32 h-32 rounded-full border-4 border-emerald-500/30 flex items-center justify-center">
+                 <CheckCircle2 className="w-16 h-16 text-emerald-400" />
+               </div>
+            ) : (
+               <div className="w-32 h-32 rounded-full border-4 border-red-500/30 flex items-center justify-center">
+                 <XCircle className="w-16 h-16 text-red-400" />
+               </div>
+            )}
+            
+            <p className="mt-6 text-xs text-zinc-500 text-center max-w-xs">
+              {waStatus === 'qr' ? "Scan this QR Code using the WhatsApp app on your mobile device to link the system." : 
+               waStatus === 'connected' ? "WhatsApp Node is fully connected and ready to transmit payloads." :
+               "Node is currently unreachable or offline. Click 'Start Node' to boot it up."}
+            </p>
+          </div>
+        )}
 
         {/* Intelligence Buttons */}
-        {waStatus === 'connected' && (
+        {(waStatus === 'connected' || isArchived) && (
           <div className="mt-6 pt-6 border-t border-white/5 flex gap-4">
             <button 
               onClick={() => setShowStatusMonitor(true)}

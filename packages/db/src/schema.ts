@@ -226,6 +226,7 @@ export const mcProviders = sqliteTable('mc_providers', {
   providerType: text('provider_type').notNull(), // 'whatsapp', 'telegram', 'signal', 'sms', 'email'
   name: text('name').notNull(), // e.g. "WhatsApp Official Gateway"
   isActive: integer('is_active', { mode: 'boolean' }).notNull().default(false),
+  isArchived: integer('is_archived', { mode: 'boolean' }).notNull().default(false),
   configPayload: text('config_payload').notNull().default('{}'), // JSON for webhook, api key
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),

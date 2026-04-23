@@ -10,11 +10,13 @@ import WaNodePanel from "./wa-node-panel";
 
 export default function MultiChannelDashboard({
   initialProviders,
+  archivedProviders,
   initialMappings,
   initialSessions,
   initialLogs
 }: {
   initialProviders: any[];
+  archivedProviders: any[];
   initialMappings: any[];
   initialSessions: any[];
   initialLogs: any[];
@@ -213,6 +215,7 @@ export default function MultiChannelDashboard({
 
   const renderLiveExplorer = () => {
     const waProviders = initialProviders.filter(p => p.providerType === 'whatsapp');
+    const waArchived = archivedProviders?.filter(p => p.providerType === 'whatsapp') || [];
 
     return (
       <div className="space-y-6">
@@ -234,6 +237,19 @@ export default function MultiChannelDashboard({
           </div>
         ) : (
           waProviders.map(p => <WaNodePanel key={p.id} provider={p} />)
+        )}
+
+        {waArchived.length > 0 && (
+          <div className="mt-12 pt-8 border-t border-white/10">
+            <h3 className="text-sm font-bold text-zinc-500 tracking-widest uppercase flex items-center gap-2 mb-6">
+              <Database className="w-4 h-4" /> Archived Nodes (Read Only Logbooks)
+            </h3>
+            {waArchived.map(p => (
+              <div key={p.id} className="opacity-80">
+                 <WaNodePanel provider={p} isArchived={true} />
+              </div>
+            ))}
+          </div>
         )}
       </div>
     );

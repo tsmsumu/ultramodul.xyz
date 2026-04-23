@@ -8,7 +8,7 @@ import { randomUUID } from "crypto";
 // --- PROVIDERS ---
 export async function getProviders() {
   try {
-    let providers = await db.select().from(mcProviders).orderBy(mcProviders.providerType);
+    let providers = await db.select().from(mcProviders).where(eq(mcProviders.isArchived, false)).orderBy(mcProviders.providerType);
     
     // Seed default providers if empty
     if (providers.length === 0) {
@@ -20,11 +20,20 @@ export async function getProviders() {
         { id: randomUUID(), providerType: "email", name: "SMTP Secure Gateway", isActive: false, configPayload: "{}", createdAt: new Date(), updatedAt: new Date() }
       ];
       await db.insert(mcProviders).values(initialProviders);
-      providers = await db.select().from(mcProviders).orderBy(mcProviders.providerType);
+      providers = await db.select().from(mcProviders).where(eq(mcProviders.isArchived, false)).orderBy(mcProviders.providerType);
     }
     return providers;
   } catch (error) {
     console.error("Failed to fetch mcProviders", error);
+    return [];
+  }
+}
+
+export async function getArchivedProviders() {
+  try {
+    return await db.select().from(mcProviders).where(eq(mcProviders.isArchived, true)).orderBy(desc(mcProviders.updatedAt));
+  } catch (error) {
+    console.error("Failed to fetch archived mcProviders", error);
     return [];
   }
 }
@@ -168,8 +177,8 @@ export async function deleteWhatsAppNode(providerId: string) {
       console.log("Engine logout failed or engine unreachable", e);
     }
     
-    // Delete from DB
-    await db.delete(mcProviders).where(eq(mcProviders.id, providerId));
+    // Soft Delete from DB
+    await db.update(mcProviders).set({ isArchived: true, updatedAt: new Date() }).where(eq(mcProviders.id, providerId));
     return { success: true };
   } catch (error) {
     console.error("Failed to delete WA Node", error);

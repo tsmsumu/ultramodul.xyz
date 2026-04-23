@@ -121,31 +121,31 @@ export default function WaNodePanel({ provider }: { provider: any }) {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 pb-8 border-b border-white/10 last:border-0 last:pb-0">
       {/* Omni WA-Engine Panel */}
       <div className="bg-zinc-950/80 border border-white/5 rounded-3xl p-6 shadow-xl relative">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-          <h2 className="text-sm font-bold text-white tracking-widest uppercase flex items-center gap-2 flex-shrink-0">
-            <Radio className="w-5 h-5 text-emerald-400" />
+        <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
+          <h2 className="text-sm font-bold text-white tracking-widest uppercase flex items-center gap-2 w-full sm:w-auto">
+            <Radio className="w-5 h-5 text-emerald-400 flex-shrink-0" />
             {isEditing ? (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 max-w-full">
                 <input 
                   type="text" 
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="bg-black/50 border border-white/10 text-white px-2 py-1 rounded text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 w-32"
+                  className="bg-black/50 border border-white/10 text-white px-2 py-1 rounded text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 w-32 sm:w-auto"
                   autoFocus
                   onKeyDown={(e) => e.key === 'Enter' && handleRename()}
                 />
-                <button onClick={handleRename} className="text-emerald-400 hover:text-emerald-300">
+                <button onClick={handleRename} className="text-emerald-400 hover:text-emerald-300 flex-shrink-0">
                   <Check className="w-4 h-4" />
                 </button>
               </div>
             ) : (
-              <div className="flex items-center gap-2 group cursor-pointer" onClick={() => setIsEditing(true)}>
-                <span>{provider.name}</span>
-                <Edit2 className="w-3 h-3 text-zinc-500 group-hover:text-zinc-300 transition-colors opacity-0 group-hover:opacity-100" />
+              <div className="flex items-center gap-2 group cursor-pointer truncate" onClick={() => setIsEditing(true)}>
+                <span className="truncate">{provider.name}</span>
+                <Edit2 className="w-3 h-3 text-zinc-500 group-hover:text-zinc-300 transition-colors opacity-0 group-hover:opacity-100 flex-shrink-0" />
               </div>
             )}
           </h2>
-          <div className="flex flex-wrap gap-2 justify-start sm:justify-end">
+          <div className="flex flex-wrap gap-2 justify-start">
             {waStatus === 'connected' && (
               <button onClick={handleLogoutSession} className="text-[10px] px-3 py-1.5 bg-orange-500/10 hover:bg-orange-500/30 rounded-lg text-orange-400 font-bold uppercase transition-all flex items-center gap-1">
                 <LogOut className="w-3 h-3" /> Logout
